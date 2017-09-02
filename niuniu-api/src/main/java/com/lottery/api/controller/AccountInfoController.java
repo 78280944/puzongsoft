@@ -112,7 +112,7 @@ public class AccountInfoController {
 		    	//获取上级的限额等信息
 			    OffAccountInfo leOffAccountInfo = offAccountInfoMapper.selectByUsername(accountInfo.getSupusername());
 				if(leOffAccountInfo==null){ 	
-				      result.fail("管理员",MessageTool.Code_3002);
+				      result.fail("管理员;",MessageTool.Code_3002);
 				      LOG.info(result.getMessage());
 				      return result;
 				  }
