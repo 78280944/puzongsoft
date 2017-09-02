@@ -98,7 +98,7 @@ public class AccountInfoController {
 			String username = param.getUsername();
 			String password = param.getPassword();
 			
-			//参数合规性校验，必要参数不能为空
+			//参数合规性校验，必要参数不能为空;
 			if (ToolsUtil.isEmptyTrim(username)||ToolsUtil.isEmptyTrim(password)){
 			      result.fail(MessageTool.Code_2002);
 			      LOG.info(result.getMessage());
