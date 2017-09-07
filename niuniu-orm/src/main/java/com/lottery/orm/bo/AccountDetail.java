@@ -17,7 +17,7 @@ public class AccountDetail {
 
 	private String state;
 
-	private String supusername;
+	private Integer supuserid;
 
 	private String level;
 
@@ -87,12 +87,14 @@ public class AccountDetail {
 		this.state = state == null ? null : state.trim();
 	}
 
-	public String getSupusername() {
-		return supusername;
+
+
+	public Integer getSupuserid() {
+		return supuserid;
 	}
 
-	public void setSupusername(String supusername) {
-		this.supusername = supusername == null ? null : supusername.trim();
+	public void setSupuserid(Integer supuserid) {
+		this.supuserid = supuserid;
 	}
 
 	public String getLevel() {

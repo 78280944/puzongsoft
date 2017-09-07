@@ -97,6 +97,12 @@
 		   <mvc:exclude-mapping path="/api-docs" />
 		   <mvc:exclude-mapping path="/account/getAccountInfo" />
 		   <mvc:exclude-mapping path="/account/getRemarkInfo" />
+		   <mvc:exclude-mapping path="/initService/initData"/>
+		   <mvc:exclude-mapping path="/initService/updatePassword"/>
+		   <mvc:exclude-mapping path="/account/addAccountInfo"/>
+		   <mvc:exclude-mapping path="/account/addAccountInfo"/>
+		   <mvc:exclude-mapping path="/account/userExit"/>
+		   <mvc:exclude-mapping path="/trade/getTradeInfo"/>
 		   <mvc:exclude-mapping path="/rule.html" />
 		   <ref bean="responseInterceptor"/>
 	  </mvc:interceptor>

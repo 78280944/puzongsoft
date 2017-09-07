@@ -34,7 +34,7 @@ public class OffAccountInfoService {
 		accountDetail.setRatio(paraInfo.getRatio());
 		accountDetail.setPercentage(paraInfo.getPercentage());
 		accountDetail.setState(paraInfo.getState());
-		accountDetail.setSupusername(paraInfo.getSupusername());
+		//accountDetail.setSupusername(paraInfo.getUsername());
 		accountDetail.setLevel(paraInfo.getLevel());
 		accountDetail.setOfftype(paraInfo.getOfftype());
 		accountDetail.setMoney(BigDecimal.valueOf(0.0));
@@ -53,7 +53,7 @@ public class OffAccountInfoService {
 			accountDetail.setRatio(paraInfo.getRatio());
 			accountDetail.setPercentage(paraInfo.getPercentage());
 			accountDetail.setState(paraInfo.getState());
-			accountDetail.setSupusername(paraInfo.getSupusername());
+			//accountDetail.setSupusername(paraInfo.getUsername());
 			accountDetail.setLevel(paraInfo.getLevel());
 			accountDetail.setOfftype("2");
 			accountDetailMapper.insertSelective(accountDetail);  
@@ -73,7 +73,7 @@ public class OffAccountInfoService {
 		accountDetail.setRatio(paraInfo.getRatio());
 		accountDetail.setPercentage(paraInfo.getPercentage());
 		accountDetail.setState(paraInfo.getState());
-		accountDetail.setSupusername(paraInfo.getSupusername());
+		//accountDetail.setSupusername(paraInfo.getSupusername());
 		accountDetail.setLevel(paraInfo.getLevel());
 		accountDetail.setOfftype(paraInfo.getOfftype());
 		accountDetailMapper.updateByPrimaryKeySelective(accountDetail);

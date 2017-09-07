@@ -6,39 +6,15 @@ import com.wordnik.swagger.annotations.ApiModelProperty;
 
 public class OffAccountInfoVo extends BaseAccountInfoVo{
 	
-    //@ApiModelProperty(value = "点数限额")
-   // private Double limited;
-    @ApiModelProperty(value = "洗码比")
-    private Double ratio;
+
     @ApiModelProperty(value = "代理占成")
     private Double percentage;
-    @ApiModelProperty(value = "风控限额")
-    private String riskamount;
 
+    @ApiModelProperty(value = "邀请码")
+    private String code;
     
-	public String getRiskamount() {
-		return riskamount;
-	}
-
-	public void setRiskamount(String riskamount) {
-		this.riskamount = riskamount;
-	}
-/*
-	public Double getLimited() {
-		return limited;
-	}
-
-	public void setLimited(Double limited) {
-		this.limited = limited;
-	}
-*/
-	public Double getRatio() {
-		return ratio;
-	}
-
-	public void setRatio(Double ratio) {
-		this.ratio = ratio;
-	}
+    @ApiModelProperty(value = "管理人id")
+    private Integer accountid;
 
 	public Double getPercentage() {
 		return percentage;
@@ -48,5 +24,20 @@ public class OffAccountInfoVo extends BaseAccountInfoVo{
 		this.percentage = percentage;
 	}
 
+	public String getCode() {
+		return code;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
+	}
+
+	public Integer getAccountid() {
+		return accountid;
+	}
+
+	public void setAccountid(Integer accountid) {
+		this.accountid = accountid;
+	}	
 	   
 }

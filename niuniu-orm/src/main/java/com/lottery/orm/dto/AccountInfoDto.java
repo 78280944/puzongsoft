@@ -6,17 +6,9 @@ import com.wordnik.swagger.annotations.ApiModelProperty;
 
 public class AccountInfoDto extends BaseAccountDto {
 	
-	//@ApiModelProperty(value = "点数限额", required = true)
-	//private Double limited;
-
-	@ApiModelProperty(value = "洗码比", required = true)
-	private Double ratio;
-	
-	@ApiModelProperty(value = "账户ID", required = true)
-	private Integer accountID;
 	
 	@ApiModelProperty(value = "账户余额", required = true)
-	private BigDecimal accountAmount;
+	private BigDecimal usermoney;
 	
 	@ApiModelProperty(value = "电话号码", required = true)
 	private String phone;
@@ -30,77 +22,52 @@ public class AccountInfoDto extends BaseAccountDto {
 	@ApiModelProperty(value = "管理权限", required = true)
 	private String query;
 	
-	//@ApiModelProperty(value = "管理权限", required = true)
-	//private String manage;
-	
 	@ApiModelProperty(value = "账户类型", required = true)
 	private String offtype;
 	
-	@ApiModelProperty(value = "风险限额", required = true)
-	private String riskamount;
+	@ApiModelProperty(value = "邀请码", required = true)
+	private String code;
 	
-	//@ApiModelProperty(value = "上级点数限额", required = true)
-	//private Double lelimited;
+	@ApiModelProperty(value = "安全认证码", required = true)
+	private String sfcode;
 	
-	@ApiModelProperty(value = "上级洗码比", required = true)
-	private Double leratio;
-	
-	@ApiModelProperty(value = "上级代理占成", required = true)
-	private Double lepercentage;
-	
-	@ApiModelProperty(value = "上级风险限额", required = true)
-	private String leriskamount;
+	@ApiModelProperty(value = "银行户名", required = true)
+    private String bankid;
+
+	@ApiModelProperty(value = "银行名称", required = true)
+    private String bankname;
+
+	@ApiModelProperty(value = "开户行", required = true)
+    private String bankaddress;
+
+	@ApiModelProperty(value = "银行账号", required = true)
+    private String bankaccount;
 	
 	@ApiModelProperty(value = "接口口令", required = true)
 	private String token;
-	
-	/*
-	public Double getLelimited() {
-		return lelimited;
+
+	public BigDecimal getUsermoney() {
+		return usermoney;
 	}
 
-	public void setLelimited(Double lelimited) {
-		this.lelimited = lelimited;
-	}
-*/
-	public Double getLeratio() {
-		return leratio;
+	public void setUsermoney(BigDecimal usermoney) {
+		this.usermoney = usermoney;
 	}
 
-	public void setLeratio(Double leratio) {
-		this.leratio = leratio;
+	public String getPhone() {
+		return phone;
 	}
 
-	public Double getLepercentage() {
-		return lepercentage;
+	public void setPhone(String phone) {
+		this.phone = phone;
 	}
 
-	public void setLepercentage(Double lepercentage) {
-		this.lepercentage = lepercentage;
+	public String getWebchat() {
+		return webchat;
 	}
 
-	public String getLeriskamount() {
-		return leriskamount;
-	}
-
-	public void setLeriskamount(String leriskamount) {
-		this.leriskamount = leriskamount;
-	}
-
-	public String getRiskamount() {
-		return riskamount;
-	}
-
-	public void setRiskamount(String riskamount) {
-		this.riskamount = riskamount;
-	}
-
-	public Integer getAccountID() {
-		return accountID;
-	}
-
-	public void setAccountID(Integer accountID) {
-		this.accountID = accountID;
+	public void setWebchat(String webchat) {
+		this.webchat = webchat;
 	}
 
 	public Double getPercentage() {
@@ -127,44 +94,52 @@ public class AccountInfoDto extends BaseAccountDto {
 		this.offtype = offtype;
 	}
 
-	public String getPhone() {
-		return phone;
+	public String getCode() {
+		return code;
 	}
 
-	public void setPhone(String phone) {
-		this.phone = phone;
+	public void setCode(String code) {
+		this.code = code;
 	}
 
-	public String getWebchat() {
-		return webchat;
+	public String getSfcode() {
+		return sfcode;
 	}
 
-	public void setWebchat(String webchat) {
-		this.webchat = webchat;
-	}
-/*
-	public Double getLimited() {
-		return limited;
+	public void setSfcode(String sfcode) {
+		this.sfcode = sfcode;
 	}
 
-	public void setLimited(Double limited) {
-		this.limited = limited;
-	}
-*/
-	public Double getRatio() {
-		return ratio;
+	public String getBankid() {
+		return bankid;
 	}
 
-	public void setRatio(Double ratio) {
-		this.ratio = ratio;
+	public void setBankid(String bankid) {
+		this.bankid = bankid;
 	}
 
-	public BigDecimal getAccountAmount() {
-		return accountAmount;
+	public String getBankname() {
+		return bankname;
 	}
 
-	public void setAccountAmount(BigDecimal accountAmount) {
-		this.accountAmount = accountAmount;
+	public void setBankname(String bankname) {
+		this.bankname = bankname;
+	}
+
+	public String getBankaddress() {
+		return bankaddress;
+	}
+
+	public void setBankaddress(String bankaddress) {
+		this.bankaddress = bankaddress;
+	}
+
+	public String getBankaccount() {
+		return bankaccount;
+	}
+
+	public void setBankaccount(String bankaccount) {
+		this.bankaccount = bankaccount;
 	}
 
 	public String getToken() {
@@ -174,5 +149,6 @@ public class AccountInfoDto extends BaseAccountDto {
 	public void setToken(String token) {
 		this.token = token;
 	}
+	
 	
 }

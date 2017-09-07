@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.lottery.api.dto.AccountInfoVo;
 import com.lottery.api.dto.LoginParamVo;
+import com.lottery.api.dto.NoticeTypeVo;
 import com.lottery.api.dto.PlayAccountInfoVo;
 import com.lottery.api.dto.UpdateAccountVo;
 import com.lottery.api.filter.LockedClientException;
@@ -26,9 +27,11 @@ import com.lottery.api.util.Des3Util;
 import com.lottery.api.util.ToolsUtil;
 import com.lottery.orm.bo.AccountDetail;
 import com.lottery.orm.bo.AccountInfo;
+import com.lottery.orm.bo.NoticeInfo;
 import com.lottery.orm.bo.OffAccountInfo;
 import com.lottery.orm.dao.AccountDetailMapper;
 import com.lottery.orm.dao.AccountInfoMapper;
+import com.lottery.orm.dao.NoticeInfoMapper;
 import com.lottery.orm.dao.OffAccountInfoMapper;
 import com.lottery.orm.dto.AccountInfoDto;
 import com.lottery.orm.dto.RemarkDto;
@@ -63,6 +66,9 @@ public class AccountInfoController {
 	@Autowired
     private OffAccountInfoMapper offAccountInfoMapper;
 	
+	@Autowired
+    private NoticeInfoMapper noticeInfoMapper;
+	
 	@Value("${jwt.splitter}")
     private String tokenSplitter;
 	
@@ -94,7 +100,6 @@ public class AccountInfoController {
 	public AccountResult getAccountInfo(@ApiParam(value = "Json参数", required = true) @Validated @RequestBody LoginParamVo param) throws Exception {
 		AccountResult result = new AccountResult();
 		try {
-			
 			String username = param.getUsername();
 			String password = param.getPassword();
 			
@@ -107,87 +112,20 @@ public class AccountInfoController {
 			param.setPassword(DigestUtils.md5Hex(password));
 		    AccountInfo paraInfo = mapper.map(param, AccountInfo.class);
 		    AccountInfo accountInfo = accountInfoMapper.selectByLogin(paraInfo);
-		    if(accountInfo!=null){
-		    	AccountDetail accountDetail = accountDetailMapper.selectByUserId(accountInfo.getUserid(), "3");
-		    	//获取上级的限额等信息
-			    OffAccountInfo leOffAccountInfo = offAccountInfoMapper.selectByUsername(accountInfo.getSupusername());
-				if(leOffAccountInfo==null){ 	
-				      result.fail("管理员",MessageTool.Code_3002);
-				      LOG.info(result.getMessage());
-				      return result;
-				  }
-				
-				if(accountDetail.getState().equals("0")){
+		    if(accountInfo!=null){	
+		    	
+				if(accountInfo.getState().equals("0")){
 					throw new LockedClientException();
 				}
 				    	
 				AccountInfoDto rAcDto = new AccountInfoDto();
-				rAcDto.setUserid(null==accountInfo.getUserid()||"".equals(accountInfo.getUserid())||0.0==accountInfo.getUserid() ?0:accountInfo.getUserid());
-				rAcDto.setUsername(accountInfo.getUsername());
-				rAcDto.setAusername(accountInfo.getAusername());
-				rAcDto.setPassword(accountInfo.getPassword());
-				//rAcDto.setLimited(null==accountInfo.getLimited()||"".equals(accountInfo.getLimited())||0.0==accountInfo.getLimited() ?0.0:accountInfo.getLimited());
-				rAcDto.setRatio(null==accountInfo.getRatio()||"".equals(accountInfo.getRatio())||0.0==accountInfo.getRatio() ?0:accountInfo.getRatio());
-				rAcDto.setState(null==accountInfo.getState()||"".equals(accountInfo.getState()) ? "":accountInfo.getState());
-				rAcDto.setSupusername(null==accountInfo.getSupusername()||"".equals(accountInfo.getSupusername()) ? "":accountInfo.getSupusername());
-				rAcDto.setLevel(null==accountInfo.getLevel()||"".equals(accountInfo.getLevel()) ? "":accountInfo.getLevel());
-				rAcDto.setPhone(null==accountInfo.getPhone()||"".equals(accountInfo.getPhone()) ? "":accountInfo.getPhone());
-				rAcDto.setWebchat(null==accountInfo.getWebchat()||"".equals(accountInfo.getWebchat()) ? "":accountInfo.getWebchat());
-				rAcDto.setPercentage(0.0);
-				rAcDto.setQuery("");
-				rAcDto.setOfftype("3");
-				rAcDto.setAccountID(accountDetail.getAccountid());
-				rAcDto.setRiskamount("");
-			    //rAcDto.setLelimited(leOffAccountInfo.getLimited());
-			    rAcDto.setLepercentage(leOffAccountInfo.getPercentage());
-			    rAcDto.setLeratio(leOffAccountInfo.getRatio());
-			    rAcDto.setLeriskamount(leOffAccountInfo.getRiskamount());
-				rAcDto.setAccountAmount(null==accountDetail.getMoney()||"".equals(accountDetail.getMoney())||BigDecimal.valueOf(0) == accountDetail.getMoney()?BigDecimal.valueOf(0):accountDetail.getMoney());
-				rAcDto.setToken((new Des3Util()).encode(accountDetail.getAccountid()+tokenSplitter+tokenSecret));
+				rAcDto = mapper.map(accountInfo, AccountInfoDto.class);
+			    rAcDto.setToken((new Des3Util()).encode(accountInfo.getAccountid()+tokenSplitter+tokenSecret));
 				result.success(rAcDto);
 		    }else {
-		    	OffAccountInfo offparaInfo = mapper.map(param, OffAccountInfo.class);
-		    	OffAccountInfo offaccountInfo = offAccountInfoMapper.selectByLogin(offparaInfo);
-		    	if (offaccountInfo!=null){
-			    	//判断子账户
-			    	if (offaccountInfo.getOfftype().equals("2")){
-			    		String query = offaccountInfo.getQuery();
-			    		offaccountInfo = offAccountInfoMapper.selectByUsername(offaccountInfo.getSupusername());
-			    		offaccountInfo.setQuery(query);
-			    	}
-		    		
-			    	AccountDetail accountDetail = accountDetailMapper.selectByUserId(offaccountInfo.getUserid(), offaccountInfo.getOfftype());
-			    	if (accountDetail == null){
-					      result.fail(MessageTool.Code_3002);
-					      LOG.info(result.getMessage());
-					      return result;
-			    	}
-			    	if(accountDetail.getState().equals("0")){
-						throw new LockedClientException();
-					}
-					AccountInfoDto rAcDto = new AccountInfoDto();
-					rAcDto.setUserid(null==offaccountInfo.getUserid()||"".equals(offaccountInfo.getUserid())||0.0==offaccountInfo.getUserid() ?0:offaccountInfo.getUserid());
-					rAcDto.setUsername(offaccountInfo.getUsername());
-					rAcDto.setAusername(offaccountInfo.getAusername());
-					rAcDto.setPassword(offaccountInfo.getPassword());
-					//rAcDto.setLimited(null==offaccountInfo.getLimited()||"".equals(offaccountInfo.getLimited())||0.0==offaccountInfo.getLimited() ?0.0:offaccountInfo.getLimited());
-					rAcDto.setRatio(null==offaccountInfo.getRatio()||"".equals(offaccountInfo.getRatio())||0.0==offaccountInfo.getRatio() ?0:offaccountInfo.getRatio());
-					rAcDto.setState(null==offaccountInfo.getState()||"".equals(offaccountInfo.getState()) ? "":offaccountInfo.getState());
-					rAcDto.setSupusername(null==offaccountInfo.getSupusername()||"".equals(offaccountInfo.getSupusername()) ? "":offaccountInfo.getSupusername());
-					rAcDto.setLevel(null==offaccountInfo.getLevel()||"".equals(offaccountInfo.getLevel()) ? "":offaccountInfo.getLevel());
-					rAcDto.setPhone("");
-					rAcDto.setWebchat("");
-					rAcDto.setPercentage(null==offaccountInfo.getPercentage()||"".equals(offaccountInfo.getPercentage())||0.0==offaccountInfo.getPercentage() ?0.0:offaccountInfo.getPercentage());
-					rAcDto.setQuery(null==offaccountInfo.getQuery()||"".equals(offaccountInfo.getQuery()) ? "":offaccountInfo.getQuery());
-					//rAcDto.setManage(null==offaccountInfo.getManage()||"".equals(offaccountInfo.getManage()) ? "":offaccountInfo.getManage());
-					rAcDto.setOfftype(offaccountInfo.getOfftype());
-					rAcDto.setAccountID(accountDetail.getAccountid());
-					rAcDto.setAccountAmount(null==accountDetail.getMoney()||"".equals(accountDetail.getMoney())||BigDecimal.valueOf(0) == accountDetail.getMoney()?BigDecimal.valueOf(0):accountDetail.getMoney());
-					rAcDto.setRiskamount(null==offaccountInfo.getRiskamount()||"".equals(offaccountInfo.getRiskamount()) ?"":offaccountInfo.getRiskamount());
-					rAcDto.setToken((new Des3Util()).encode(accountDetail.getAccountid()+tokenSplitter+tokenSecret));
-					result.success(rAcDto);	
-		    	}else
-		    	   result.fail(MessageTool.Code_3001);
+			      result.fail(MessageTool.Code_3001);
+			      LOG.info(result.getMessage());
+			      return result;
 		    }
 			LOG.info(username+","+result.getMessage()+","+new Date());
 		} catch (LockedClientException e) {
@@ -200,79 +138,62 @@ public class AccountInfoController {
 
 	}
 	
-	@ApiOperation(value = "新增玩家", notes = "新增玩家", httpMethod = "POST")
+	@ApiOperation(value = "玩家注册", notes = "玩家注册", httpMethod = "POST")
 	@RequestMapping(value = "/addAccountInfo", method = RequestMethod.POST)
 	@ResponseBody
 	public RestResult addAccountInfo(@ApiParam(value = "Json参数", required = true) @Validated @RequestBody PlayAccountInfoVo param) throws Exception {
 		RestResult result = new RestResult();
 		try {
-			String username = param.getUsername();
-			String password = param.getPassword();
-			String supusername = param.getSupusername();
-			String level = param.getLevel();
-			//Double limited =  null;
-			Double ratio = null;
-			
-			if (null != param.getRatio())
-				ratio = param.getRatio();		
-			
+			AccountInfo accountInfo = mapper.map(param,AccountInfo.class);			
 			//参数合规性校验，必要参数不能为空
-			if (ToolsUtil.isEmptyTrim(username)||ToolsUtil.isEmptyTrim(password)){
+			if (ToolsUtil.isEmptyTrim(accountInfo.getUsername())||ToolsUtil.isEmptyTrim(accountInfo.getPassword())){
 			      result.fail("用户名，密码",MessageTool.Code_2002);
 			      LOG.info(result.getMessage());
 			      return result;
 			}
 			
-
 			//最长14个英文或者数字组合
-			if (ToolsUtil.validatName(username)){
+			if (ToolsUtil.validatName(accountInfo.getUsername())){
 			      result.fail("用户名",MessageTool.Code_1006);
 			      LOG.info(result.getMessage());
 			      return result;
 			}
 			
-			if (ToolsUtil.isEmptyTrim(supusername)||ToolsUtil.isEmptyTrim(level)){
-			      result.fail("管理操作员，代理级别",MessageTool.Code_2002);
+			if ("".equals(accountInfo.getCode())){
+			      result.fail("邀请码",MessageTool.Code_1009);
 			      LOG.info(result.getMessage());
 			      return result;
 			}
-			
-			//数字型
-			if (null != ratio){
-				if (ToolsUtil.isNumeric(String.valueOf(ratio))){
-				      result.fail("洗码比",MessageTool.Code_1004);
-				      LOG.info(result.getMessage());
-				      return result;		
-				}
-			}
-			
+				
 			//玩家是否存在，用户名不能一致
-			param.setPassword(DigestUtils.md5Hex(password));
-		    AccountInfo paraInfo = mapper.map(param, AccountInfo.class);
-		    AccountInfo accountInfo = accountInfoMapper.selectByUsername(paraInfo.getUsername());
-		    if (accountInfo!=null){
-			      result.fail(username,MessageTool.Code_2005);
+		    //AccountInfo paraInfo = mapper.map(param, AccountInfo.class);
+		    AccountInfo accountInfo1 = accountInfoMapper.selectByUsername(accountInfo.getUsername());
+		    if (accountInfo1!=null){
+			      result.fail(accountInfo.getUsername(),MessageTool.Code_2005);
+			      return result;
 		    }else{
-		    	//代理账户是否存在，用户名不能一致
-		    	OffAccountInfo temmpAccountInfo = offAccountInfoMapper.selectByUsername(paraInfo.getUsername());
-		    	if (temmpAccountInfo!=null){
-				      result.fail(username,MessageTool.Code_2005);
-				      LOG.info(result.getMessage());
-				      return result;	
-		    	}
 		    	
-		    	OffAccountInfo offAccountInfo = offAccountInfoMapper.selectByUsername(paraInfo.getSupusername());
-		    	if (offAccountInfo == null){
-		    		result.fail(supusername,MessageTool.Code_2006);
-				    LOG.info(result.getMessage());
-				    return result;
+		    	//根据邀请码判断上级
+		    	
+		    	AccountInfo accountInfo2 = accountInfoMapper.selectByCode(accountInfo.getCode(), "9", "2");
+		    	System.out.println("34-----------"+accountInfo2);
+		    	if (accountInfo2!=null){
+		    		accountInfo.setSupuserid(accountInfo2.getAccountid());
+			    	accountInfo.setPassword(DigestUtils.md5Hex(accountInfo.getPassword())); 
+			    	//默认账户类型,试玩00;玩家1；代理商2；子账户3；
+			    	accountInfo.setOfftype("1");
+			    	//默认9，玩家账户
+			    	accountInfo.setLevel("9");
+			    	accountInfo.setState("1");//默认状态正常
+			    	accountInfo.setInputdate(new Date());
+			    	accountInfo.setUsermoney(BigDecimal.valueOf(0.0));
+				    accountInfoService.addAccountInfo(accountInfo);
+				    result.success();
+		    	}else {
+				     result.fail("邀请码",MessageTool.Code_3003);
+				     return result;
 		    	}
-		    	paraInfo.setLevel(offAccountInfo.getLevel());
-			    paraInfo.setState("1");//默认状态正常
-			    paraInfo.setInputdate(new Date());
-			    paraInfo.setLimited(Double.parseDouble("0.0"));
-			    accountInfoService.addAccountInfo(paraInfo);
-			    result.success();
+
 		    }
 			LOG.info(result.getMessage());
 		} catch (Exception e) {
@@ -329,7 +250,7 @@ public class AccountInfoController {
 			    paraInfo.setWebchat(null==param.getWebchat()||"".equals(param.getWebchat()) ?  accountInfo.getWebchat():param.getWebchat());
 			    paraInfo.setUpdateip(null==param.getIp()||"".equals(param.getIp()) ? accountInfo.getIp():param.getIp());
 			    paraInfo.setUpdatedate(new Date());
-			    paraInfo.setSupusername(accountInfo.getSupusername());
+			    //paraInfo.getSupuserid(accountInfo.getSupuserid());
 			    paraInfo.setLevel(accountInfo.getLevel());
 			    paraInfo.setLimited(Double.parseDouble("0.0"));
 			    accountInfoService.updateAccountInfo(paraInfo);
@@ -358,9 +279,9 @@ public class AccountInfoController {
 	
 				List<AccountInfoDto> list = new ArrayList<AccountInfoDto>();
 				for (int i = 0;i<accountInfos.size();i++){
-					AccountDetail accountDetail =  accountDetailMapper.selectByUserId(accountInfos.get(i).getUserid(),"3");
+					AccountDetail accountDetail =  accountDetailMapper.selectByUserId(accountInfos.get(i).getAccountid(),"3");
 			    	//获取上级的限额等信息
-				    OffAccountInfo leOffAccountInfo = offAccountInfoMapper.selectByUsername(accountInfos.get(i).getSupusername());
+				    OffAccountInfo leOffAccountInfo = offAccountInfoMapper.selectByUsername(accountInfos.get(i).getUsername());
 					if(leOffAccountInfo==null){ 	
 					      result.fail("管理员",MessageTool.Code_3002);
 					      LOG.info(result.getMessage());
@@ -368,22 +289,22 @@ public class AccountInfoController {
 					  }
 					    
 					AccountInfoDto rAcDto = new AccountInfoDto();
-			        rAcDto.setUserid(null==accountInfos.get(i).getUserid()||"".equals(accountInfos.get(i).getUserid())||0==accountInfos.get(i).getUserid() ?0:accountInfos.get(i).getUserid());
+			        //rAcDto.setUserid(null==accountInfos.get(i).getUserid()||"".equals(accountInfos.get(i).getUserid())||0==accountInfos.get(i).getUserid() ?0:accountInfos.get(i).getUserid());
 			        rAcDto.setUsername(null==accountInfos.get(i).getUsername()||"".equals(accountInfos.get(i).getUsername()) ?"":accountInfos.get(i).getUsername());
 			        rAcDto.setAusername(null==accountInfos.get(i).getAusername()||"".equals(accountInfos.get(i).getAusername()) ?"":accountInfos.get(i).getAusername());
 			        rAcDto.setPassword(null==accountInfos.get(i).getPassword()||"".equals(accountInfos.get(i).getPassword()) ?"":accountInfos.get(i).getPassword());
 			        //rAcDto.setLimited(null==accountInfos.get(i).getLimited()||"".equals(accountInfos.get(i).getLimited())||0.0==accountInfos.get(i).getLimited() ?0.0:accountInfos.get(i).getLimited());
-			        rAcDto.setRatio(null==accountInfos.get(i).getRatio()||"".equals(accountInfos.get(i).getRatio())||0.0==accountInfos.get(i).getRatio() ?0.0:accountInfos.get(i).getRatio());
+			        //rAcDto.setRatio(null==accountInfos.get(i).getRatio()||"".equals(accountInfos.get(i).getRatio())||0.0==accountInfos.get(i).getRatio() ?0.0:accountInfos.get(i).getRatio());
 			        rAcDto.setLevel(null==accountInfos.get(i).getLevel()||"".equals(accountInfos.get(i).getLevel()) ?"":accountInfos.get(i).getLevel());
 			        rAcDto.setState(null==accountInfos.get(i).getState()||"".equals(accountInfos.get(i).getState()) ?"":accountInfos.get(i).getState());
-			        rAcDto.setSupusername(null==accountInfos.get(i).getSupusername()||"".equals(accountInfos.get(i).getSupusername()) ?"":accountInfos.get(i).getSupusername());
+			        //rAcDto.setSupusername(null==accountInfos.get(i).getSupuserid()||"".equals(accountInfos.get(i).getSupuserid()) ?"":accountInfos.get(i).getSupuserid());
 			        rAcDto.setOfftype("3");
-			        rAcDto.setAccountID(accountDetail.getAccountid());
-			        rAcDto.setAccountAmount(accountDetail.getMoney());
+			        //rAcDto.setAccountID(accountDetail.getAccountid());
+			      //rAcDto.setAccountAmount(accountDetail.getMoney());
 				    //rAcDto.setLelimited(leOffAccountInfo.getLimited());
-				    rAcDto.setLepercentage(leOffAccountInfo.getPercentage());
-				    rAcDto.setLeratio(leOffAccountInfo.getRatio());
-				    rAcDto.setLeriskamount(leOffAccountInfo.getRiskamount());
+				   /// rAcDto.setLepercentage(leOffAccountInfo.getPercentage());
+				   // rAcDto.setLeratio(leOffAccountInfo.getRatio());
+				   // rAcDto.setLeriskamount(leOffAccountInfo.getRiskamount());
 			        list.add(rAcDto);
 				}
 				result.success(list);
@@ -396,6 +317,8 @@ public class AccountInfoController {
 		}
 		return result;
 	}
+	
+	
 	
 	@ApiOperation(value = "获取在线客服、分享链接、规则说明", notes = "获取在线客服、分享链接、规则说明", httpMethod = "POST")
 	@RequestMapping(value = "/getRemarkInfo", method = RequestMethod.POST)
@@ -412,6 +335,54 @@ public class AccountInfoController {
 		remark.setIosAppVersion(iosAppVersion);
 		result.success(remark);
 
+		return result;
+	}
+	
+	@ApiOperation(value = "获取公告", notes = "获取公告", httpMethod = "POST")
+	@RequestMapping(value = "/lotteryMessage", method = RequestMethod.POST)
+	@ResponseBody
+	public RestResult getLotteryMessage(@ApiParam(value = "Json参数", required = true) @Validated @RequestBody NoticeTypeVo param) throws Exception {
+		RestResult result = new RestResult();
+		try {
+			String stype = param.getOfftype();
+			if (stype.equals("")||!(stype.equals("00")||stype.equals("1")||stype.equals("2"))||stype.equals("3")){
+			      result.fail("公告类型",MessageTool.Code_1005);
+			      LOG.info(result.getMessage());
+			      return result;
+			}
+			int noticeid = 1;
+			if (stype.equals("0")||stype.equals("00"))
+				noticeid = 1;
+			else if (stype.equals("1")||stype.equals("2")||stype.equals("3"))
+				noticeid = 2;
+
+            NoticeInfo noticeInfo = noticeInfoMapper.selectByPrimaryKey(noticeid);
+			if(noticeInfo==null){
+			      result.fail(MessageTool.Code_4001);
+			}else{
+				result.success(noticeInfo);
+			}
+			LOG.info(result.getMessage());
+		} catch (Exception e) {
+			result.error();
+			LOG.error(e.getMessage(),e);
+		}
+		return result;
+	}
+	
+	@ApiOperation(value = "退出", notes = "退出", httpMethod = "POST")
+	@RequestMapping(value = "/userExit", method = RequestMethod.POST)
+	@ResponseBody
+	public RestResult userExit(@ApiParam(value = "Json参数", required = true) @Validated @RequestBody LoginParamVo param) throws Exception {
+		RestResult result = new RestResult();
+		try {
+
+			result.success();
+			LOG.info(result.getMessage());
+		} catch (Exception e) {
+			result.error();
+			LOG.error(e.getMessage(),e);
+		}
 		return result;
 	}
 	

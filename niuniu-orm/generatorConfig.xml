@@ -3,7 +3,7 @@
 
 <generatorConfiguration>
 	<!-- 配置文件路径 -->
-	<properties url="file:///z:/pzspace/lottery/lottery-orm/generatorConfig.properties" />
+	<properties url="file:///E:/workspace/niuniu/niuniu-orm/generatorConfig.properties" />
 
 	<!--数据库驱动包路径 -->
 	<classPathEntry location="${drive.class.path}" />
@@ -41,14 +41,25 @@
 			<property name="enableSubPackages" value="ture" />
 		</javaClientGenerator>
 		<!--对应数据库表名 -->
-<!-- 		<table tableName="account_info" domainObjectName="AccountInfo"
+		
+<!-- 		<table tableName="lottery_service" domainObjectName="LotteryService"
 	    	enableCountByExample="false"
 			enableUpdateByExample="false" 
 			enableDeleteByExample="false"
 			enableSelectByExample="false" 
 			selectByExampleQueryId="false">
-			<generatedKey column="serialno" sqlStatement="MySql" identity="true"/>
-	    </table> -->
+			<generatedKey column="sid" sqlStatement="MySql" identity="true"/>
+	    </table>  -->
+		
+		
+		<table tableName="account_info" domainObjectName="AccountInfo"
+	    	enableCountByExample="false"
+			enableUpdateByExample="false" 
+			enableDeleteByExample="false"
+			enableSelectByExample="false" 
+			selectByExampleQueryId="false">
+			<generatedKey column="userid" sqlStatement="MySql" identity="true"/>
+	    </table>
 
 <!-- 	    <table tableName="offaccount_info" domainObjectName="OffAccountInfo"
 	    	enableCountByExample="false"
@@ -124,13 +135,13 @@
 			selectByExampleQueryId="false">
 			<generatedKey column="tradeid" sqlStatement="MySql" identity="true"/> 
 	    </table>-->
-	    <table tableName="account_detail" domainObjectName="AccountDetail"
+<!-- 	    <table tableName="account_detail" domainObjectName="AccountDetail"
 	    	enableCountByExample="false"
 			enableUpdateByExample="false" 
 			enableDeleteByExample="false"
 			enableSelectByExample="false" 
 			selectByExampleQueryId="false">
 			<generatedKey column="accountid" sqlStatement="MySql" identity="true"/> 
-	    </table>
+	    </table> -->
 	</context>
 </generatorConfiguration>

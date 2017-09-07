@@ -19,7 +19,7 @@ public class BaseAccountDto {
 	private String state;
 
 	@ApiModelProperty(value = "管理账户", required = true)
-	private String supusername;
+	private Integer supuserid;
 
 	@ApiModelProperty(value = "管理账户级别，0：超级管理员，1：一级代理，2：二级代理，3：三级代理", required = true)
 	private String level;
@@ -32,12 +32,14 @@ public class BaseAccountDto {
 		this.level = level;
 	}
 
-	public String getSupusername() {
-		return supusername;
+
+
+	public Integer getSupuserid() {
+		return supuserid;
 	}
 
-	public void setSupusername(String supusername) {
-		this.supusername = supusername;
+	public void setSupuserid(Integer supuserid) {
+		this.supuserid = supuserid;
 	}
 
 	public String getPassword() {

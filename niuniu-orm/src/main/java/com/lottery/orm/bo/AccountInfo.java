@@ -1,10 +1,10 @@
 package com.lottery.orm.bo;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 public class AccountInfo {
-    
-    private Integer userid; 
+    private Integer accountid;
 
     private String username;
 
@@ -26,37 +26,43 @@ public class AccountInfo {
 
     private String state;
 
-    private String supusername;
+    private Integer supuserid;
 
     private String level;
-    
+
     private String phone;
-    
+
     private String webchat;
 
-    
-	public String getPhone() {
-		return phone;
+    private BigDecimal usermoney;
+
+    private String offtype;
+
+    private Double percentage;
+
+    private String query;
+
+    private String budget;
+
+    private String code;
+
+    private String sfcode;
+
+    private String bankid;
+
+    private String bankname;
+
+    private String bankaddress;
+
+    private String bankaccount;
+
+
+    public Integer getAccountid() {
+		return accountid;
 	}
 
-	public void setPhone(String phone) {
-		this.phone = phone;
-	}
-
-	public String getWebchat() {
-		return webchat;
-	}
-
-	public void setWebchat(String webchat) {
-		this.webchat = webchat;
-	}
-
-	public Integer getUserid() {
-		return userid;
-	}
-
-	public void setUserid(Integer userid) {
-		this.userid = userid;
+	public void setAccountid(Integer accountid) {
+		this.accountid = accountid;
 	}
 
 	public String getUsername() {
@@ -64,7 +70,7 @@ public class AccountInfo {
     }
 
     public void setUsername(String username) {
-        this.username = username;
+        this.username = username == null ? null : username.trim();
     }
 
     public String getAusername() {
@@ -72,7 +78,7 @@ public class AccountInfo {
     }
 
     public void setAusername(String ausername) {
-        this.ausername = ausername;
+        this.ausername = ausername == null ? null : ausername.trim();
     }
 
     public String getPassword() {
@@ -80,7 +86,7 @@ public class AccountInfo {
     }
 
     public void setPassword(String password) {
-        this.password = password;
+        this.password = password == null ? null : password.trim();
     }
 
     public Double getLimited() {
@@ -104,7 +110,7 @@ public class AccountInfo {
     }
 
     public void setIp(String ip) {
-        this.ip = ip;
+        this.ip = ip == null ? null : ip.trim();
     }
 
     public Date getInputdate() {
@@ -120,7 +126,7 @@ public class AccountInfo {
     }
 
     public void setUpdateip(String updateip) {
-        this.updateip = updateip;
+        this.updateip = updateip == null ? null : updateip.trim();
     }
 
     public Date getUpdatedate() {
@@ -136,15 +142,15 @@ public class AccountInfo {
     }
 
     public void setState(String state) {
-        this.state = state;
+        this.state = state == null ? null : state.trim();
     }
 
-    public String getSupusername() {
-        return supusername;
+    public Integer getSupuserid() {
+        return supuserid;
     }
 
-    public void setSupusername(String supusername) {
-        this.supusername = supusername;
+    public void setSupuserid(Integer supuserid) {
+        this.supuserid = supuserid == null ? null : supuserid;
     }
 
     public String getLevel() {
@@ -152,9 +158,110 @@ public class AccountInfo {
     }
 
     public void setLevel(String level) {
-        this.level = level;
+        this.level = level == null ? null : level.trim();
     }
 
+    public String getPhone() {
+        return phone;
+    }
 
-    
+    public void setPhone(String phone) {
+        this.phone = phone == null ? null : phone.trim();
+    }
+
+    public String getWebchat() {
+        return webchat;
+    }
+
+    public void setWebchat(String webchat) {
+        this.webchat = webchat == null ? null : webchat.trim();
+    }
+
+    public BigDecimal getUsermoney() {
+        return usermoney;
+    }
+
+    public void setUsermoney(BigDecimal usermoney) {
+        this.usermoney = usermoney;
+    }
+
+    public String getOfftype() {
+        return offtype;
+    }
+
+    public void setOfftype(String offtype) {
+        this.offtype = offtype == null ? null : offtype.trim();
+    }
+
+    public Double getPercentage() {
+        return percentage;
+    }
+
+    public void setPercentage(Double percentage) {
+        this.percentage = percentage;
+    }
+
+    public String getQuery() {
+        return query;
+    }
+
+    public void setQuery(String query) {
+        this.query = query == null ? null : query.trim();
+    }
+
+    public String getBudget() {
+        return budget;
+    }
+
+    public void setBudget(String budget) {
+        this.budget = budget == null ? null : budget.trim();
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code == null ? null : code.trim();
+    }
+
+    public String getSfcode() {
+        return sfcode;
+    }
+
+    public void setSfcode(String sfcode) {
+        this.sfcode = sfcode == null ? null : sfcode.trim();
+    }
+
+    public String getBankid() {
+        return bankid;
+    }
+
+    public void setBankid(String bankid) {
+        this.bankid = bankid == null ? null : bankid.trim();
+    }
+
+    public String getBankname() {
+        return bankname;
+    }
+
+    public void setBankname(String bankname) {
+        this.bankname = bankname == null ? null : bankname.trim();
+    }
+
+    public String getBankaddress() {
+        return bankaddress;
+    }
+
+    public void setBankaddress(String bankaddress) {
+        this.bankaddress = bankaddress == null ? null : bankaddress.trim();
+    }
+
+    public String getBankaccount() {
+        return bankaccount;
+    }
+
+    public void setBankaccount(String bankaccount) {
+        this.bankaccount = bankaccount == null ? null : bankaccount.trim();
+    }
 }

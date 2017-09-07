@@ -97,7 +97,7 @@ public class LotteryOrderService {
 		double playRatio = account.getRatio()==null?0.0:account.getRatio();
 		double maxRatio = 0.0;
 		
-		List<AccountDetail> parentAccounts = customLotteryMapper.selectAccountBySupUserName(account.getSupusername());
+		List<AccountDetail> parentAccounts = customLotteryMapper.selectAccountBySupUserName(account.getUsername());
 		if(parentAccounts.size()<1){
 			return "订单号"+order.getOrderid()+"对应的账号"+account.getAccountid()+"无上级代理,兑奖失败!";
 		}else{
@@ -281,7 +281,7 @@ public class LotteryOrderService {
 		List<Map<String, String>> detailList = customLotteryMapper.selectOrderForCheck(order.getRoundid(), order.getAccountid());
 		Map<String, Double> tempMap = new HashMap<String, Double>();
 		
-		OffAccountInfo accountInfo = offAccountInfoMapper.selectByUsername(accountDetail.getSupusername());
+		OffAccountInfo accountInfo = offAccountInfoMapper.selectByUsername(accountDetail.getUsername());
 		List<LotteryItem> itemList = customLotteryMapper.selectItemByLottery(EnumType.Lottery.YMZ.ID);
 		Map<String, String> itemGroupMap = new HashMap<String, String>();
 		for (LotteryItem item : itemList) {

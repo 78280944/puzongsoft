@@ -1,7 +1,10 @@
 package com.lottery.orm.service;
 
 import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,6 +18,7 @@ import com.lottery.orm.dao.AccountDetailMapper;
 import com.lottery.orm.dao.AccountInfoMapper;
 import com.lottery.orm.dao.OffAccountInfoMapper;
 import com.lottery.orm.dao.TradeInfoMapper;
+import com.lottery.orm.result.TradeListResult;
 import com.lottery.orm.util.EnumType;
 
 @Service
@@ -84,4 +88,24 @@ public class TradeInfoService {
 		
     }
     
+    //查询
+    public List<TradeInfo> getTradeInfo(String relativeType,String startTime,String overTime,int beginRow,int pageSize) {
+    	List<TradeInfo> list = tradeInfoMapper.selectByTrade(relativeType, getStrtoDate(startTime), getStrtoDate(overTime), beginRow, pageSize);
+        return list;
+    }
+	  
+    public Date getStrtoDate(String dateString){ 
+    	Date date = null;
+    	try  
+    	{  
+    	    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd ");  
+    	    date = sdf.parse(dateString);  
+    	    return date;
+    	}  
+    	catch (ParseException e)  
+    	{  
+    	    System.out.println(e.getMessage());  
+    	} 
+    	return date;
+    }
 }

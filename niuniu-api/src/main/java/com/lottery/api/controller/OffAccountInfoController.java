@@ -81,7 +81,7 @@ public class OffAccountInfoController {
 	@Autowired
     private NoticeInfoMapper noticeInfoMapper;
 	
-	@ApiOperation(value = "新增代理", notes = "新增代理", httpMethod = "POST")
+	@ApiOperation(value = "新增下线代理", notes = "新增下线代理", httpMethod = "POST")
 	@RequestMapping(value = "/addOffAccountInfo", method = RequestMethod.POST)
 	@ResponseBody
 	public RestResult addOffAccountInfo(@ApiParam(value = "Json参数", required = true) @Validated @RequestBody OffAccountInfoVo param) throws Exception {
@@ -91,14 +91,9 @@ public class OffAccountInfoController {
 			String username = param.getUsername();
 			String ausername = param.getAusername();
 			String password = param.getPassword();
-			String supusername = param.getSupusername();
-			Double percentage = null;
-			Double ratio = null;
+			//String supusername = param.getSupusername();
+			Double percentage = param.getPercentage();
 			
-			if (null != param.getRatio())
-				ratio = param.getRatio();
-			if (null != param.getPercentage())
-				percentage = param.getPercentage();
 				
 			//参数合规性校验，必要参数不能为空
 			if (ToolsUtil.isEmptyTrim(username)||ToolsUtil.isEmptyTrim(password)){
@@ -109,39 +104,24 @@ public class OffAccountInfoController {
 			
 			
 			//数字型
-			if (null != ratio){
-				if (ToolsUtil.isNumeric(String.valueOf(ratio))){
-				      result.fail("洗码比",MessageTool.Code_1004);
-				      LOG.info(result.getMessage());
-				      return result;		
-				}
-			}
-			
-			//数字型
 			if (null != percentage){
 				if (ToolsUtil.isNumeric(String.valueOf(percentage))){
-				      result.fail("抽成占比",MessageTool.Code_1004);
+				      result.fail("代理占成",MessageTool.Code_1004);
 				      LOG.info(result.getMessage());
 				      return result;		
 				}
 			}
 			param.setPassword(DigestUtils.md5Hex(password));
-			OffAccountInfo paraInfo = mapper.map(param, OffAccountInfo.class);		
-			OffAccountInfo OffAccountInfo = offAccountInfoMapper.selectByUsername(paraInfo.getUsername());
+			AccountInfo paraInfo = mapper.map(param, AccountInfo.class);		
+			AccountInfo OffAccountInfo = accountInfoMapper.selectByUsername(paraInfo.getUsername());
 		    if(OffAccountInfo!=null){ 	
 		    	result.fail(username,MessageTool.Code_2005);
 		    }else{
-		    	//用户名判断重复性
-		    	AccountInfo accountInfo = accountInfoMapper.selectByUsername(paraInfo.getUsername());
-		    	if (accountInfo!=null){
-		    		result.fail(username,MessageTool.Code_2005);
-				    LOG.info(result.getMessage());
-				    return result;
-		    	}
+
 		    	//获取管理员level
-		    	OffAccountInfo OffAccountInfo1 = offAccountInfoMapper.selectByUsername(supusername);
+		    	AccountInfo OffAccountInfo1 = accountInfoMapper.selectByPrimaryKey(param.getAccountid());
 		    	if (OffAccountInfo1 == null){
-		    		result.fail(supusername,MessageTool.Code_2006);
+		    		result.fail(username,MessageTool.Code_2006);
 				    LOG.info(result.getMessage());
 				    return result;
 		    	}
@@ -153,33 +133,18 @@ public class OffAccountInfoController {
 			        return result;	
 				}
 		    	
-				//洗码比逻辑 
-		    	OffAccountInfo = offAccountInfoMapper.selectByUsername(paraInfo.getSupusername());
-		    	if (OffAccountInfo==null){
-		    		result.fail(paraInfo.getSupusername(),MessageTool.Code_2005);
-		    		return result;
-		    	}
-		    	if (ratio>OffAccountInfo.getRatio()){
-				      result.fail("洗码比",MessageTool.Code_1008);
-				      LOG.info(result.getMessage());
-				      return result;	
-				}	
 				//代理占比逻辑
 				if (percentage>OffAccountInfo.getPercentage()){
 				      result.fail("代理占成",MessageTool.Code_1008);
 				      LOG.info(result.getMessage());
 				      return result;	
 				}
-
-			    paraInfo.setQuery("M1,M2");
-			    paraInfo.setManage("");
 			    paraInfo.setState("1");//默认状态正常
 			    paraInfo.setLevel(ToolsUtil.decideLevel(level));
-			    paraInfo.setOfftype("1");
+			    paraInfo.setOfftype(OffAccountInfo1.getOfftype());
 			    paraInfo.setInputdate(new Date());
-			    paraInfo.setRiskamount(param.getRiskamount());
-			    paraInfo.setLimited(Double.parseDouble("0.0"));
-			    offAccountInfoService.addOffAccountInfo(paraInfo);
+			    paraInfo.setUsermoney(BigDecimal.valueOf(0.0));
+			    accountInfoService.addAccountInfo(paraInfo);
 			    
 			    result.success();
 		    }
@@ -230,7 +195,7 @@ public class OffAccountInfoController {
 		      rAcDto.setQuery(null==OffAccountInfos.get(i).getQuery()||"".equals(OffAccountInfos.get(i).getQuery()) ?"":OffAccountInfos.get(i).getQuery());
 		      //rAcDto.setManage(null==OffAccountInfos.get(i).getManage()||"".equals(OffAccountInfos.get(i).getManage()) ?"":OffAccountInfos.get(i).getManage());
 		      rAcDto.setState(null==OffAccountInfos.get(i).getState()||"".equals(OffAccountInfos.get(i).getState()) ?"":OffAccountInfos.get(i).getState());
-		      rAcDto.setSupusername(null==OffAccountInfos.get(i).getSupusername()||"".equals(OffAccountInfos.get(i).getSupusername()) ?"":OffAccountInfos.get(i).getSupusername());
+		    //  rAcDto.setSupusername(null==OffAccountInfos.get(i).getSupusername()||"".equals(OffAccountInfos.get(i).getSupusername()) ?"":OffAccountInfos.get(i).getSupusername());
 		      rAcDto.setLevel(null==OffAccountInfos.get(i).getLevel()||"".equals(OffAccountInfos.get(i).getLevel()) ?"":OffAccountInfos.get(i).getLevel());
 		      rAcDto.setOfftype(null==OffAccountInfos.get(i).getOfftype()||"".equals(OffAccountInfos.get(i).getOfftype()) ?"":OffAccountInfos.get(i).getOfftype());
 		      rAcDto.setAccountID(accountDetail.getAccountid());
@@ -311,9 +276,9 @@ public class OffAccountInfoController {
 			      result.fail(MessageTool.Code_3001);
 			}else{
 				//洗码比逻辑 
-				OffAccountInfo supAccount = offAccountInfoMapper.selectByUsername(accountInfo.getSupusername());
+				OffAccountInfo supAccount = offAccountInfoMapper.selectByUsername(accountInfo.getUsername());
 		    	if (supAccount==null){
-		    		result.fail(accountInfo.getSupusername(),MessageTool.Code_2005);
+		    		result.fail(accountInfo.getUsername(),MessageTool.Code_2005);
 		    		return result;
 		    	}
 		    	if (ratio>supAccount.getRatio()){
@@ -368,7 +333,7 @@ public class OffAccountInfoController {
 			    accountInfoService.updateAccountInfo(accountInfo);
 			    
 			    //修改账户状态
-			    AccountDetail accountDetail = accountDetailMapper.selectByUserId(accountInfo.getUserid(), "3");
+			    AccountDetail accountDetail = accountDetailMapper.selectByUserId(accountInfo.getAccountid(), "3");
 			    accountDetail.setState(state);
 			    accountDetailMapper.updateByPrimaryKey(accountDetail);
 			   
@@ -626,7 +591,7 @@ public class OffAccountInfoController {
 				accountDetail.setState(state);
 				accountDetailMapper.updateByPrimaryKey(accountDetail);
 				
-				accountDetail.setSupusername(offAccountInfo.getSupusername());
+				//accountDetail.setSupusername(offAccountInfo.getSupusername());
 				accountDetailMapper.updateAccountDetailState(accountDetail);
 				
 				//修改玩家的状态
@@ -692,36 +657,6 @@ public class OffAccountInfoController {
 		return result;
 	}
 	
-	@ApiOperation(value = "获取公告", notes = "获取公告", httpMethod = "POST")
-	@RequestMapping(value = "/getNotice", method = RequestMethod.POST)
-	@ResponseBody
-	public RestResult getNotice(@ApiParam(value = "Json参数", required = true) @Validated @RequestBody NoticeTypeVo param) throws Exception {
-		RestResult result = new RestResult();
-		try {
-			String stype = param.getStype();
-			if (stype.equals("")||!(stype.equals("0")||stype.equals("1"))){
-			      result.fail("公告类型",MessageTool.Code_1005);
-			      LOG.info(result.getMessage());
-			      return result;
-			}
-			int noticeid = 1;
-			if (stype.equals("0"))
-				noticeid = 1;
-			else if (stype.equals("1"))
-				noticeid = 2;
 
-            NoticeInfo noticeInfo = noticeInfoMapper.selectByPrimaryKey(noticeid);
-			if(noticeInfo==null){
-			      result.fail(MessageTool.Code_4001);
-			}else{
-				result.success(noticeInfo);
-			}
-			LOG.info(result.getMessage());
-		} catch (Exception e) {
-			result.error();
-			LOG.error(e.getMessage(),e);
-		}
-		return result;
-	}
 	
 }

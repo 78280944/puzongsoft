@@ -1,5 +1,6 @@
 package com.lottery.api.controller;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -68,60 +69,35 @@ public class SubAccountInfoController {
 			
 			String username = param.getUsername();
 			String password = param.getPassword();
-			String supusername = param.getSupusername();	
-			String level = param.getLevel();
-			String query = param.getQuery()==null?"":param.getQuery();
-			//String manage = param.getManage();
 			//参数合规性校验，必要参数不能为空
 			if (ToolsUtil.isEmptyTrim(username)||ToolsUtil.isEmptyTrim(password)){
 			      result.fail("用户名，密码",MessageTool.Code_2002);
 			      LOG.info(result.getMessage());
 			      return result;
 			}
-			
-			//参数合规性校验，必要参数不能为空
-			if (ToolsUtil.isEmptyTrim(supusername)||ToolsUtil.isEmptyTrim(level)){
-			      result.fail("管理操作员,代理级别",MessageTool.Code_2002);
-			      LOG.info(result.getMessage());
-			      return result;
-			}
-			
-			if (!"".equals(query)){
-		        if (ToolsUtil.checkQuery(query)){
-			      result.fail("权限设置",MessageTool.Code_1005);
-			      LOG.info(result.getMessage());
-			      return result;
-		        }
-			}
-
-			OffAccountInfo paraInfo = mapper.map(param, OffAccountInfo.class);
-			OffAccountInfo offAccountInfo = offAccountInfoMapper.selectByUsername(paraInfo.getUsername());
+		
+			AccountInfo paraInfo = mapper.map(param, AccountInfo.class);
+			AccountInfo offAccountInfo = accountInfoMapper.selectByUsername(paraInfo.getUsername());
 		    if (offAccountInfo!=null){
 			      result.fail(username,MessageTool.Code_2005);
-		    }else{
-		    	//账户唯一性判断
-		    	AccountInfo accountInfo = accountInfoMapper.selectByUsername(paraInfo.getUsername());
-		    	if (accountInfo!=null){
-		    		result.fail(username,MessageTool.Code_2005);
-				    LOG.info(result.getMessage());
+			      LOG.info(result.getMessage());
 				    return result;
-		    	}
+		    }else{
+	
 		    	//获取管理员level
-		    	OffAccountInfo OffAccountInfo1 = offAccountInfoMapper.selectByUsername(supusername);
-		    	if (OffAccountInfo1 == null){
-		    		result.fail(supusername,MessageTool.Code_2006);
+		    	AccountInfo offAccountInfo1 = accountInfoMapper.selectByPrimaryKey(param.getAccountid());
+		    	if (offAccountInfo1 == null){
+		    		result.fail(username,MessageTool.Code_2006);
 				    LOG.info(result.getMessage());
 				    return result;
 		    	}
 		    	
-		    	level = OffAccountInfo1.getLevel();		
-		    	paraInfo.setLevel(level);
-		    	paraInfo.setPassword(DigestUtils.md5Hex(password));
+		    	paraInfo.setLevel(offAccountInfo1.getLevel());
 			    paraInfo.setState("1");//默认状态正常
-			    paraInfo.setOfftype("2");
-			    paraInfo.setManage(query);
+			    paraInfo.setOfftype("3");
 			    paraInfo.setInputdate(new Date());
-			    offAccountInfoService.addOffAccountInfo(paraInfo,"2");
+			    paraInfo.setUsermoney(BigDecimal.valueOf(0.0));
+			    accountInfoMapper.insert(paraInfo);
 			    result.success();
 		    }
 
@@ -157,7 +133,7 @@ public class SubAccountInfoController {
 				      rAcDto.setQuery(null==SubAccountInfos.get(i).getQuery()||"".equals(SubAccountInfos.get(i).getQuery()) ?"":SubAccountInfos.get(i).getQuery());
 				      //rAcDto.setManage(null==SubAccountInfos.get(i).getManage()||"".equals(SubAccountInfos.get(i).getManage()) ?"":SubAccountInfos.get(i).getManage());
 				      rAcDto.setState(null==SubAccountInfos.get(i).getState()||"".equals(SubAccountInfos.get(i).getState()) ?"":SubAccountInfos.get(i).getState());
-				      rAcDto.setSupusername(null==SubAccountInfos.get(i).getSupusername()||"".equals(SubAccountInfos.get(i).getSupusername()) ?"":SubAccountInfos.get(i).getSupusername());
+				      //rAcDto.setSupusername(null==SubAccountInfos.get(i).getSupusername()||"".equals(SubAccountInfos.get(i).getSupusername()) ?"":SubAccountInfos.get(i).getSupusername());
 				      rAcDto.setLevel(null==SubAccountInfos.get(i).getLevel()||"".equals(SubAccountInfos.get(i).getLevel()) ?"":SubAccountInfos.get(i).getLevel());
 				      rAcDto.setOfftype(null==SubAccountInfos.get(i).getOfftype()||"".equals(SubAccountInfos.get(i).getOfftype()) ?"":SubAccountInfos.get(i).getOfftype());	 
 				      rAcDto.setAccountID(accountDetail.getAccountid());

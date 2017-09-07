@@ -4,15 +4,16 @@ import com.wordnik.swagger.annotations.ApiModelProperty;
 
 public class NoticeTypeVo {
 	
-	@ApiModelProperty(value = "公告类型，0：代理公告；1，玩家公告", required = true)
-	private String stype;
+	@ApiModelProperty(value = "账户类型，00：玩家账户；1：玩家账户；2：代理账户；3：子账户", required = true)
+	private String offtype;
 
-	public String getStype() {
-		return stype;
+	public String getOfftype() {
+		return offtype;
 	}
 
-	public void setStype(String stype) {
-		this.stype = stype;
+	public void setOfftype(String offtype) {
+		this.offtype = offtype;
 	}
-	
+
+
 }

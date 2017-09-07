@@ -21,6 +21,7 @@
 		<typeAlias type="com.lottery.orm.bo.NoticeInfo" alias="NoticeInfo" />
 		<typeAlias type="com.lottery.orm.bo.LotteryOrderResult" alias="LotteryOrderResult" />
 		<typeAlias type="com.lottery.orm.bo.TSTimeTask" alias="TSTimeTask" />
+		<typeAlias type="com.lottery.orm.bo.LotteryService" alias="LotteryService" />
 	</typeAliases>
 	<mappers>
 		<mapper resource="com/lottery/xml/mapper/ApiUserMapper.xml" />
@@ -39,5 +40,6 @@
 		<mapper resource="com/lottery/xml/mapper/NoticeInfoMapper.xml" />
 		<mapper resource="com/lottery/xml/mapper/LotteryOrderResultMapper.xml" />
 		<mapper resource="com/lottery/xml/mapper/TSTimeTaskMapper.xml" />
+		<mapper resource="com/lottery/xml/mapper/LotteryServiceMapper.xml" />
 	</mappers>
 </configuration>

@@ -8,7 +8,8 @@ import com.lottery.orm.bo.AccountInfo;
 
 public interface AccountInfoMapper {
     
-    int deleteByPrimaryKey(Integer serialno);
+
+	int deleteByPrimaryKey(Integer serialno);
 
     int insert(AccountInfo record);
 
@@ -32,4 +33,8 @@ public interface AccountInfoMapper {
     AccountInfo selectByUsername(String username);
     
     AccountInfo selectByUserAndId(AccountInfo record);
+    
+    AccountInfo selectByCode(@Param("code")String code, @Param("level")String level, @Param("offtype")String offtype);
+    
+    AccountInfo selectByUserAndSfcode(@Param("username")String username, @Param("sfcode")String sfcode);
 }
