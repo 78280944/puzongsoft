@@ -1,0 +1,343 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lottery.orm.dao.LotteryRoomDetailMapper" >
+  <resultMap id="BaseResultMap" type="com.lottery.orm.bo.LotteryRoomDetail" >
+    <result column="LTDID" property="ltdid" jdbcType="INTEGER" />
+    <result column="RMID" property="rmid" jdbcType="INTEGER" />
+    <result column="SID" property="sid" jdbcType="INTEGER" />
+    <result column="LOTTERYTERM" property="lotteryterm" jdbcType="VARCHAR" />
+    <result column="GAMESTARTTIME" property="gamestarttime" jdbcType="TIMESTAMP" />
+    <result column="GAMEOVERTIME" property="gameovertime" jdbcType="TIMESTAMP" />
+    <result column="NO1" property="no1" jdbcType="VARCHAR" />
+    <result column="NO2" property="no2" jdbcType="VARCHAR" />
+    <result column="NO3" property="no3" jdbcType="VARCHAR" />
+    <result column="NO4" property="no4" jdbcType="VARCHAR" />
+    <result column="NO5" property="no5" jdbcType="VARCHAR" />
+    <result column="NO6" property="no6" jdbcType="VARCHAR" />
+    <result column="NO7" property="no7" jdbcType="VARCHAR" />
+    <result column="NO8" property="no8" jdbcType="VARCHAR" />
+    <result column="NO9" property="no9" jdbcType="VARCHAR" />
+    <result column="NO10" property="no10" jdbcType="VARCHAR" />
+    <result column="NO11" property="no11" jdbcType="VARCHAR" />
+    <result column="NO12" property="no12" jdbcType="VARCHAR" />
+    <result column="NO13" property="no13" jdbcType="VARCHAR" />
+    <result column="NO14" property="no14" jdbcType="VARCHAR" />
+    <result column="NO15" property="no15" jdbcType="VARCHAR" />
+    <result column="NO16" property="no16" jdbcType="VARCHAR" />
+    <result column="NO17" property="no17" jdbcType="VARCHAR" />
+    <result column="NO18" property="no18" jdbcType="VARCHAR" />
+    <result column="NO19" property="no19" jdbcType="VARCHAR" />
+    <result column="NO20" property="no20" jdbcType="VARCHAR" />
+    <result column="NO21" property="no21" jdbcType="VARCHAR" />
+    <result column="NO22" property="no22" jdbcType="VARCHAR" />
+    <result column="NO23" property="no23" jdbcType="VARCHAR" />
+    <result column="NO24" property="no24" jdbcType="VARCHAR" />
+    <result column="NO25" property="no25" jdbcType="VARCHAR" />
+    <result column="NO26" property="no26" jdbcType="VARCHAR" />
+    <result column="NO27" property="no27" jdbcType="VARCHAR" />
+    <result column="NO28" property="no28" jdbcType="VARCHAR" />
+    <result column="NO29" property="no29" jdbcType="VARCHAR" />
+    <result column="NO30" property="no30" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <resultMap id="RoomResultMap" type="com.lottery.orm.dto.QueryRoomDateDto" >
+    <result column="LOTTERYTERM" property="lotteryterm" jdbcType="VARCHAR" />
+    <result column="NO1" property="no1" jdbcType="VARCHAR" />
+    <result column="NO2" property="no2" jdbcType="VARCHAR" />
+    <result column="NO3" property="no3" jdbcType="VARCHAR" />
+    <result column="NO4" property="no4" jdbcType="VARCHAR" />
+    <result column="NO5" property="no5" jdbcType="VARCHAR" />
+    <result column="NO6" property="no6" jdbcType="VARCHAR" />
+    <result column="NO7" property="no7" jdbcType="VARCHAR" />
+    <result column="NO8" property="no8" jdbcType="VARCHAR" />
+    <result column="NO9" property="no9" jdbcType="VARCHAR" />
+    <result column="NO10" property="no10" jdbcType="VARCHAR" />
+    <result column="NO11" property="no11" jdbcType="VARCHAR" />
+    <result column="NO12" property="no12" jdbcType="VARCHAR" />
+    <result column="NO13" property="no13" jdbcType="VARCHAR" />
+    <result column="NO14" property="no14" jdbcType="VARCHAR" />
+    <result column="NO15" property="no15" jdbcType="VARCHAR" />
+    <result column="NO16" property="no16" jdbcType="VARCHAR" />
+    <result column="NO17" property="no17" jdbcType="VARCHAR" />
+    <result column="NO18" property="no18" jdbcType="VARCHAR" />
+    <result column="NO19" property="no19" jdbcType="VARCHAR" />
+    <result column="NO20" property="no20" jdbcType="VARCHAR" />
+    <result column="NO21" property="no21" jdbcType="VARCHAR" />
+    <result column="NO22" property="no22" jdbcType="VARCHAR" />
+    <result column="NO23" property="no23" jdbcType="VARCHAR" />
+    <result column="NO24" property="no24" jdbcType="VARCHAR" />
+    <result column="NO25" property="no25" jdbcType="VARCHAR" />
+    <result column="NO26" property="no26" jdbcType="VARCHAR" />
+    <result column="NO27" property="no27" jdbcType="VARCHAR" />
+    <result column="NO28" property="no28" jdbcType="VARCHAR" />
+    <result column="NO29" property="no29" jdbcType="VARCHAR" />
+    <result column="NO30" property="no30" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  
+  <insert id="insert" parameterType="com.lottery.orm.bo.LotteryRoomDetail" >
+    <selectKey resultType="java.lang.Integer" keyProperty="ltdid" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into lottery_room_detail (RMID, SID, LOTTERYTERM, 
+      GAMESTARTTIME, GAMEOVERTIME, NO1, 
+      NO2, NO3, NO4, NO5, 
+      NO6, NO7, NO8, NO9, 
+      NO10, NO11, NO12, NO13, 
+      NO14, NO15, NO16, NO17, 
+      NO18, NO19, NO20, NO21, 
+      NO22, NO23, NO24, NO25, 
+      NO26, NO27, NO28, NO29, 
+      NO30)
+    values (#{rmid,jdbcType=INTEGER}, #{sid,jdbcType=INTEGER}, #{lotteryterm,jdbcType=VARCHAR}, 
+      #{gamestarttime,jdbcType=TIMESTAMP}, #{gameovertime,jdbcType=TIMESTAMP}, #{no1,jdbcType=VARCHAR}, 
+      #{no2,jdbcType=VARCHAR}, #{no3,jdbcType=VARCHAR}, #{no4,jdbcType=VARCHAR}, #{no5,jdbcType=VARCHAR}, 
+      #{no6,jdbcType=VARCHAR}, #{no7,jdbcType=VARCHAR}, #{no8,jdbcType=VARCHAR}, #{no9,jdbcType=VARCHAR}, 
+      #{no10,jdbcType=VARCHAR}, #{no11,jdbcType=VARCHAR}, #{no12,jdbcType=VARCHAR}, #{no13,jdbcType=VARCHAR}, 
+      #{no14,jdbcType=VARCHAR}, #{no15,jdbcType=VARCHAR}, #{no16,jdbcType=VARCHAR}, #{no17,jdbcType=VARCHAR}, 
+      #{no18,jdbcType=VARCHAR}, #{no19,jdbcType=VARCHAR}, #{no20,jdbcType=VARCHAR}, #{no21,jdbcType=VARCHAR}, 
+      #{no22,jdbcType=VARCHAR}, #{no23,jdbcType=VARCHAR}, #{no24,jdbcType=VARCHAR}, #{no25,jdbcType=VARCHAR}, 
+      #{no26,jdbcType=VARCHAR}, #{no27,jdbcType=VARCHAR}, #{no28,jdbcType=VARCHAR}, #{no29,jdbcType=VARCHAR}, 
+      #{no30,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.lottery.orm.bo.LotteryRoomDetail" >
+    <selectKey resultType="java.lang.Integer" keyProperty="ltdid" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into lottery_room_detail
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="rmid != null" >
+        RMID,
+      </if>
+      <if test="sid != null" >
+        SID,
+      </if>
+      <if test="lotteryterm != null" >
+        LOTTERYTERM,
+      </if>
+      <if test="gamestarttime != null" >
+        GAMESTARTTIME,
+      </if>
+      <if test="gameovertime != null" >
+        GAMEOVERTIME,
+      </if>
+      <if test="no1 != null" >
+        NO1,
+      </if>
+      <if test="no2 != null" >
+        NO2,
+      </if>
+      <if test="no3 != null" >
+        NO3,
+      </if>
+      <if test="no4 != null" >
+        NO4,
+      </if>
+      <if test="no5 != null" >
+        NO5,
+      </if>
+      <if test="no6 != null" >
+        NO6,
+      </if>
+      <if test="no7 != null" >
+        NO7,
+      </if>
+      <if test="no8 != null" >
+        NO8,
+      </if>
+      <if test="no9 != null" >
+        NO9,
+      </if>
+      <if test="no10 != null" >
+        NO10,
+      </if>
+      <if test="no11 != null" >
+        NO11,
+      </if>
+      <if test="no12 != null" >
+        NO12,
+      </if>
+      <if test="no13 != null" >
+        NO13,
+      </if>
+      <if test="no14 != null" >
+        NO14,
+      </if>
+      <if test="no15 != null" >
+        NO15,
+      </if>
+      <if test="no16 != null" >
+        NO16,
+      </if>
+      <if test="no17 != null" >
+        NO17,
+      </if>
+      <if test="no18 != null" >
+        NO18,
+      </if>
+      <if test="no19 != null" >
+        NO19,
+      </if>
+      <if test="no20 != null" >
+        NO20,
+      </if>
+      <if test="no21 != null" >
+        NO21,
+      </if>
+      <if test="no22 != null" >
+        NO22,
+      </if>
+      <if test="no23 != null" >
+        NO23,
+      </if>
+      <if test="no24 != null" >
+        NO24,
+      </if>
+      <if test="no25 != null" >
+        NO25,
+      </if>
+      <if test="no26 != null" >
+        NO26,
+      </if>
+      <if test="no27 != null" >
+        NO27,
+      </if>
+      <if test="no28 != null" >
+        NO28,
+      </if>
+      <if test="no29 != null" >
+        NO29,
+      </if>
+      <if test="no30 != null" >
+        NO30,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="rmid != null" >
+        #{rmid,jdbcType=INTEGER},
+      </if>
+      <if test="sid != null" >
+        #{sid,jdbcType=INTEGER},
+      </if>
+      <if test="lotteryterm != null" >
+        #{lotteryterm,jdbcType=VARCHAR},
+      </if>
+      <if test="gamestarttime != null" >
+        #{gamestarttime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="gameovertime != null" >
+        #{gameovertime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="no1 != null" >
+        #{no1,jdbcType=VARCHAR},
+      </if>
+      <if test="no2 != null" >
+        #{no2,jdbcType=VARCHAR},
+      </if>
+      <if test="no3 != null" >
+        #{no3,jdbcType=VARCHAR},
+      </if>
+      <if test="no4 != null" >
+        #{no4,jdbcType=VARCHAR},
+      </if>
+      <if test="no5 != null" >
+        #{no5,jdbcType=VARCHAR},
+      </if>
+      <if test="no6 != null" >
+        #{no6,jdbcType=VARCHAR},
+      </if>
+      <if test="no7 != null" >
+        #{no7,jdbcType=VARCHAR},
+      </if>
+      <if test="no8 != null" >
+        #{no8,jdbcType=VARCHAR},
+      </if>
+      <if test="no9 != null" >
+        #{no9,jdbcType=VARCHAR},
+      </if>
+      <if test="no10 != null" >
+        #{no10,jdbcType=VARCHAR},
+      </if>
+      <if test="no11 != null" >
+        #{no11,jdbcType=VARCHAR},
+      </if>
+      <if test="no12 != null" >
+        #{no12,jdbcType=VARCHAR},
+      </if>
+      <if test="no13 != null" >
+        #{no13,jdbcType=VARCHAR},
+      </if>
+      <if test="no14 != null" >
+        #{no14,jdbcType=VARCHAR},
+      </if>
+      <if test="no15 != null" >
+        #{no15,jdbcType=VARCHAR},
+      </if>
+      <if test="no16 != null" >
+        #{no16,jdbcType=VARCHAR},
+      </if>
+      <if test="no17 != null" >
+        #{no17,jdbcType=VARCHAR},
+      </if>
+      <if test="no18 != null" >
+        #{no18,jdbcType=VARCHAR},
+      </if>
+      <if test="no19 != null" >
+        #{no19,jdbcType=VARCHAR},
+      </if>
+      <if test="no20 != null" >
+        #{no20,jdbcType=VARCHAR},
+      </if>
+      <if test="no21 != null" >
+        #{no21,jdbcType=VARCHAR},
+      </if>
+      <if test="no22 != null" >
+        #{no22,jdbcType=VARCHAR},
+      </if>
+      <if test="no23 != null" >
+        #{no23,jdbcType=VARCHAR},
+      </if>
+      <if test="no24 != null" >
+        #{no24,jdbcType=VARCHAR},
+      </if>
+      <if test="no25 != null" >
+        #{no25,jdbcType=VARCHAR},
+      </if>
+      <if test="no26 != null" >
+        #{no26,jdbcType=VARCHAR},
+      </if>
+      <if test="no27 != null" >
+        #{no27,jdbcType=VARCHAR},
+      </if>
+      <if test="no28 != null" >
+        #{no28,jdbcType=VARCHAR},
+      </if>
+      <if test="no29 != null" >
+        #{no29,jdbcType=VARCHAR},
+      </if>
+      <if test="no30 != null" >
+        #{no30,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  <select id="selectLotteryRoomDetail" resultMap="RoomResultMap">
+    select o.lgmid,o.LOTTERYTERM, o.NO1, 
+      o.NO2, o.NO3, o.NO4, o.NO5, 
+      o.NO6, o.NO7, o.NO8, o.NO9, 
+      o.NO10, o.NO11, o.NO12, o.NO13, 
+      o.NO14, o.NO15, o.NO16, o.NO17, 
+      o.NO18, o.NO19, o.NO20, o.NO21, 
+      o.NO22, o.NO23, o.NO24, o.NO25, 
+      o.NO26, o.NO27, o.NO28, o.NO29, 
+      o.NO30 
+    from LOTTERY_ROOM_DETAIL o 
+    where (Date(o.GAMESTARTTIME) between #{startTime,jdbcType=TIMESTAMP} and #{endTime,jdbcType=TIMESTAMP})
+	and o.rmid = #{rmid,jdbcType=INTEGER} order by o.LOTTERYTERM desc
+	<if test="beginRow != null and pageSize !=null">
+	limit #{beginRow,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
+	</if>
+
+  </select>
+  
+</mapper>

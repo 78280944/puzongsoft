@@ -13,11 +13,15 @@ public class TradeInfoVo extends PageParamVo{
     @Min(value=0, message = "用户ID格式不正确")
     private Integer accountid;
 	
-    @ApiModelProperty(value = "开始时间", required = true)
+	@ApiModelProperty(value = "查询类型(例如In)", required = true)
+    @NotNull(message = "查询类型不能为空")
+	private String relativetype;
+	
+    @ApiModelProperty(value = "开始时间(例如2017-03-16)", required = true)
     @NotNull(message = "开始时间不能为空")
     private String starttime;
     
-    @ApiModelProperty(value = "结束时间", required = true)
+    @ApiModelProperty(value = "结束时间(例如2017-03-16)", required = true)
     @NotNull(message = "结束时间不能为空")
     private String overtime;
    
@@ -44,6 +48,14 @@ public class TradeInfoVo extends PageParamVo{
 
 	public void setOvertime(String overtime) {
 		this.overtime = overtime;
+	}
+
+	public String getRelativetype() {
+		return relativetype;
+	}
+
+	public void setRelativetype(String relativetype) {
+		this.relativetype = relativetype;
 	}
     
     

@@ -1,5 +1,7 @@
 package com.lottery.orm.dto;
 
+import java.math.BigDecimal;
+
 import com.wordnik.swagger.annotations.ApiModelProperty;
 
 public class LotteryServiceDto {
@@ -17,138 +19,28 @@ public class LotteryServiceDto {
     private String playservice;
 
     @ApiModelProperty(value = "牛牛房间数设置")
-    private Integer lotteryniuroom;
+    private Integer lotteryniuroom = 18;
     
     @ApiModelProperty(value = "牛牛房间数人数设置")
-    private String lotteryniunpman;
+    private Integer lotteryniunpman = 10;
     
     @ApiModelProperty(value = "牛牛上庄金额设置")
-    private String lotteryniunbanker;
+    private BigDecimal lotteryniunbanker = BigDecimal.valueOf(5000);
     
     @ApiModelProperty(value = "牛牛投注金额设置")
-    private String lotteryniunpbet;
+    private BigDecimal lotteryniunpbet = BigDecimal.valueOf(2000);
     
     @ApiModelProperty(value = "板九房间数设置")
-    private String lotterybjroom;
+    private Integer lotterybjroom = 18;
     
     @ApiModelProperty(value = "板九房间人数设置")
-    private String lotterybjman;
+    private Integer lotterybjman = 10;
     
-    @ApiModelProperty(value = "牛牛上庄金额设置")
-    private String lotterybjbanker;
+    @ApiModelProperty(value = "板九上庄金额设置")
+    private  BigDecimal lotterybjbanker = BigDecimal.valueOf(5000);
     
-    @ApiModelProperty(value = "牛牛投注金额设置")
-    private String lotterybjbet;
-    
-    @ApiModelProperty(value = "提现倍数")
-    private String cashmultiple;
-    
-    @ApiModelProperty(value = "提现次数")
-    private String cashtime;
-    
-    @ApiModelProperty(value = "充值服务费")
-    private String topupfees;
-    
-    @ApiModelProperty(value = "提现服务费")
-    private String cashfees;
-     
-    
-    
-	public Integer getLotteryniuroom() {
-		return lotteryniuroom;
-	}
-
-	public void setLotteryniuroom(Integer lotteryniuroom) {
-		this.lotteryniuroom = lotteryniuroom;
-	}
-
-	public String getLotteryniunpman() {
-		return lotteryniunpman;
-	}
-
-	public void setLotteryniunpman(String lotteryniunpman) {
-		this.lotteryniunpman = lotteryniunpman;
-	}
-
-	public String getLotteryniunbanker() {
-		return lotteryniunbanker;
-	}
-
-	public void setLotteryniunbanker(String lotteryniunbanker) {
-		this.lotteryniunbanker = lotteryniunbanker;
-	}
-
-	public String getLotteryniunpbet() {
-		return lotteryniunpbet;
-	}
-
-	public void setLotteryniunpbet(String lotteryniunpbet) {
-		this.lotteryniunpbet = lotteryniunpbet;
-	}
-
-	public String getLotterybjroom() {
-		return lotterybjroom;
-	}
-
-	public void setLotterybjroom(String lotterybjroom) {
-		this.lotterybjroom = lotterybjroom;
-	}
-
-	public String getLotterybjman() {
-		return lotterybjman;
-	}
-
-	public void setLotterybjman(String lotterybjman) {
-		this.lotterybjman = lotterybjman;
-	}
-
-	public String getLotterybjbanker() {
-		return lotterybjbanker;
-	}
-
-	public void setLotterybjbanker(String lotterybjbanker) {
-		this.lotterybjbanker = lotterybjbanker;
-	}
-
-	public String getLotterybjbet() {
-		return lotterybjbet;
-	}
-
-	public void setLotterybjbet(String lotterybjbet) {
-		this.lotterybjbet = lotterybjbet;
-	}
-
-	public String getCashmultiple() {
-		return cashmultiple;
-	}
-
-	public void setCashmultiple(String cashmultiple) {
-		this.cashmultiple = cashmultiple;
-	}
-
-	public String getCashtime() {
-		return cashtime;
-	}
-
-	public void setCashtime(String cashtime) {
-		this.cashtime = cashtime;
-	}
-
-	public String getTopupfees() {
-		return topupfees;
-	}
-
-	public void setTopupfees(String topupfees) {
-		this.topupfees = topupfees;
-	}
-
-	public String getCashfees() {
-		return cashfees;
-	}
-
-	public void setCashfees(String cashfees) {
-		this.cashfees = cashfees;
-	}
+    @ApiModelProperty(value = "板九投注金额设置")
+    private BigDecimal lotterybjbet = BigDecimal.valueOf(2000);
 
 	public String getLoginservice() {
 		return loginservice;
@@ -182,6 +74,73 @@ public class LotteryServiceDto {
 		this.playservice = playservice;
 	}
 
+	public Integer getLotteryniuroom() {
+		return lotteryniuroom;
+	}
+
+	public void setLotteryniuroom(Integer lotteryniuroom) {
+		this.lotteryniuroom = lotteryniuroom;
+	}
+
+	public Integer getLotteryniunpman() {
+		return lotteryniunpman;
+	}
+
+	public void setLotteryniunpman(Integer lotteryniunpman) {
+		this.lotteryniunpman = lotteryniunpman;
+	}
+
+
+
+	public BigDecimal getLotteryniunbanker() {
+		return lotteryniunbanker;
+	}
+
+	public void setLotteryniunbanker(BigDecimal lotteryniunbanker) {
+		this.lotteryniunbanker = lotteryniunbanker;
+	}
+
+	public BigDecimal getLotteryniunpbet() {
+		return lotteryniunpbet;
+	}
+
+	public void setLotteryniunpbet(BigDecimal lotteryniunpbet) {
+		this.lotteryniunpbet = lotteryniunpbet;
+	}
+
+	public Integer getLotterybjroom() {
+		return lotterybjroom;
+	}
+
+	public void setLotterybjroom(Integer lotterybjroom) {
+		this.lotterybjroom = lotterybjroom;
+	}
+
+	public Integer getLotterybjman() {
+		return lotterybjman;
+	}
+
+	public void setLotterybjman(Integer lotterybjman) {
+		this.lotterybjman = lotterybjman;
+	}
+
+	public BigDecimal getLotterybjbanker() {
+		return lotterybjbanker;
+	}
+
+	public void setLotterybjbanker(BigDecimal lotterybjbanker) {
+		this.lotterybjbanker = lotterybjbanker;
+	}
+
+	public BigDecimal getLotterybjbet() {
+		return lotterybjbet;
+	}
+
+	public void setLotterybjbet(BigDecimal lotterybjbet) {
+		this.lotterybjbet = lotterybjbet;
+	}
+     
     
+   
     
 }

@@ -1,5 +1,6 @@
 package com.lottery.orm.service;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -18,10 +19,13 @@ import com.lottery.orm.bo.LotteryRound;
 import com.lottery.orm.bo.LotteryRoundItem;
 import com.lottery.orm.bo.TSTimeTask;
 import com.lottery.orm.dao.CustomLotteryMapper;
+import com.lottery.orm.dao.LotteryGameRoundMapper;
 import com.lottery.orm.dao.LotteryRoundItemMapper;
 import com.lottery.orm.dao.LotteryRoundMapper;
 import com.lottery.orm.dao.ScheduleJobMapper;
 import com.lottery.orm.dao.TSTimeTaskMapper;
+import com.lottery.orm.dto.ResultDataDto;
+import com.lottery.orm.util.CommonUtils;
 import com.lottery.orm.util.EnumType;
 import com.lottery.orm.util.TaskUtils;
 
@@ -44,6 +48,9 @@ public class LotteryRoundService {
 
 	@Autowired
 	private LotteryOrderService lotteryOrderService;
+	
+	@Autowired
+	private LotteryGameRoundMapper lotteryGameRoundMapper;
 	
 	@Autowired
 	private DynamicTask dynamicTask;
@@ -222,5 +229,21 @@ public class LotteryRoundService {
 			return true;
 		}
 		return false;
+	}
+	
+	// 游戏结果
+	public List<ResultDataDto> getLotteryResult(Date startTime, Date endTime, Integer sid, String time, Integer beginRow, Integer pageSize) throws ParseException {
+		List<ResultDataDto> roundList = new ArrayList<ResultDataDto>();
+		System.out.println("9---"+(null != startTime)+"..."+(!("".equals(startTime))));
+		if ((null != startTime)&&(null != endTime)){
+		    roundList = lotteryGameRoundMapper.selectGameResult(startTime, endTime, sid,  beginRow, pageSize);
+		}else if (time.equals("01")||(time.equals("02")||(time.equals("03")))){
+			Date[] sTime = CommonUtils.getDateBetween(startTime, endTime, time);
+			roundList = lotteryGameRoundMapper.selectGameResult(sTime[0], sTime[1], sid,  beginRow, pageSize);
+		}else if (time.equals("04")||time.equals("05")){	
+			roundList = lotteryGameRoundMapper.selectGameResultBytime(sid, time, beginRow, pageSize);
+		}
+			
+		return roundList;
 	}
 }

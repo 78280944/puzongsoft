@@ -42,6 +42,7 @@ public class TradeInfoController {
 	@Autowired
 	TradeInfoService tradeInfoService;
 
+	/*
 	@ApiOperation(value = "新增入金交易记录", notes = "新增资金交易记录", httpMethod = "POST")
 	@RequestMapping(value = "/addInTradeInfo", method = RequestMethod.POST)
 	@ResponseBody
@@ -89,7 +90,7 @@ public class TradeInfoController {
 		}
 		return result;
 	}
-	
+	*/
 	
 	@ApiOperation(value = "查询交易记录", notes = "查询交易记录", httpMethod = "POST")
 	@RequestMapping(value = "/getTradeInfo", method = RequestMethod.POST)
@@ -98,8 +99,13 @@ public class TradeInfoController {
 		TradeListResult result = new TradeListResult();
 		try {
 			TradeInfo tradeInfo = mapper.map(param, TradeInfo.class);
-			List<TradeInfo> tradeInfos = tradeInfoService.getTradeInfo(tradeInfo.getRelativetype(),param.getStarttime(),param.getOvertime(),param.getBeginRow(),param.getPageSize());
+			List<TradeInfo> tradeInfos = tradeInfoService.selectByTrade(tradeInfo.getRelativetype(),param.getStarttime(),param.getOvertime(),param.getBeginRow(),param.getPageSize());
 			List<TradeInfoDto> list = new ArrayList<TradeInfoDto>();
+			if (tradeInfos.size() == 0){
+				result.fail("该查询条件下", MessageTool.Code_1010);
+				LOG.info(result.getMessage());
+				return result;
+			}
 			for (int i = 0;i<tradeInfos.size();i++){
 				TradeInfoDto rAcDto = new TradeInfoDto();
 				rAcDto.setTradeamount(BigDecimal.valueOf(tradeInfos.get(i).getTradeamount()));

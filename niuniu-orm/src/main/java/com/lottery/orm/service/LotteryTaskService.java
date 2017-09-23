@@ -54,7 +54,7 @@ public class LotteryTaskService {
 	 */
 	@Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor=Exception.class)
 	public void getCQLotteryResult() throws Exception{
-		getLotteryOriginResult(EnumType.LotteryType.CQ.ID, lotteryApiUrlCQ);
+		//getLotteryOriginResult(EnumType.LotteryType.CQ.ID, lotteryApiUrlCQ);
 	}
 	
 	/**
@@ -63,7 +63,7 @@ public class LotteryTaskService {
 	 */
 	@Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor=Exception.class)
 	public void getGDLotteryResult() throws Exception{
-		getLotteryOriginResult(EnumType.LotteryType.GD.ID, lotteryApiUrlGD);
+		//getLotteryOriginResult(EnumType.LotteryType.GD.ID, lotteryApiUrlGD);
 	}
 	
 	/**
@@ -72,7 +72,7 @@ public class LotteryTaskService {
 	 */
 	@Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor=Exception.class)
 	public void getTJLotteryResult() throws Exception{
-		getLotteryOriginResult(EnumType.LotteryType.TJ.ID, lotteryApiUrlTJ);
+		//getLotteryOriginResult(EnumType.LotteryType.TJ.ID, lotteryApiUrlTJ);
 	}
 	
 	/**

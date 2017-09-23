@@ -19,6 +19,7 @@ public class MessageTool {
 	public final static int Code_1007 = 1007;
 	public final static int Code_1008 = 1008;
 	public final static int Code_1009 = 1009;
+	public final static int Code_1010 = 1010;
 	
 	public final static int Code_2002 = 2002;
 	public final static int Code_2004 = 2004;

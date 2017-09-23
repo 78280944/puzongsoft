@@ -103,6 +103,11 @@
 		   <mvc:exclude-mapping path="/account/addAccountInfo"/>
 		   <mvc:exclude-mapping path="/account/userExit"/>
 		   <mvc:exclude-mapping path="/trade/getTradeInfo"/>
+		   <mvc:exclude-mapping path="/offAccount/**"/>
+		   <mvc:exclude-mapping path="/subAccount/**"/>
+		   <mvc:exclude-mapping path="/lottery/**"/>
+		   <mvc:exclude-mapping path="/order/**"/>
+		   <mvc:exclude-mapping path="/report/**"/>
 		   <mvc:exclude-mapping path="/rule.html" />
 		   <ref bean="responseInterceptor"/>
 	  </mvc:interceptor>

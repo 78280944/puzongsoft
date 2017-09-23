@@ -16,20 +16,24 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.lottery.api.dto.AgencyWinVo;
 import com.lottery.api.dto.ReportParamVo;
+import com.lottery.api.dto.RoomParamRVo;
 import com.lottery.api.dto.TradeReportVo;
 import com.lottery.orm.bo.AccountDetail;
 import com.lottery.orm.dao.AccountDetailMapper;
 import com.lottery.orm.dao.CustomLotteryMapper;
 import com.lottery.orm.dao.LotteryReportMapper;
+import com.lottery.orm.dao.LotteryRoomDetailMapper;
 import com.lottery.orm.dto.AgencyWinReportDto;
 import com.lottery.orm.dto.InoutReportDto;
 import com.lottery.orm.dto.PlayerWinReportDto;
 import com.lottery.orm.dto.QueryDateDto;
+import com.lottery.orm.dto.QueryRoomDateDto;
 import com.lottery.orm.dto.TradeReportDto;
 import com.lottery.orm.result.AgencyWinReportResult;
 import com.lottery.orm.result.InoutReportResult;
 import com.lottery.orm.result.PlayerWinReportResult;
 import com.lottery.orm.result.QueryDateResult;
+import com.lottery.orm.result.RoomListResult;
 import com.lottery.orm.result.TradeReportResult;
 import com.lottery.orm.util.EnumType;
 import com.lottery.orm.util.QueryTool;
@@ -52,8 +56,36 @@ public class LotteryReportController {
 	@Autowired
 	AccountDetailMapper accountDetailMapper;
 	
+	@Autowired
+	LotteryRoomDetailMapper lotteryRoomDetailMapper;
+	
 	@Value("${lottery.initDate}")
     private String initDate;
+	
+	
+	@ApiOperation(value = "获取本房战绩", notes = "获取本房战绩", httpMethod = "POST")
+	@RequestMapping(value = "/getRoomQueryDate", method = RequestMethod.POST)
+	@ResponseBody
+	public RoomListResult getRoomQueryDate(
+			@ApiParam(value = "Json参数", required = true) @Validated @RequestBody RoomParamRVo param) throws Exception {
+		RoomListResult result = new RoomListResult();
+		try {
+				DateTime initDate = new DateTime(this.initDate);
+				Date startTime = QueryTool.getPeroidStartTime(initDate.toDate());
+				Date endTime = (new DateTime(startTime)).plusDays(27).toDate();
+				QueryRoomDateDto queryDate = new QueryRoomDateDto();
+				List<QueryRoomDateDto> list = lotteryRoomDetailMapper.selectLotteryRoomDetail(param.getStartDate(), param.getEndDate(), param.getRmid(), param.getBeginRow(), param.getPageSize());;
+				result.success(list);
+			LOG.info(result.getMessage());
+		} catch (Exception e) {
+			result.error();
+			LOG.error(e.getMessage(), e);
+		}
+		return result;
+
+	}
+	
+	
 	
 	@ApiOperation(value = "获取当期日期", notes = "获取当期日期", httpMethod = "POST")
 	@RequestMapping(value = "/getQueryDate", method = RequestMethod.POST)

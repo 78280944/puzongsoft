@@ -89,8 +89,8 @@ public class TradeInfoService {
     }
     
     //查询
-    public List<TradeInfo> getTradeInfo(String relativeType,String startTime,String overTime,int beginRow,int pageSize) {
-    	List<TradeInfo> list = tradeInfoMapper.selectByTrade(relativeType, getStrtoDate(startTime), getStrtoDate(overTime), beginRow, pageSize);
+    public List<TradeInfo> selectByTrade(String relativeType,String startTime,String overTime,int beginRow,int pageSize) {
+    	List<TradeInfo> list = tradeInfoMapper.selectByTrade(relativeType, startTime, overTime, beginRow, pageSize);
         return list;
     }
 	  
@@ -98,7 +98,7 @@ public class TradeInfoService {
     	Date date = null;
     	try  
     	{  
-    	    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd ");  
+    	    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");  
     	    date = sdf.parse(dateString);  
     	    return date;
     	}  
@@ -108,4 +108,12 @@ public class TradeInfoService {
     	} 
     	return date;
     }
+    public static void main(String args[]){
+    	TradeInfoService ts = new TradeInfoService();
+    	System.out.println(ts.getStrtoDate("2017-10-6"));
+    	//Unparseable date: "2017-03-10"
+    	//Unparseable date: "2017-09-20"
+    	
+    }
+    
 }

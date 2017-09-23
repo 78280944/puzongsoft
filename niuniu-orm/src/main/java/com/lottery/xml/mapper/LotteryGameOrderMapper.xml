@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lottery.orm.dao.LotteryGameOrderMapper">
+  
+  <resultMap id="BaseResultMap" type="com.lottery.orm.bo.LotteryGameOrder">
+    <id column="LGMID" jdbcType="INTEGER" property="lgmid" />
+    <result column="SID" jdbcType="INTEGER" property="sid" />
+    <result column="ACCOUNTID" jdbcType="INTEGER" property="accountid" />
+    <result column="RMID" jdbcType="INTEGER" property="rmid" />
+    <result column="LTDID" jdbcType="INTEGER" property="ltdid" />
+    <result column="NOID" jdbcType="INTEGER" property="noid" />
+    <result column="PLAYORIDLE" jdbcType="VARCHAR" property="playoridle" />
+    <result column="ORDERAMOUNT" jdbcType="DECIMAL" property="orderamount" />
+    <result column="ORDERTIME" jdbcType="TIMESTAMP" property="ordertime" />
+    <result column="OPENTIME" jdbcType="TIMESTAMP" property="opentime" />
+    <result column="RESULT" jdbcType="DECIMAL" property="result" />
+    <result column="LASTAMOUNT" jdbcType="DECIMAL" property="lastamount" />
+  </resultMap>
+  
+  <resultMap id="GameOrderMap" type="com.lottery.orm.dto.RoomOrderDto">
+    <id column="LGMID" jdbcType="INTEGER" property="lgmid" />
+    <result column="ORDERTIME" jdbcType="TIMESTAMP" property="ordertime" />
+    <result column="GAMENAME" jdbcType="VARCHAR" property="gamename" />
+    <result column="GAMELOBBYNAME" jdbcType="VARCHAR" property="gamelobbyname" />
+    <result column="ROOMID" jdbcType="INTEGER" property="roomid" />
+    <result column="LOTTERYTERM" jdbcType="VARCHAR" property="lotteryterm" />
+    <result column="NOID" jdbcType="VARCHAR" property="noid" />
+    <result column="PLAYORIDLE" jdbcType="VARCHAR" property="playoridle" />
+    <result column="ORDERAMOUNT" jdbcType="DECIMAL" property="orderamount" />
+  </resultMap>
+  
+    <resultMap id="GameHisOrderMap" type="com.lottery.orm.dto.RoomOrderDto">
+    <id column="LGMID" jdbcType="INTEGER" property="lgmid" />
+    <result column="ORDERTIME" jdbcType="TIMESTAMP" property="ordertime" />
+    <result column="GAMENAME" jdbcType="VARCHAR" property="gamename" />
+    <result column="GAMELOBBYNAME" jdbcType="VARCHAR" property="gamelobbyname" />
+    <result column="ROOMID" jdbcType="INTEGER" property="roomid" />
+    <result column="LOTTERYTERM" jdbcType="VARCHAR" property="lotteryterm" />
+    <result column="NOID" jdbcType="VARCHAR" property="noid" />
+    <result column="PLAYORIDLE" jdbcType="VARCHAR" property="playoridle" />
+    <result column="ORDERAMOUNT" jdbcType="DECIMAL" property="orderamount" />
+  </resultMap>
+  
+  <select id="selectGameOrder"  resultMap="GameOrderMap">
+    select 
+    a.LGMID,a.ordertime,b.gamename,b.gamelobbyname,c.roomid,
+    a.lotteryterm,a.noid,getCodeName('IsOridle',a.playoridle) AS playoridle,
+    a.orderamount 
+    FROM
+    ((lottery_game_order a LEFT JOIN lottery_game b ON a.sid = b.sid) LEFT JOIN lottery_room c ON a.rmid = c.rmid )
+    WHERE 
+    a.lotteryterm  = (SELECT lotteryterm FROM LOTTERY_GAME_ORDER WHERE RESULT IS NULL ORDER BY LOTTERYTERM DESC LIMIT 1) 
+    AND a.accountid =#{accountid,jdbcType=INTEGER} AND a.sid=#{sid,jdbcType=INTEGER}
+  </select>
+  
+    <select id="selectGameHisOrder"  resultMap="GameOrderMap">
+    select 
+    a.LGMID,a.ordertime,b.gamename,b.gamelobbyname,c.roomid,
+    a.lotteryterm,a.noid,getCodeName('IsOridle',a.playoridle) AS playoridle,
+    a.orderamount 
+    FROM
+    ((lottery_game_order a LEFT JOIN lottery_game b ON a.sid = b.sid) LEFT JOIN lottery_room c ON a.rmid = c.rmid )
+    WHERE 
+    a.lotteryterm  = (SELECT lotteryterm FROM LOTTERY_GAME_ORDER WHERE RESULT IS NULL ORDER BY LOTTERYTERM DESC LIMIT 1) 
+    AND a.accountid =#{accountid,jdbcType=INTEGER} AND a.sid=#{sid,jdbcType=INTEGER}
+  </select>
+  
+  
+  
+  <sql id="Base_Column_List">
+    LGMID, SID, ACCOUNTID, RMID, LTDID, NOID, PLAYORIDLE, ORDERAMOUNT, ORDERTIME, OPENTIME, 
+    RESULT, LASTAMOUNT
+  </sql>
+  
+  <sql id="Game_Order_List">
+    LGMID, ORDERTIME, GAMENAME, GAMELOBBYNAME, ROOMID, LOTTERYTERM, NO, PLAYORIDLE, ORDERAMOUNT
+  </sql>
+  
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from lottery_game_order
+    where LGMID = #{lgmid,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from lottery_game_order
+    where LGMID = #{lgmid,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.lottery.orm.bo.LotteryGameOrder">
+    <selectKey keyProperty="lgmid" order="AFTER" resultType="java.lang.Integer">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into lottery_game_order (SID, ACCOUNTID, RMID, 
+      LTDID, NOID, PLAYORIDLE, 
+      ORDERAMOUNT, ORDERTIME, OPENTIME, 
+      RESULT, LASTAMOUNT)
+    values (#{sid,jdbcType=INTEGER}, #{accountid,jdbcType=INTEGER}, #{rmid,jdbcType=INTEGER}, 
+      #{ltdid,jdbcType=INTEGER}, #{noid,jdbcType=INTEGER}, #{playoridle,jdbcType=VARCHAR}, 
+      #{orderamount,jdbcType=DECIMAL}, #{ordertime,jdbcType=TIMESTAMP}, #{opentime,jdbcType=TIMESTAMP}, 
+      #{result,jdbcType=DECIMAL}, #{lastamount,jdbcType=DECIMAL})
+  </insert>
+  <insert id="insertSelective" parameterType="com.lottery.orm.bo.LotteryGameOrder">
+    <selectKey keyProperty="lgmid" order="AFTER" resultType="java.lang.Integer">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into lottery_game_order
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="sid != null">
+        SID,
+      </if>
+      <if test="accountid != null">
+        ACCOUNTID,
+      </if>
+      <if test="rmid != null">
+        RMID,
+      </if>
+      <if test="ltdid != null">
+        LTDID,
+      </if>
+      <if test="noid != null">
+        NOID,
+      </if>
+      <if test="playoridle != null">
+        PLAYORIDLE,
+      </if>
+      <if test="orderamount != null">
+        ORDERAMOUNT,
+      </if>
+      <if test="ordertime != null">
+        ORDERTIME,
+      </if>
+      <if test="opentime != null">
+        OPENTIME,
+      </if>
+      <if test="result != null">
+        RESULT,
+      </if>
+      <if test="lastamount != null">
+        LASTAMOUNT,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="sid != null">
+        #{sid,jdbcType=INTEGER},
+      </if>
+      <if test="accountid != null">
+        #{accountid,jdbcType=INTEGER},
+      </if>
+      <if test="rmid != null">
+        #{rmid,jdbcType=INTEGER},
+      </if>
+      <if test="ltdid != null">
+        #{ltdid,jdbcType=INTEGER},
+      </if>
+      <if test="noid != null">
+        #{noid,jdbcType=INTEGER},
+      </if>
+      <if test="playoridle != null">
+        #{playoridle,jdbcType=VARCHAR},
+      </if>
+      <if test="orderamount != null">
+        #{orderamount,jdbcType=DECIMAL},
+      </if>
+      <if test="ordertime != null">
+        #{ordertime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="opentime != null">
+        #{opentime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="result != null">
+        #{result,jdbcType=DECIMAL},
+      </if>
+      <if test="lastamount != null">
+        #{lastamount,jdbcType=DECIMAL},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.lottery.orm.bo.LotteryGameOrder">
+    update lottery_game_order
+    <set>
+      <if test="sid != null">
+        SID = #{sid,jdbcType=INTEGER},
+      </if>
+      <if test="accountid != null">
+        ACCOUNTID = #{accountid,jdbcType=INTEGER},
+      </if>
+      <if test="rmid != null">
+        RMID = #{rmid,jdbcType=INTEGER},
+      </if>
+      <if test="ltdid != null">
+        LTDID = #{ltdid,jdbcType=INTEGER},
+      </if>
+      <if test="noid != null">
+        NOID = #{noid,jdbcType=INTEGER},
+      </if>
+      <if test="playoridle != null">
+        PLAYORIDLE = #{playoridle,jdbcType=VARCHAR},
+      </if>
+      <if test="orderamount != null">
+        ORDERAMOUNT = #{orderamount,jdbcType=DECIMAL},
+      </if>
+      <if test="ordertime != null">
+        ORDERTIME = #{ordertime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="opentime != null">
+        OPENTIME = #{opentime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="result != null">
+        RESULT = #{result,jdbcType=DECIMAL},
+      </if>
+      <if test="lastamount != null">
+        LASTAMOUNT = #{lastamount,jdbcType=DECIMAL},
+      </if>
+    </set>
+    where LGMID = #{lgmid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.lottery.orm.bo.LotteryGameOrder">
+    update lottery_game_order
+    set SID = #{sid,jdbcType=INTEGER},
+      ACCOUNTID = #{accountid,jdbcType=INTEGER},
+      RMID = #{rmid,jdbcType=INTEGER},
+      LTDID = #{ltdid,jdbcType=INTEGER},
+      NOID = #{noid,jdbcType=INTEGER},
+      PLAYORIDLE = #{playoridle,jdbcType=VARCHAR},
+      ORDERAMOUNT = #{orderamount,jdbcType=DECIMAL},
+      ORDERTIME = #{ordertime,jdbcType=TIMESTAMP},
+      OPENTIME = #{opentime,jdbcType=TIMESTAMP},
+      RESULT = #{result,jdbcType=DECIMAL},
+      LASTAMOUNT = #{lastamount,jdbcType=DECIMAL}
+    where LGMID = #{lgmid,jdbcType=INTEGER}
+  </update>
+
+  
+</mapper>

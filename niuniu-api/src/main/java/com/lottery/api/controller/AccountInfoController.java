@@ -203,6 +203,7 @@ public class AccountInfoController {
 		return result;
 	}
 	
+	/*
 	@ApiOperation(value = "修改玩家", notes = "修改玩家", httpMethod = "POST")
 	@RequestMapping(value = "/updateAccountInfo", method = RequestMethod.POST)
 	@ResponseBody
@@ -318,7 +319,7 @@ public class AccountInfoController {
 		return result;
 	}
 	
-	
+	*/
 	
 	@ApiOperation(value = "获取在线客服、分享链接、规则说明", notes = "获取在线客服、分享链接、规则说明", httpMethod = "POST")
 	@RequestMapping(value = "/getRemarkInfo", method = RequestMethod.POST)
@@ -385,5 +386,6 @@ public class AccountInfoController {
 		}
 		return result;
 	}
+	
 	
 }

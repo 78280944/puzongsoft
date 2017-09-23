@@ -21,6 +21,6 @@ public interface TradeInfoMapper {
 
     int updateByPrimaryKey(TradeInfo record);
     
-    List<TradeInfo> selectByTrade(@Param("relativetype")String relativetype, @Param("starttime")Date starttime,@Param("overtime")Date overtime,@Param("beginrow")Integer beginrow, @Param("pageSize")Integer pageSize);
+    List<TradeInfo> selectByTrade(@Param("relativetype")String relativetype, @Param("starttime")String starttime,@Param("overtime")String overtime,@Param("beginrow")Integer beginrow, @Param("pageSize")Integer pageSize);
     
 }

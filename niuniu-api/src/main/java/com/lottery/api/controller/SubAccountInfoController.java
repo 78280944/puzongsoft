@@ -91,12 +91,13 @@ public class SubAccountInfoController {
 				    LOG.info(result.getMessage());
 				    return result;
 		    	}
-		    	
+		    	paraInfo.setPassword(DigestUtils.md5Hex(password));
 		    	paraInfo.setLevel(offAccountInfo1.getLevel());
 			    paraInfo.setState("1");//默认状态正常
 			    paraInfo.setOfftype("3");
 			    paraInfo.setInputdate(new Date());
 			    paraInfo.setUsermoney(BigDecimal.valueOf(0.0));
+			    paraInfo.setSupuserid(param.getAccountid());
 			    accountInfoMapper.insert(paraInfo);
 			    result.success();
 		    }
@@ -109,6 +110,7 @@ public class SubAccountInfoController {
 		return result;
 	}
 	
+	/*
 
 	@ApiOperation(value = "获取该代理的子账号列表", notes = "获取该代理的子账号列表", httpMethod = "POST")
 	@RequestMapping(value = "/getAllSubAccountInfo", method = RequestMethod.POST)
@@ -301,5 +303,5 @@ public class SubAccountInfoController {
 		}
 		return result;
 	}
-	
+	*/
 }

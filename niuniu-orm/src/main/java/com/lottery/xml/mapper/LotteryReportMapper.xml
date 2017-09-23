@@ -199,6 +199,9 @@
     o.ORDERID, ORDERTIME, ROUNDID, i.ITEMNAMECN, d.DETAILAMOUNT, d.ACTUALAMOUNT, d.RETURNAMOUNT, d.ACTUALAMOUNT+d.RETURNAMOUNT AS WINAMOUNT
     from lottery_order o inner join lottery_order_detail d on o.ORDERID=d.ORDERID left join lottery_item i on d.ITEMNO=i.ITEMNO
     where o.ACCOUNTID = #{accountId,jdbcType=INTEGER} and o.ROUNDID = #{roundId,jdbcType=INTEGER}
+    <if test="beginrow != null and pageSize !=null">
+	limit #{beginrow,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
+	</if>
 	order by o.ORDERID desc, ORDERTIME desc
   </select>
 </mapper>

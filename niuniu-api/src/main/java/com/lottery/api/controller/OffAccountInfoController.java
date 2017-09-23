@@ -134,7 +134,7 @@ public class OffAccountInfoController {
 				}
 		    	
 				//代理占比逻辑
-				if (percentage>OffAccountInfo.getPercentage()){
+				if (percentage>OffAccountInfo1.getPercentage()){
 				      result.fail("代理占成",MessageTool.Code_1008);
 				      LOG.info(result.getMessage());
 				      return result;	
@@ -144,6 +144,7 @@ public class OffAccountInfoController {
 			    paraInfo.setOfftype(OffAccountInfo1.getOfftype());
 			    paraInfo.setInputdate(new Date());
 			    paraInfo.setUsermoney(BigDecimal.valueOf(0.0));
+			    paraInfo.setSupuserid(param.getAccountid());
 			    accountInfoService.addAccountInfo(paraInfo);
 			    
 			    result.success();
@@ -157,7 +158,7 @@ public class OffAccountInfoController {
 		return result;
 	}
 	
-
+/*
 	@ApiOperation(value = "获取该代理下的代理列表", notes = "获取该代理下的代理列表", httpMethod = "POST")
 	@RequestMapping(value = "/getAllOffAccountInfo", method = RequestMethod.POST)
 	@ResponseBody
@@ -657,6 +658,6 @@ public class OffAccountInfoController {
 		return result;
 	}
 	
-
+*/
 	
 }

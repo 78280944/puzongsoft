@@ -23,13 +23,17 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.lottery.api.dto.HisRoundParamVo;
+import com.lottery.api.dto.ResultParamVo;
 import com.lottery.api.dto.RoundParamVo;
 import com.lottery.api.dto.UpdateRoundVo;
 import com.lottery.orm.bo.LotteryRound;
 import com.lottery.orm.dao.CustomLotteryMapper;
+import com.lottery.orm.dao.LotteryGameRoundMapper;
 import com.lottery.orm.dao.LotteryRoundMapper;
+import com.lottery.orm.dto.ResultDataDto;
 import com.lottery.orm.result.BaseRestResult;
 import com.lottery.orm.result.HisRoundResult;
+import com.lottery.orm.result.ResultListResult;
 import com.lottery.orm.result.RoundResult;
 import com.lottery.orm.service.LotteryOrderService;
 import com.lottery.orm.service.LotteryRoundService;
@@ -40,9 +44,11 @@ import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 
+
 @RequestMapping(value = "/lottery", produces = { "application/json;charset=UTF-8" })
 @Api(value = "/lottery", description = "游戏信息接口")
 @Controller
+
 public class LotteryRoundController {
 	public static final Logger LOG = Logger.getLogger(LotteryRoundController.class);
 
@@ -54,12 +60,15 @@ public class LotteryRoundController {
 
 	@Autowired
 	LotteryRoundService lotteryRoundService;
-
+	
 	@Autowired
 	CustomLotteryMapper customLotteryMapper;
 
 	@Autowired
 	LotteryOrderService lotteryOrderService;
+	
+	@Autowired
+	LotteryGameRoundMapper lotteryGameRoundMapper;
 	
 	@Value("${lottery.apiUrlByDate.cqklsf}")
     private String apiUrlByDateCQ;
@@ -70,7 +79,8 @@ public class LotteryRoundController {
 	@Value("${lottery.apiUrlByDate.tjklsf}")
     private String apiUrlByDateTJ;
 	
-	/*@ApiOperation(value = "新增一期游戏", notes = "新增游戏记录", httpMethod = "POST")
+	/*
+	@ApiOperation(value = "新增一期游戏", notes = "新增游戏记录", httpMethod = "POST")
 	@RequestMapping(value = "/addLotteryRound", method = RequestMethod.POST)
 	@ResponseBody
 	public RoundResult addLotteryRound(
@@ -92,7 +102,8 @@ public class LotteryRoundController {
 			LOG.error(e.getMessage(), e);
 		}
 		return result;
-	}*/
+	}
+	*/
 
 	@ApiOperation(value = "获取游戏及赔率信息", notes = "获取游戏及赔率信息", httpMethod = "POST")
 	@RequestMapping(value = "/getLotteryRound/{lotteryType}", method = RequestMethod.POST)
@@ -160,7 +171,7 @@ public class LotteryRoundController {
 		}
 		return result;
 	}
-
+ /*
 	@ApiOperation(value = "兑奖并结束游戏", notes = "兑奖并结束游戏", httpMethod = "POST")
 	@RequestMapping(value = "/endLotteryRound", method = RequestMethod.POST)
 	@ResponseBody
@@ -215,5 +226,24 @@ public class LotteryRoundController {
 		}
 		return result;
 	}
-
+	*/
+	
+	@ApiOperation(value = "获取游戏结果", notes = "获取游戏结果", httpMethod = "POST")
+	@RequestMapping(value = "/getLotteryResult", method = RequestMethod.POST)
+	@ResponseBody
+	public ResultListResult getLotteryResult(
+			@ApiParam(value = "Json参数", required = true) @Validated @RequestBody ResultParamVo param) throws Exception {
+		ResultListResult result = new ResultListResult();
+		
+		try {
+			
+			List<ResultDataDto> list = lotteryRoundService.getLotteryResult(param.getStartDate(), param.getEndDate(), param.getSid(), param.getTime(),param.getBeginRow(), param.getPageSize());
+			result.success(list);
+		} catch (Exception e) {
+			result.fail(MessageTool.ErrorCode);
+			LOG.error(e.getMessage(), e);
+		}
+		return result;
+	}
+	
 }

@@ -27,12 +27,15 @@ import com.lottery.orm.bo.LotteryOrderDetail;
 import com.lottery.orm.bo.LotteryRound;
 import com.lottery.orm.dao.AccountDetailMapper;
 import com.lottery.orm.dao.CustomLotteryMapper;
+import com.lottery.orm.dao.LotteryGameOrderMapper;
 import com.lottery.orm.dao.LotteryOrderMapper;
 import com.lottery.orm.dao.LotteryReportMapper;
 import com.lottery.orm.dao.LotteryRoundMapper;
 import com.lottery.orm.dto.HistoryOrderDto;
 import com.lottery.orm.dto.LotteryOrderDto;
+import com.lottery.orm.dto.RoomOrderDto;
 import com.lottery.orm.result.BaseRestResult;
+import com.lottery.orm.result.GameOrderListResult;
 import com.lottery.orm.result.HistoryOrderResult;
 import com.lottery.orm.result.OrderResult;
 import com.lottery.orm.service.LotteryOrderService;
@@ -68,6 +71,9 @@ public class LotteryOrderController {
 	
 	@Autowired
 	private LotteryReportMapper reportLotteryMapper;
+	
+	@Autowired
+	private LotteryGameOrderMapper lotteryGameOrderMapper;
 
 	@ApiOperation(value = "新增投注记录", notes = "新增投注记录", httpMethod = "POST")
 	@RequestMapping(value = "/addLotteryOrder", method = RequestMethod.POST)
@@ -109,14 +115,14 @@ public class LotteryOrderController {
 		return result;
 	}
 	
-	@ApiOperation(value = "获取当期下注记录", notes = "获取当期下注记录", httpMethod = "POST")
-	@RequestMapping(value = "/getCurRoundOrder", method = RequestMethod.POST)
+	@ApiOperation(value = "获取本期注单", notes = "获取本期注单", httpMethod = "POST")
+	@RequestMapping(value = "/getCurTermOrder", method = RequestMethod.POST)
 	@ResponseBody
-	public HistoryOrderResult getCurRoundOrder(
+	public GameOrderListResult getCurTermOrder(
 			@ApiParam(value = "Json参数", required = true) @Validated @RequestBody HisOrderVo param) throws Exception {
-		HistoryOrderResult result = new HistoryOrderResult();
+		GameOrderListResult result = new GameOrderListResult();
 		try {
-			List<HistoryOrderDto> orderList = reportLotteryMapper.selectByCurRoundOrder(param.getRoundId(), param.getAccountId());
+			List<RoomOrderDto> orderList = lotteryGameOrderMapper.selectGameOrder(param.getAccountId(), param.getsId(), param.getBeginRow(), param.getPageSize());
 			result.success(orderList);
 			LOG.info(result.getMessage());
 		} catch (Exception e) {
