@@ -26,7 +26,7 @@ public class LotteryGameOrder {
 
     private Date opentime;
 
-    private BigDecimal result;
+    private String result;
 
     private BigDecimal lastamount;
 
@@ -120,15 +120,17 @@ public class LotteryGameOrder {
         this.opentime = opentime;
     }
 
-    public BigDecimal getResult() {
-        return result;
-    }
 
-    public void setResult(BigDecimal result) {
-        this.result = result;
-    }
 
-    public BigDecimal getLastamount() {
+    public String getResult() {
+		return result;
+	}
+
+	public void setResult(String result) {
+		this.result = result;
+	}
+
+	public BigDecimal getLastamount() {
         return lastamount;
     }
 

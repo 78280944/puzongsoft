@@ -7,7 +7,7 @@ import com.wordnik.swagger.annotations.ApiModelProperty;
 public class UpdatePlayPassVo {
 	
 	@ApiModelProperty(value = "用户id", required = true)
-	private int userid;
+	private int accountid;
 	
 	@ApiModelProperty(value = "密码", required = true)
 	private String password;
@@ -15,32 +15,12 @@ public class UpdatePlayPassVo {
 	@ApiModelProperty(value = "状态", required = true)
 	private String state;
 	
-	@ApiModelProperty(value = "代理账户名称", required = true)
-	private String supusername;
-	
-	@ApiModelProperty(value = "代理账户类型", required = true)
-	private int offtype;
+	@ApiModelProperty(value = "代理账户id", required = true)
+	private String supuserid;
 	
 	@ApiModelProperty(value = "ip", required = true)
 	private String ip;
 	
-	
-	public String getSupusername() {
-		return supusername;
-	}
-
-	public void setSupusername(String supusername) {
-		this.supusername = supusername;
-	}
-
-	public int getOfftype() {
-		return offtype;
-	}
-
-	public void setOfftype(int offtype) {
-		this.offtype = offtype;
-	}
-
 	public String getIp() {
 		return ip;
 	}
@@ -57,12 +37,21 @@ public class UpdatePlayPassVo {
 		this.state = state;
 	}
 
-	public int getUserid() {
-		return userid;
+
+	public int getAccountid() {
+		return accountid;
 	}
 
-	public void setUserid(int userid) {
-		this.userid = userid;
+	public void setAccountid(int accountid) {
+		this.accountid = accountid;
+	}
+
+	public String getSupuserid() {
+		return supuserid;
+	}
+
+	public void setSupuserid(String supuserid) {
+		this.supuserid = supuserid;
 	}
 
 	public String getPassword() {

@@ -1,18 +1,23 @@
 package com.lottery.orm.service;
 
 import java.math.BigDecimal;
+import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.lottery.orm.bo.AccountDetail;
+import com.lottery.orm.bo.AccountInfo;
+import com.lottery.orm.bo.LotteryGameOrder;
 import com.lottery.orm.bo.LotteryItem;
 import com.lottery.orm.bo.LotteryOrder;
 import com.lottery.orm.bo.LotteryOrderDetail;
@@ -20,14 +25,23 @@ import com.lottery.orm.bo.LotteryOrderResult;
 import com.lottery.orm.bo.LotteryRound;
 import com.lottery.orm.bo.LotteryRoundItem;
 import com.lottery.orm.bo.OffAccountInfo;
+import com.lottery.orm.bo.SysLimit;
 import com.lottery.orm.bo.TradeInfo;
 import com.lottery.orm.dao.AccountDetailMapper;
+import com.lottery.orm.dao.AccountInfoMapper;
 import com.lottery.orm.dao.CustomLotteryMapper;
+import com.lottery.orm.dao.LotteryGameOrderMapper;
 import com.lottery.orm.dao.LotteryOrderDetailMapper;
 import com.lottery.orm.dao.LotteryOrderMapper;
 import com.lottery.orm.dao.LotteryOrderResultMapper;
+import com.lottery.orm.dao.LotteryRoomDetailMapper;
 import com.lottery.orm.dao.OffAccountInfoMapper;
 import com.lottery.orm.dao.TradeInfoMapper;
+import com.lottery.orm.dto.QueryRoomDateDto;
+import com.lottery.orm.dto.ResultDataDto;
+import com.lottery.orm.dto.RoomHisOrderDto;
+import com.lottery.orm.dto.RoomOrderItemDto;
+import com.lottery.orm.util.CommonUtils;
 import com.lottery.orm.util.EnumType;
 
 @Service
@@ -50,11 +64,21 @@ public class LotteryOrderService {
 	private LotteryOrderDetailMapper lotteryOrderDetailMapper;
 	
 	@Autowired
+	private AccountInfoMapper accountInfoMapper;
+	
+	@Autowired
 	private OffAccountInfoMapper offAccountInfoMapper;
 	
 	@Autowired
 	private LotteryOrderResultMapper lotteryOrderResultMapper;
 
+	@Autowired
+	private LotteryGameOrderMapper lotteryGameOrderMapper;
+	
+	@Autowired
+	private LotteryRoomDetailMapper lotteryRoomDetailMapper;
+	
+	
 	// 添加投注单
 	@Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor=Exception.class)
 	public LotteryOrder addLotteryOrder(AccountDetail accountDetail, LotteryOrder order) {
@@ -276,6 +300,38 @@ public class LotteryOrderService {
 		return -1;
 	}
 
+	//投注金额检查
+	public String checkLotteryOrderInfo(AccountInfo accountInfo, LotteryGameOrder order,SysLimit sys) {
+		if((order.getOrderamount()).compareTo(accountInfo.getUsermoney())>0){
+			return "下注金额不能超过账户金额";
+		}
+		
+		if((order.getOrderamount()).compareTo(sys.getLimited())>0){
+			return "下注金额不能超过设置金额";
+		}
+		
+		return "true";
+	}
+	
+	//账户变动
+	public void changeAccountAmount(AccountInfo accountInfo,LotteryGameOrder order){
+		//账户变动明细
+		TradeInfo trade = new TradeInfo();
+		trade.setAccountid(accountInfo.getAccountid());
+		trade.setTradetype(EnumType.TradeType.Trade.ID);
+		trade.setRelativeid(1000);
+		trade.setRelativetype(EnumType.RalativeType.Trade.ID);
+		trade.setTradeamount(order.getOrderamount().doubleValue());
+		trade.setAccountamount(accountInfo.getUsermoney().subtract(order.getOrderamount()));
+		trade.setInputtime(new Date());
+		trade.setRemark("用户ID："+accountInfo.getAccountid()+" 下注金额："+order.getOrderamount());
+		tradeInfoMapper.insert(trade);
+		//账户金额
+		accountInfo.setUsermoney(accountInfo.getUsermoney().subtract(order.getOrderamount()));
+		accountInfoMapper.updateByPrimaryKey(accountInfo);
+	}
+	
+	
 	public String checkLotteryOrder(AccountDetail accountDetail, LotteryRound round, LotteryOrder order) {
 		String[] typeOrder = {"角","连","番","正","三中","特码","色","大小","单双"};
 		List<Map<String, String>> detailList = customLotteryMapper.selectOrderForCheck(order.getRoundid(), order.getAccountid());
@@ -372,4 +428,79 @@ public class LotteryOrderService {
 		}
 	}
 
+	// 投注结果
+	public List<RoomHisOrderDto> getLotteryHisOrder(Date startTime, Date endTime, Integer accountid,Integer sid, Integer beginRow, Integer pageSize) throws ParseException {
+		List<RoomHisOrderDto> roundList = new ArrayList<RoomHisOrderDto>();
+		Date[] sTime = CommonUtils.getDateTime(startTime, endTime);
+		roundList = lotteryGameOrderMapper.selectGameHisOrder(sTime[0], sTime[1], accountid,sid,  beginRow, pageSize);	
+		return roundList;
+	}
+	
+	/*
+	// 投注结果
+	public List<RoomHisOrderDto> getLotteryHisOrder(Date startTime, Date endTime, Integer accountid,Integer sid, String time, Integer beginRow, Integer pageSize) throws ParseException {
+		List<RoomHisOrderDto> roundList = new ArrayList<RoomHisOrderDto>();
+		System.out.println("9---"+(null != startTime)+"..."+(!("".equals(startTime))));
+		if ((null != startTime)&&(null != endTime)){
+			Date[] sTime = CommonUtils.getDateTime(startTime, endTime);
+		    roundList = lotteryGameOrderMapper.selectGameHisOrder(sTime[0], sTime[1], accountid,sid,  beginRow, pageSize);
+		}else if (time.equals("01")||(time.equals("02")||(time.equals("03")))){
+			Date[] sTime = CommonUtils.getDateBetween(startTime, endTime, time);
+			roundList = lotteryGameOrderMapper.selectGameHisOrder(sTime[0], sTime[1], accountid,sid,  beginRow, pageSize);
+		}else if (time.equals("04")||time.equals("05")){	
+			roundList = lotteryGameOrderMapper.selectGameHisOrderBytime(accountid,sid, time, beginRow, pageSize);
+		}
+			
+		return roundList;
+	}
+	*/
+	// 投注明细
+	public List<List<RoomOrderItemDto>> selectGameOrderItem(String lotteryTerm,Integer sid, Integer rmid, Integer accountid) throws ParseException {
+		List<RoomOrderItemDto> roundList = new ArrayList<RoomOrderItemDto>();
+		List<RoomOrderItemDto> temp1 = new ArrayList<RoomOrderItemDto>();
+		List<List<RoomOrderItemDto>> list = new ArrayList<List<RoomOrderItemDto>>();
+        roundList = lotteryGameOrderMapper.selectGameOrderItem(accountid, sid, rmid, lotteryTerm);
+        int orderno = 0;
+        int count = 0;
+        int j = 0;
+	    for (int i=0;i<roundList.size();i++){
+	    	RoomOrderItemDto rod = new RoomOrderItemDto();
+	    	rod = roundList.get(i);
+	    	orderno = rod.getOrderno();
+	    	if (1 == orderno&&count !=0){
+	    		List<RoomOrderItemDto> temp = new ArrayList<RoomOrderItemDto>();
+	    	    for (;j<count;j++){
+	    	    	temp.add(roundList.get(j));
+	    	    }	
+	    	    list.add(temp);
+	    	    j = count;
+	    	}
+	    	count ++;
+	    }
+	    for (;j<roundList.size();j++){
+	    	RoomOrderItemDto rod = new RoomOrderItemDto();
+	    	rod = roundList.get(j);
+	    	temp1.add(rod);
+	    }
+		list.add(temp1);	
+		return list;
+	}
+	
+	   
+	//本房战绩
+	public List<QueryRoomDateDto> selectRoomResult(Date startTime,Date endTime, String time,Integer sid,Integer rmid, Integer accountid,Integer beginRow, Integer pageSize) throws ParseException {
+		//List<QueryRoomDateDto> list = lotteryRoomDetailMapper.selectLotteryRoomDetail(param.getStartDate(), param.getEndDate(), param.getRmid(), param.getBeginRow(), param.getPageSize());;
+		List<QueryRoomDateDto> roundList = new ArrayList<QueryRoomDateDto>();
+		System.out.println("9---"+(null != startTime)+"..."+(!("".equals(startTime))));
+		if ((null != startTime)&&(null != endTime)){
+			Date[] sTime = CommonUtils.getDateTime(startTime, endTime);
+		    roundList = lotteryRoomDetailMapper.selectRoomDetail(sTime[0], sTime[1], sid, rmid, beginRow, pageSize);
+		}else if (time.equals("01")||(time.equals("02")||(time.equals("03")))){
+			Date[] sTime = CommonUtils.getDateBetween(startTime, endTime, time);
+			roundList = lotteryRoomDetailMapper.selectRoomDetail(sTime[0], sTime[1], sid, rmid, beginRow, pageSize);
+		}else if (time.equals("04")||time.equals("05")){	
+			roundList = lotteryRoomDetailMapper.selectRoomDetailByTime(sid,rmid,time, beginRow, pageSize);
+		}
+		return roundList;
+	}
 }

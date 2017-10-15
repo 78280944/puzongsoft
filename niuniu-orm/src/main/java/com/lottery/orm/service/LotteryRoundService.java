@@ -232,9 +232,12 @@ public class LotteryRoundService {
 	}
 	
 	// 游戏结果
-	public List<ResultDataDto> getLotteryResult(Date startTime, Date endTime, Integer sid, String time, Integer beginRow, Integer pageSize) throws ParseException {
+	public List<ResultDataDto> getLotteryResult(Date startTime, Date endTime, Integer sid, Integer beginRow, Integer pageSize) throws ParseException {
 		List<ResultDataDto> roundList = new ArrayList<ResultDataDto>();
 		System.out.println("9---"+(null != startTime)+"..."+(!("".equals(startTime))));
+		Date[] sTime = CommonUtils.getDateTime(startTime, endTime);
+		roundList = lotteryGameRoundMapper.selectGameResult(sTime[0], sTime[1], sid,  beginRow, pageSize);
+		/*
 		if ((null != startTime)&&(null != endTime)){
 		    roundList = lotteryGameRoundMapper.selectGameResult(startTime, endTime, sid,  beginRow, pageSize);
 		}else if (time.equals("01")||(time.equals("02")||(time.equals("03")))){
@@ -243,7 +246,7 @@ public class LotteryRoundService {
 		}else if (time.equals("04")||time.equals("05")){	
 			roundList = lotteryGameRoundMapper.selectGameResultBytime(sid, time, beginRow, pageSize);
 		}
-			
+		*/	
 		return roundList;
 	}
 }

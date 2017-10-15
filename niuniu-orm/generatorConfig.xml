@@ -52,13 +52,13 @@
 	    </table>  -->
 		
 		
-		<table tableName="lottery_game_round" domainObjectName="LotteryGameRound"
+		<table tableName="lottery_room" domainObjectName="LotteryRoom"
 	    	enableCountByExample="false"
 			enableUpdateByExample="false" 
 			enableDeleteByExample="false"
 			enableSelectByExample="false" 
 			selectByExampleQueryId="false">
-			<generatedKey column="lgrid" sqlStatement="MySql" identity="true"/>
+			<generatedKey column="rmid" sqlStatement="MySql" identity="true"/>
 	    </table>
 
 <!-- 	    <table tableName="offaccount_info" domainObjectName="OffAccountInfo"

@@ -29,7 +29,7 @@ public class RoomOrderDto {
 	@ApiModelProperty(value = "台号", required = true)
 	private String noid;
 	
-	@ApiModelProperty(value = "庄闲", required = true)
+	@ApiModelProperty(value = "庄闲；1：庄；2：闲", required = true)
 	private String playoridle;
 	
 	@ApiModelProperty(value = "投注金额", required = true)

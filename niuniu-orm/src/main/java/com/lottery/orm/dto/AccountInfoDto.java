@@ -45,6 +45,18 @@ public class AccountInfoDto extends BaseAccountDto {
 	
 	@ApiModelProperty(value = "接口口令", required = true)
 	private String token;
+	
+	@ApiModelProperty(value = "登录记录流水号", required = true)
+	private String recordid;
+
+
+	public String getRecordid() {
+		return recordid;
+	}
+
+	public void setRecordid(String recordid) {
+		this.recordid = recordid;
+	}
 
 	public BigDecimal getUsermoney() {
 		return usermoney;

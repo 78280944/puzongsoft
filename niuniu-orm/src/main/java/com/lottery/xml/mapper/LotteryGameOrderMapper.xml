@@ -13,7 +13,7 @@
     <result column="ORDERAMOUNT" jdbcType="DECIMAL" property="orderamount" />
     <result column="ORDERTIME" jdbcType="TIMESTAMP" property="ordertime" />
     <result column="OPENTIME" jdbcType="TIMESTAMP" property="opentime" />
-    <result column="RESULT" jdbcType="DECIMAL" property="result" />
+    <result column="RESULT" jdbcType="VARCHAR" property="result" />
     <result column="LASTAMOUNT" jdbcType="DECIMAL" property="lastamount" />
   </resultMap>
   
@@ -29,16 +29,26 @@
     <result column="ORDERAMOUNT" jdbcType="DECIMAL" property="orderamount" />
   </resultMap>
   
-    <resultMap id="GameHisOrderMap" type="com.lottery.orm.dto.RoomOrderDto">
+    <resultMap id="GameHisOrderMap" type="com.lottery.orm.dto.RoomHisOrderDto">
     <id column="LGMID" jdbcType="INTEGER" property="lgmid" />
-    <result column="ORDERTIME" jdbcType="TIMESTAMP" property="ordertime" />
     <result column="GAMENAME" jdbcType="VARCHAR" property="gamename" />
     <result column="GAMELOBBYNAME" jdbcType="VARCHAR" property="gamelobbyname" />
-    <result column="ROOMID" jdbcType="INTEGER" property="roomid" />
     <result column="LOTTERYTERM" jdbcType="VARCHAR" property="lotteryterm" />
+    <result column="ROOMID" jdbcType="INTEGER" property="roomid" />
     <result column="NOID" jdbcType="VARCHAR" property="noid" />
     <result column="PLAYORIDLE" jdbcType="VARCHAR" property="playoridle" />
     <result column="ORDERAMOUNT" jdbcType="DECIMAL" property="orderamount" />
+    <result column="RESULT" jdbcType="VARCHAR" property="result" />
+    <result column="LASTAMOUNT" jdbcType="DECIMAL" property="lastamount" />
+  </resultMap>
+
+  <resultMap id="GameOrderItemMap" type="com.lottery.orm.dto.RoomOrderItemDto">
+    <id column="LGMID" jdbcType="INTEGER" property="lgmid" />
+    <result column="ORDERNO" jdbcType="INTEGER" property="orderno" />
+    <result column="AUSERNAME" jdbcType="VARCHAR" property="ausername" />
+    <result column="NOID" jdbcType="INTEGER" property="noid" />
+    <result column="ORDERAMOUNT" jdbcType="DECIMAL" property="orderamount" />
+    <result column="RATIO" jdbcType="DECIMAL" property="ratio" />
   </resultMap>
   
   <select id="selectGameOrder"  resultMap="GameOrderMap">
@@ -53,19 +63,59 @@
     AND a.accountid =#{accountid,jdbcType=INTEGER} AND a.sid=#{sid,jdbcType=INTEGER}
   </select>
   
-    <select id="selectGameHisOrder"  resultMap="GameOrderMap">
+  <select id="selectGameHisOrderBytime"  resultMap="GameHisOrderMap">
     select 
-    a.LGMID,a.ordertime,b.gamename,b.gamelobbyname,c.roomid,
-    a.lotteryterm,a.noid,getCodeName('IsOridle',a.playoridle) AS playoridle,
-    a.orderamount 
+    a.LGMID,b.gamename,b.gamelobbyname,a.lotteryterm,c.roomid,
+    a.noid,getCodeName('IsOridle',a.playoridle) AS playoridle,
+    a.orderamount,a.result,a.lastamount 
+    FROM
+    ((lottery_game_order a LEFT JOIN lottery_game b ON a.sid = b.sid) LEFT JOIN lottery_room c ON a.rmid = c.rmid ) 
+    WHERE 
+    a.RESULT IS NOT NULL 
+    AND a.lotteryterm  = getLotteryTerm(#{time,jdbcType=VARCHAR}) 
+    AND a.accountid =#{accountid,jdbcType=INTEGER} AND a.sid=#{sid,jdbcType=INTEGER} 
+    <if test="beginRow != null and pageSize !=null">
+	limit #{beginRow,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
+	</if>
+  </select>
+  
+  <select id="selectGameHisOrder"  resultMap="GameHisOrderMap">
+    select 
+    a.LGMID,b.gamename,b.gamelobbyname,a.lotteryterm,c.roomid,
+    a.noid,getCodeName('IsOridle',a.playoridle) AS playoridle,
+    a.orderamount,a.result,a.lastamount 
     FROM
     ((lottery_game_order a LEFT JOIN lottery_game b ON a.sid = b.sid) LEFT JOIN lottery_room c ON a.rmid = c.rmid )
     WHERE 
-    a.lotteryterm  = (SELECT lotteryterm FROM LOTTERY_GAME_ORDER WHERE RESULT IS NULL ORDER BY LOTTERYTERM DESC LIMIT 1) 
-    AND a.accountid =#{accountid,jdbcType=INTEGER} AND a.sid=#{sid,jdbcType=INTEGER}
+    a.RESULT IS NOT NULL
+    AND a.accountid =#{accountid,jdbcType=INTEGER} AND a.sid=#{sid,jdbcType=INTEGER} 
+    AND (Date(a.ordertime) BETWEEN #{startTime,jdbcType=TIMESTAMP} and #{endTime,jdbcType=TIMESTAMP}) 
+    <if test="beginRow != null and pageSize !=null">
+	limit #{beginRow,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
+	</if>
   </select>
   
-  
+  <select id="selectGameOrderItem"  resultMap="GameOrderItemMap">
+	SELECT 	c.lgmid,
+	@orderno:=CASE WHEN
+	@noid=c.noid THEN
+	@orderno+1 ELSE 1 END AS orderno,
+	d.ausername,
+	@noid := c.noid AS noid,
+	c.orderamount,c.ratio 
+	FROM (
+	SELECT a.lgmid,a.noid,a.accountid,a.orderamount,a.orderamount/m.ratio AS ratio 
+	FROM lottery_game_order a
+	LEFT JOIN (
+	SELECT a.noid,SUM(a.orderamount) AS ratio FROM lottery_game_order a WHERE a.lotteryterm=#{lotteryTerm,jdbcType=VARCHAR} AND a.sid=#{sid,jdbcType=INTEGER} AND a.rmid=#{rmid,jdbcType=INTEGER} GROUP BY a.noid) AS m
+	ON a.noid = m.noid
+	WHERE a.lotteryterm=#{lotteryTerm,jdbcType=VARCHAR} AND a.sid=#{sid,jdbcType=INTEGER} AND a.rmid=#{rmid,jdbcType=INTEGER} AND m.noid=a.noid GROUP BY a.noid,accountid ORDER BY noid
+	) AS c, account_info d,
+	(SELECT @orderno:=1,@noid:='') AS b
+	WHERE c.accountid=d.accountid
+	ORDER BY c.noid,c.orderamount DESC
+
+  </select>
   
   <sql id="Base_Column_List">
     LGMID, SID, ACCOUNTID, RMID, LTDID, NOID, PLAYORIDLE, ORDERAMOUNT, ORDERTIME, OPENTIME, 
@@ -97,7 +147,7 @@
     values (#{sid,jdbcType=INTEGER}, #{accountid,jdbcType=INTEGER}, #{rmid,jdbcType=INTEGER}, 
       #{ltdid,jdbcType=INTEGER}, #{noid,jdbcType=INTEGER}, #{playoridle,jdbcType=VARCHAR}, 
       #{orderamount,jdbcType=DECIMAL}, #{ordertime,jdbcType=TIMESTAMP}, #{opentime,jdbcType=TIMESTAMP}, 
-      #{result,jdbcType=DECIMAL}, #{lastamount,jdbcType=DECIMAL})
+      #{result,jdbcType=VARCHAR}, #{lastamount,jdbcType=DECIMAL})
   </insert>
   <insert id="insertSelective" parameterType="com.lottery.orm.bo.LotteryGameOrder">
     <selectKey keyProperty="lgmid" order="AFTER" resultType="java.lang.Integer">
@@ -168,7 +218,7 @@
         #{opentime,jdbcType=TIMESTAMP},
       </if>
       <if test="result != null">
-        #{result,jdbcType=DECIMAL},
+        #{result,jdbcType=VARCHAR},
       </if>
       <if test="lastamount != null">
         #{lastamount,jdbcType=DECIMAL},
@@ -206,7 +256,7 @@
         OPENTIME = #{opentime,jdbcType=TIMESTAMP},
       </if>
       <if test="result != null">
-        RESULT = #{result,jdbcType=DECIMAL},
+        RESULT = #{result,jdbcType=VARCHAR},
       </if>
       <if test="lastamount != null">
         LASTAMOUNT = #{lastamount,jdbcType=DECIMAL},
@@ -225,7 +275,7 @@
       ORDERAMOUNT = #{orderamount,jdbcType=DECIMAL},
       ORDERTIME = #{ordertime,jdbcType=TIMESTAMP},
       OPENTIME = #{opentime,jdbcType=TIMESTAMP},
-      RESULT = #{result,jdbcType=DECIMAL},
+      RESULT = #{result,jdbcType=VARCHAR},
       LASTAMOUNT = #{lastamount,jdbcType=DECIMAL}
     where LGMID = #{lgmid,jdbcType=INTEGER}
   </update>

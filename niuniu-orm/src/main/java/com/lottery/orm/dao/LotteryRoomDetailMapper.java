@@ -14,6 +14,11 @@ public interface LotteryRoomDetailMapper {
 
     int insertSelective(LotteryRoomDetail record);
     
-    List<QueryRoomDateDto> selectLotteryRoomDetail(@Param("startTime")Date startTime,@Param("endTime")Date endTime,@Param("rmid")Integer rmid,@Param("beginRow")Integer beginRow,@Param("pageSize")Integer pageSize);
+    //List<QueryRoomDateDto> selectLotteryRoomDetail(@Param("startTime")Date startTime,@Param("endTime")Date endTime,@Param("sid")Integer sid,@Param("rmid")Integer rmid,@Param("beginRow")Integer beginRow,@Param("pageSize")Integer pageSize);
+ 
+    List<QueryRoomDateDto> selectRoomDetail(@Param("startTime")Date startTime,@Param("endTime")Date endTime,@Param("sid")Integer sid,@Param("rmid")Integer rmid,@Param("beginRow")Integer beginRow,@Param("pageSize")Integer pageSize);
+    
+    List<QueryRoomDateDto> selectRoomDetailByTime(@Param("sid")Integer sid,@Param("rmid")Integer rmid,@Param("time")String time,@Param("beginRow")Integer beginRow,@Param("pageSize")Integer pageSize);
+   
     
 }

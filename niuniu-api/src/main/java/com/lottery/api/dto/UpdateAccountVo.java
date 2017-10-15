@@ -5,10 +5,10 @@ import com.wordnik.swagger.annotations.ApiModelProperty;
 public class UpdateAccountVo{
 	
 	    @ApiModelProperty(value = "用户id", required = true)
-        private int userid;
+        private int accountid;
       
 	    @ApiModelProperty(value = "用户名")
-	    private String username;
+	    private String ausername;
 	    
 	    
 	    @ApiModelProperty(value = "密码")
@@ -20,34 +20,38 @@ public class UpdateAccountVo{
 	    @ApiModelProperty(value = "微信号")
 	    private String webchat;
 	    
-	    @ApiModelProperty(value = "状态")
-	    private String state;
+		@ApiModelProperty(value = "银行户名", required = true)
+	    private String bankid;
+
+		@ApiModelProperty(value = "银行名称", required = true)
+	    private String bankname;
+
+		@ApiModelProperty(value = "开户行", required = true)
+	    private String bankaddress;
+
+		@ApiModelProperty(value = "银行账号", required = true)
+	    private String bankaccount;
 	    
 	    @ApiModelProperty(value = "ip")
-	    private String ip;    
-	    
-		public String getIp() {
-			return ip;
+	    private String ip;
+
+
+	
+
+		public int getAccountid() {
+			return accountid;
 		}
 
-		public void setIp(String ip) {
-			this.ip = ip;
+		public void setAccountid(int accountid) {
+			this.accountid = accountid;
 		}
 
-		public int getUserid() {
-			return userid;
+		public String getAusername() {
+			return ausername;
 		}
 
-		public void setUserid(int userid) {
-			this.userid = userid;
-		}
-
-		public String getUsername() {
-			return username;
-		}
-
-		public void setUsername(String username) {
-			this.username = username;
+		public void setAusername(String ausername) {
+			this.ausername = ausername;
 		}
 
 		public String getPassword() {
@@ -74,13 +78,45 @@ public class UpdateAccountVo{
 			this.webchat = webchat;
 		}
 
-		public String getState() {
-			return state;
+		public String getBankid() {
+			return bankid;
 		}
 
-		public void setState(String state) {
-			this.state = state;
+		public void setBankid(String bankid) {
+			this.bankid = bankid;
 		}
+
+		public String getBankname() {
+			return bankname;
+		}
+
+		public void setBankname(String bankname) {
+			this.bankname = bankname;
+		}
+
+		public String getBankaddress() {
+			return bankaddress;
+		}
+
+		public void setBankaddress(String bankaddress) {
+			this.bankaddress = bankaddress;
+		}
+
+		public String getBankaccount() {
+			return bankaccount;
+		}
+
+		public void setBankaccount(String bankaccount) {
+			this.bankaccount = bankaccount;
+		}
+
+		public String getIp() {
+			return ip;
+		}
+
+		public void setIp(String ip) {
+			this.ip = ip;
+		}    
 	    
-	    
+		
 }

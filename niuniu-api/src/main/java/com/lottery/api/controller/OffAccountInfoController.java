@@ -42,6 +42,7 @@ import com.lottery.orm.dao.AccountInfoMapper;
 import com.lottery.orm.dao.NoticeInfoMapper;
 import com.lottery.orm.dao.OffAccountInfoMapper;
 import com.lottery.orm.dto.OffAccountDto;
+import com.lottery.orm.dto.OffsAccountDto;
 import com.lottery.orm.result.OffAccountListResult;
 import com.lottery.orm.result.OffAccountResult;
 import com.lottery.orm.result.RemarkResult;
@@ -141,7 +142,7 @@ public class OffAccountInfoController {
 				}
 			    paraInfo.setState("1");//默认状态正常
 			    paraInfo.setLevel(ToolsUtil.decideLevel(level));
-			    paraInfo.setOfftype(OffAccountInfo1.getOfftype());
+			    paraInfo.setOfftype("1");
 			    paraInfo.setInputdate(new Date());
 			    paraInfo.setUsermoney(BigDecimal.valueOf(0.0));
 			    paraInfo.setSupuserid(param.getAccountid());
@@ -158,7 +159,7 @@ public class OffAccountInfoController {
 		return result;
 	}
 	
-/*
+
 	@ApiOperation(value = "获取该代理下的代理列表", notes = "获取该代理下的代理列表", httpMethod = "POST")
 	@RequestMapping(value = "/getAllOffAccountInfo", method = RequestMethod.POST)
 	@ResponseBody
@@ -166,48 +167,14 @@ public class OffAccountInfoController {
 	    OffAccountListResult result = new OffAccountListResult();
 		try {
 			
-			OffAccountInfo offacount = offAccountInfoMapper.selectByPrimaryKey(param.getUserid());
+			AccountInfo offacount = accountInfoMapper.selectByPrimaryKey(param.getAccountid());
 			//OffAccountInfo offacount = offAccountInfoMapper.selectByUseridAndType(param.getUserid(), EnumType.OffType.Agency.ID);
 			if(offacount==null){
 				  result.fail(MessageTool.Code_3001);
 			      LOG.info(result.getMessage());
 			      return result;
 			}
-			List<OffAccountInfo> OffAccountInfos = offAccountInfoMapper.selectBySupusername(offacount.getUsername(), EnumType.OffType.Agency.ID,param.getBeginRow(), param.getPageSize());
-			
-			List<OffAccountDto> list = new ArrayList<OffAccountDto>();
-			for (int i = 0;i<OffAccountInfos.size();i++){
-			  AccountDetail accountDetail =  accountDetailMapper.selectByUserId(OffAccountInfos.get(i).getUserid(),OffAccountInfos.get(i).getOfftype());
-		    	//获取上级的限额
-		      OffAccountInfo leOffAccountInfo = offAccountInfoMapper.selectByUsername(OffAccountInfos.get(i).getSupusername());
-			  if(leOffAccountInfo==null){ 	
-			      result.fail("管理员",MessageTool.Code_3002);
-			      LOG.info(result.getMessage());
-			      return result;
-			  }
-			  OffAccountDto rAcDto = new OffAccountDto();		        
-		      rAcDto.setUserid(null==OffAccountInfos.get(i).getUserid()||"".equals(OffAccountInfos.get(i).getUserid())||0==OffAccountInfos.get(i).getUserid() ?0:OffAccountInfos.get(i).getUserid());
-		      rAcDto.setUsername(null==OffAccountInfos.get(i).getUsername()||"".equals(OffAccountInfos.get(i).getUsername()) ?"":OffAccountInfos.get(i).getUsername());
-		      rAcDto.setAusername(null==OffAccountInfos.get(i).getAusername()||"".equals(OffAccountInfos.get(i).getAusername()) ?"":OffAccountInfos.get(i).getAusername());
-		      rAcDto.setPassword(null==OffAccountInfos.get(i).getPassword()||"".equals(OffAccountInfos.get(i).getPassword()) ?"":OffAccountInfos.get(i).getPassword());
-		      //rAcDto.setLimited(null==OffAccountInfos.get(i).getLimited()||"".equals(OffAccountInfos.get(i).getLimited())||0.0==OffAccountInfos.get(i).getLimited() ?0.0:OffAccountInfos.get(i).getLimited());
-		      rAcDto.setRatio(null==OffAccountInfos.get(i).getRatio()||"".equals(OffAccountInfos.get(i).getRatio())||0.0==OffAccountInfos.get(i).getRatio() ?0.0:OffAccountInfos.get(i).getRatio());
-		      rAcDto.setPercentage(null==OffAccountInfos.get(i).getPercentage()||"".equals(OffAccountInfos.get(i).getPercentage())||0.0==OffAccountInfos.get(i).getPercentage() ?0.0:OffAccountInfos.get(i).getPercentage());
-		      rAcDto.setQuery(null==OffAccountInfos.get(i).getQuery()||"".equals(OffAccountInfos.get(i).getQuery()) ?"":OffAccountInfos.get(i).getQuery());
-		      //rAcDto.setManage(null==OffAccountInfos.get(i).getManage()||"".equals(OffAccountInfos.get(i).getManage()) ?"":OffAccountInfos.get(i).getManage());
-		      rAcDto.setState(null==OffAccountInfos.get(i).getState()||"".equals(OffAccountInfos.get(i).getState()) ?"":OffAccountInfos.get(i).getState());
-		    //  rAcDto.setSupusername(null==OffAccountInfos.get(i).getSupusername()||"".equals(OffAccountInfos.get(i).getSupusername()) ?"":OffAccountInfos.get(i).getSupusername());
-		      rAcDto.setLevel(null==OffAccountInfos.get(i).getLevel()||"".equals(OffAccountInfos.get(i).getLevel()) ?"":OffAccountInfos.get(i).getLevel());
-		      rAcDto.setOfftype(null==OffAccountInfos.get(i).getOfftype()||"".equals(OffAccountInfos.get(i).getOfftype()) ?"":OffAccountInfos.get(i).getOfftype());
-		      rAcDto.setAccountID(accountDetail.getAccountid());
-		      rAcDto.setAccountAmount(accountDetail.getMoney());
-		      rAcDto.setRiskamount(null==OffAccountInfos.get(i).getRiskamount()||"".equals(OffAccountInfos.get(i).getRiskamount()) ?"":OffAccountInfos.get(i).getRiskamount());
-		      //rAcDto.setLelimited(leOffAccountInfo.getLimited());
-		      rAcDto.setLepercentage(leOffAccountInfo.getPercentage());
-		      rAcDto.setLeratio(leOffAccountInfo.getRatio());
-		      rAcDto.setLeriskamount(leOffAccountInfo.getRiskamount());
-		      list.add(rAcDto);  
-			}
+			List<OffsAccountDto> list = offAccountInfoMapper.selectOffSupuserId(offacount.getAccountid(), EnumType.OffType.Agency.ID,param.getBeginRow(), param.getPageSize());
 		    result.success(list);
 			LOG.info(result.getMessage());
 		} catch (Exception e) {
@@ -217,7 +184,33 @@ public class OffAccountInfoController {
 		return result;
 	}
 	
-
+	@ApiOperation(value = "代理用户修改下线密码", notes = "代理用户修改下线密码", httpMethod = "POST")
+	@RequestMapping(value = "/updateOffAccountPass", method = RequestMethod.POST)
+	@ResponseBody
+	public RestResult updateOffAccountPass(@ApiParam(value = "Json参数", required = true) @Validated @RequestBody UpdatePlayPassVo param) throws Exception {
+		RestResult result = new RestResult();
+		try {			
+			AccountInfo offAccountInfo = accountInfoMapper.selectByPrimaryKey(param.getAccountid());
+			if(offAccountInfo==null){
+			      result.fail(MessageTool.Code_3001);
+			      LOG.info(result.getMessage());
+			      return result;
+			}else{
+				offAccountInfo.setPassword(DigestUtils.md5Hex(param.getPassword()));
+				offAccountInfo.setIp(param.getIp());
+				accountInfoMapper.updateByPrimaryKey(offAccountInfo);
+			    LOG.info("修改密码记录详情为："+" 管理员："+param.getSupuserid()+" IP："+param.getIp()+" 修改下家ID"+param.getAccountid()+" 密码修改为"+offAccountInfo.getPassword());
+			    result.success();
+			}
+			LOG.info(result.getMessage());
+		} catch (Exception e) {
+			result.error();
+			LOG.error(e.getMessage(),e);
+		}
+		return result;
+	}
+	
+    /*
 	@ApiOperation(value = "代理用户修改玩家密码", notes = "代理用户修改玩家密码", httpMethod = "POST")
 	@RequestMapping(value = "/updatePlayPass", method = RequestMethod.POST)
 	@ResponseBody

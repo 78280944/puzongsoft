@@ -18,9 +18,14 @@ public class OrderParamVo {
     private Integer accountId;
 
     @ApiModelProperty(value = "游戏ID", required = true)
-    @NotNull(message = "游戏ID不能为空")
-    private Integer roundId;
+    private Integer sid;
 
+    @ApiModelProperty(value = "房间ID", required = true)
+    private Integer rmid;
+    
+	@ApiModelProperty(value = "游戏期次", required = true)
+    private String lotteryTerm;
+    
     @ApiModelProperty(value = "投注详情", required = true)
     @NotEmpty(message = "投注详情不能为空")
     @Valid
@@ -34,15 +39,34 @@ public class OrderParamVo {
 	this.accountId = accountId;
     }
 
-    public Integer getRoundId() {
-        return roundId;
-    }
+   
+    public Integer getSid() {
+		return sid;
+	}
 
-    public void setRoundId(Integer roundId) {
-        this.roundId = roundId;
-    }
+	public void setSid(Integer sid) {
+		this.sid = sid;
+	}
 
-    public List<OrderDetailVo> getOrderDetails() {
+	public Integer getRmid() {
+		return rmid;
+	}
+
+	public void setRmid(Integer rmid) {
+		this.rmid = rmid;
+	}
+
+
+
+	public String getLotteryTerm() {
+		return lotteryTerm;
+	}
+
+	public void setLotteryTerm(String lotteryTerm) {
+		this.lotteryTerm = lotteryTerm;
+	}
+
+	public List<OrderDetailVo> getOrderDetails() {
 	return orderDetails;
     }
 

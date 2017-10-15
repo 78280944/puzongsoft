@@ -32,6 +32,17 @@ public class CommonUtils {
 		return sTime;
 	}
 	
+	//01,本日;02,上周;03,本周;04,上期;05,本期;
+   public static Date[] getDateTime(Date startTime,Date endTime) throws ParseException {
+			Date[] sTime = new Date[2];
+			DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			String imptimeBegin = sdf.format(startTime)+" 00:00:00"; 
+			String imptimeEnd = sdf.format(endTime)+" 23:59:59";
+			sTime[0] = sdf.parse(imptimeBegin);
+			sTime[1] = sdf.parse(imptimeEnd);
+			return sTime;  
+		}
+	
 	public static String getMonday(){
 		String monday = "";
 		Calendar cal = Calendar.getInstance();
@@ -121,7 +132,16 @@ public class CommonUtils {
 	     return imptimeBegin + "," + imptimeEnd;  
 	}
 	
+	public static String getCurrentMills(){
+		Date date = new Date();
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+	    String sTime = sdf.format(date);
+	    return sTime;
+	}
+	
 	public static void main(String args[]) throws Exception{
+		String m = (CommonUtils.getCurrentMills());
+		System.out.println(".."+m);
 		Date[] data = CommonUtils.getDateBetween(new Date(),new Date(),"03");
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		System.out.println(data[0]+".."+data[1]+"..."+sdf.format(data[0])+".."+sdf.format(data[1]));

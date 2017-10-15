@@ -1,6 +1,7 @@
 package com.lottery.api.controller;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.lottery.api.dto.AccountInfoVo;
+import com.lottery.api.dto.AccountRecordVo;
 import com.lottery.api.dto.LoginParamVo;
 import com.lottery.api.dto.NoticeTypeVo;
 import com.lottery.api.dto.PlayAccountInfoVo;
@@ -27,19 +29,24 @@ import com.lottery.api.util.Des3Util;
 import com.lottery.api.util.ToolsUtil;
 import com.lottery.orm.bo.AccountDetail;
 import com.lottery.orm.bo.AccountInfo;
+import com.lottery.orm.bo.AccountRecord;
 import com.lottery.orm.bo.NoticeInfo;
 import com.lottery.orm.bo.OffAccountInfo;
 import com.lottery.orm.dao.AccountDetailMapper;
 import com.lottery.orm.dao.AccountInfoMapper;
+import com.lottery.orm.dao.AccountRecordMapper;
 import com.lottery.orm.dao.NoticeInfoMapper;
 import com.lottery.orm.dao.OffAccountInfoMapper;
 import com.lottery.orm.dto.AccountInfoDto;
+import com.lottery.orm.dto.AccountSimInfoDto;
 import com.lottery.orm.dto.RemarkDto;
 import com.lottery.orm.result.AccountListResult;
 import com.lottery.orm.result.AccountResult;
+import com.lottery.orm.result.AccountSimResult;
 import com.lottery.orm.result.RemarkResult;
 import com.lottery.orm.result.RestResult;
 import com.lottery.orm.service.AccountInfoService;
+import com.lottery.orm.util.CommonUtils;
 import com.lottery.orm.util.MessageTool;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
@@ -68,6 +75,9 @@ public class AccountInfoController {
 	
 	@Autowired
     private NoticeInfoMapper noticeInfoMapper;
+	
+	@Autowired
+    private AccountRecordMapper accountRecordMapper;
 	
 	@Value("${jwt.splitter}")
     private String tokenSplitter;
@@ -117,17 +127,30 @@ public class AccountInfoController {
 				if(accountInfo.getState().equals("0")){
 					throw new LockedClientException();
 				}
-				    	
+				AccountRecord aRecord = new AccountRecord();
+				String sRecordid = CommonUtils.getCurrentMills();
+				
+				aRecord.setRecordid(sRecordid);
+				System.out.println(sRecordid+"..."+aRecord.getRecordid());
+				aRecord.setAccountid(accountInfo.getAccountid());
+				aRecord.setIp(param.getIp());
+				aRecord.setLevel(accountInfo.getLevel());
+				aRecord.setOfftype(accountInfo.getOfftype());
+				aRecord.setInputtime(new Date());
+				accountRecordMapper.insert(aRecord);
 				AccountInfoDto rAcDto = new AccountInfoDto();
 				rAcDto = mapper.map(accountInfo, AccountInfoDto.class);
 			    rAcDto.setToken((new Des3Util()).encode(accountInfo.getAccountid()+tokenSplitter+tokenSecret));
-				result.success(rAcDto);
+			    rAcDto.setRecordid(sRecordid);
+			    result.success(rAcDto);
 		    }else {
 			      result.fail(MessageTool.Code_3001);
 			      LOG.info(result.getMessage());
 			      return result;
 		    }
 			LOG.info(username+","+result.getMessage()+","+new Date());
+			//登录
+			
 		} catch (LockedClientException e) {
 			throw new LockedClientException();
 		}catch (Exception e) {
@@ -137,6 +160,51 @@ public class AccountInfoController {
 		return result;
 
 	}
+	
+	@ApiOperation(value = "获取账户信息", notes = "获取账户信息", httpMethod = "POST")
+	@RequestMapping(value = "/getAccountSimInfo", method = RequestMethod.POST)
+	@ResponseBody
+	public AccountSimResult getAccountSimpleInfo(@ApiParam(value = "Json参数", required = true) @Validated @RequestBody LoginParamVo param) throws Exception {
+		AccountSimResult result = new AccountSimResult();
+		try {
+			String username = param.getUsername();
+			String password = param.getPassword();
+			
+			//参数合规性校验，必要参数不能为空;
+			if (ToolsUtil.isEmptyTrim(username)||ToolsUtil.isEmptyTrim(password)){
+			      result.fail(MessageTool.Code_2002);
+			      LOG.info(result.getMessage());
+			      return result;
+			}
+			param.setPassword(DigestUtils.md5Hex(password));
+		    AccountInfo paraInfo = mapper.map(param, AccountInfo.class);
+		    AccountInfo accountInfo = accountInfoMapper.selectByLogin(paraInfo);
+		    if(accountInfo!=null){	
+				if(accountInfo.getState().equals("0")){
+					throw new LockedClientException();
+				}
+				    	
+				AccountSimInfoDto rAcDto = new AccountSimInfoDto();
+				rAcDto = mapper.map(accountInfo, AccountSimInfoDto.class);
+			    //rAcDto.setToken((new Des3Util()).encode(accountInfo.getAccountid()+tokenSplitter+tokenSecret));
+				result.success(rAcDto);
+		    }else {
+			      result.fail(MessageTool.Code_3001);
+			      LOG.info(result.getMessage());
+			      return result;
+		    }
+			//LOG.info(username+","+result.getMessage()+","+new Date());
+		} catch (LockedClientException e) {
+			throw new LockedClientException();
+		}catch (Exception e) {
+			result.error();
+			LOG.error(e.getMessage(),e);
+		}
+		return result;
+
+	}
+	
+	
 	
 	@ApiOperation(value = "玩家注册", notes = "玩家注册", httpMethod = "POST")
 	@RequestMapping(value = "/addAccountInfo", method = RequestMethod.POST)
@@ -180,8 +248,8 @@ public class AccountInfoController {
 		    	if (accountInfo2!=null){
 		    		accountInfo.setSupuserid(accountInfo2.getAccountid());
 			    	accountInfo.setPassword(DigestUtils.md5Hex(accountInfo.getPassword())); 
-			    	//默认账户类型,试玩00;玩家1；代理商2；子账户3；
-			    	accountInfo.setOfftype("1");
+			    	//默认账户类型,试玩00;超级账户0；代理商1；子账户2；会员账户3
+			    	accountInfo.setOfftype("3");
 			    	//默认9，玩家账户
 			    	accountInfo.setLevel("9");
 			    	accountInfo.setState("1");//默认状态正常
@@ -203,6 +271,28 @@ public class AccountInfoController {
 		return result;
 	}
 	
+	@ApiOperation(value = "修改玩家", notes = "修改玩家", httpMethod = "POST")
+	@RequestMapping(value = "/updateAccountInfo", method = RequestMethod.POST)
+	@ResponseBody
+	public RestResult updateAccountInfo(@ApiParam(value = "Json参数", required = true) @Validated @RequestBody UpdateAccountVo param) throws Exception {
+		RestResult result = new RestResult();
+		try {
+			AccountInfo accountInfo = accountInfoMapper.selectByPrimaryKey(param.getAccountid());
+			if(accountInfo==null){
+			      result.fail(MessageTool.Code_3001);
+			}else{
+				param.setPassword(DigestUtils.md5Hex(param.getPassword()));
+			    AccountInfo paraInfo = mapper.map(param, AccountInfo.class);
+			    accountInfoService.updateAccountInfo(paraInfo);
+			    result.success();
+			}
+			  LOG.info(result.getMessage());
+	        } catch (Exception e) {
+				result.error();
+				LOG.error(e.getMessage(),e);
+	        }
+	     return result;
+    }
 	/*
 	@ApiOperation(value = "修改玩家", notes = "修改玩家", httpMethod = "POST")
 	@RequestMapping(value = "/updateAccountInfo", method = RequestMethod.POST)
@@ -374,10 +464,14 @@ public class AccountInfoController {
 	@ApiOperation(value = "退出", notes = "退出", httpMethod = "POST")
 	@RequestMapping(value = "/userExit", method = RequestMethod.POST)
 	@ResponseBody
-	public RestResult userExit(@ApiParam(value = "Json参数", required = true) @Validated @RequestBody LoginParamVo param) throws Exception {
+	public RestResult userExit(@ApiParam(value = "Json参数", required = true) @Validated @RequestBody AccountRecordVo param) throws Exception {
 		RestResult result = new RestResult();
 		try {
-
+			AccountRecord aRecord = new AccountRecord();
+			aRecord.setRecordid(param.getRecordid());
+			aRecord.setAccountid(param.getAccountid());
+			aRecord.setOuttime(new Date());
+			accountRecordMapper.updateByPrimaryKeySelective(aRecord);
 			result.success();
 			LOG.info(result.getMessage());
 		} catch (Exception e) {

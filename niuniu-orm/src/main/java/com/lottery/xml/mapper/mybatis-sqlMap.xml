@@ -44,5 +44,11 @@
 		<mapper resource="com/lottery/xml/mapper/LotteryRoomDetailMapper.xml" />
 		<mapper resource="com/lottery/xml/mapper/LotteryGameOrderMapper.xml" />
 		<mapper resource="com/lottery/xml/mapper/LotteryGameRoundMapper.xml" />
+		<mapper resource="com/lottery/xml/mapper/AccountRecordMapper.xml" />
+		<mapper resource="com/lottery/xml/mapper/AccountAmountMapper.xml" />
+		<mapper resource="com/lottery/xml/mapper/LotteryGameMapper.xml" />
+		<mapper resource="com/lottery/xml/mapper/SysLimitMapper.xml" />
+		<mapper resource="com/lottery/xml/mapper/LotteryRoomMapper.xml" />
+		
 	</mappers>
 </configuration>

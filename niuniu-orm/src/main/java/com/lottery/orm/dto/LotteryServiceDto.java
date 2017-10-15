@@ -6,26 +6,26 @@ import com.wordnik.swagger.annotations.ApiModelProperty;
 
 public class LotteryServiceDto {
 	 
-    @ApiModelProperty(value = "登录服务")
+    @ApiModelProperty(value = "登录服务;1:有效；0：无效")
     private String loginservice;
     
-    @ApiModelProperty(value = "注册服务")
+    @ApiModelProperty(value = "注册服务;1:有效；0：无效")
     private String registersercice;
 
-    @ApiModelProperty(value = "增值服务")
+    @ApiModelProperty(value = "增值服务;1:有效；0：无效")
     private String addedservice;
 
-    @ApiModelProperty(value = "玩家服务")
+    @ApiModelProperty(value = "玩家服务;1:有效；0：无效")
     private String playservice;
 
     @ApiModelProperty(value = "牛牛房间数设置")
     private Integer lotteryniuroom = 18;
     
     @ApiModelProperty(value = "牛牛房间数人数设置")
-    private Integer lotteryniunpman = 10;
+    private Integer lotteryniunpman = 60;
     
     @ApiModelProperty(value = "牛牛上庄金额设置")
-    private BigDecimal lotteryniunbanker = BigDecimal.valueOf(5000);
+    private BigDecimal lotteryniunbanker = BigDecimal.valueOf(10000);
     
     @ApiModelProperty(value = "牛牛投注金额设置")
     private BigDecimal lotteryniunpbet = BigDecimal.valueOf(2000);
@@ -37,7 +37,7 @@ public class LotteryServiceDto {
     private Integer lotterybjman = 10;
     
     @ApiModelProperty(value = "板九上庄金额设置")
-    private  BigDecimal lotterybjbanker = BigDecimal.valueOf(5000);
+    private  BigDecimal lotterybjbanker = BigDecimal.valueOf(10000);
     
     @ApiModelProperty(value = "板九投注金额设置")
     private BigDecimal lotterybjbet = BigDecimal.valueOf(2000);

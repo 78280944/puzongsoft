@@ -121,5 +121,12 @@
 	limit #{beginRow,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
 	</if>
   </select>
+
+  <select id="selectCurGameResult" resultMap="BaseResultMap">
+    select 
+    a.lgrid,a.sid,a.lotteryterm,a.lotteryresult,a.starttime,a.overtime,a.opentime,a.closetime,a.actopentime,a.actclosetime 
+    from lottery_game_round a
+    where a.sid = #{sid,jdbcType=INTEGER} and a.lotteryterm = #{lotteryterm,jdbcType=VARCHAR}
+  </select>
   
 </mapper>

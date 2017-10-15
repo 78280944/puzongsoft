@@ -15,11 +15,20 @@ public class ResultParamVo extends PageParamVo {
 	@JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
 	private Date endDate;
 	
-	@ApiModelProperty(value = "01,本日;02,上周;03,本周;04,上期;05,本期;", required = true)
-	private String time;
-	
 	@ApiModelProperty(value = "游戏号", required = true)
 	private Integer sid;
+	
+	@ApiModelProperty(value = "用户号", required = true)
+	private Integer accountid;
+
+	
+	public Integer getAccountid() {
+		return accountid;
+	}
+
+	public void setAccountid(Integer accountid) {
+		this.accountid = accountid;
+	}
 
 	public Date getStartDate() {
 		return startDate;
@@ -35,14 +44,6 @@ public class ResultParamVo extends PageParamVo {
 
 	public void setEndDate(Date endDate) {
 		this.endDate = endDate;
-	}
-
-	public String getTime() {
-		return time;
-	}
-
-	public void setTime(String time) {
-		this.time = time;
 	}
 
 	public Integer getSid() {

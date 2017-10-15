@@ -22,11 +22,57 @@
     <result column="RiskAmount" jdbcType="VARCHAR" property="riskamount" />
     <result column="Attribute2" jdbcType="VARCHAR" property="attribute2" />
   </resultMap>
+  
+  <resultMap id="OffAccountMap" type="com.lottery.orm.dto.OffsAccountDto" >
+    <id column="ACCOUNTID" property="accountid" jdbcType="INTEGER" />
+    <result column="USERNAME" property="username" jdbcType="VARCHAR" />
+    <result column="AUSERNAME" property="ausername" jdbcType="VARCHAR" />
+    <result column="PASSWORD" property="password" jdbcType="VARCHAR" />
+    <result column="SUPUSERNAME" property="supusername" jdbcType="VARCHAR" />
+    <result column="USERMONEY" property="usermoney" jdbcType="DECIMAL" />
+    <result column="PERCENTAGE" property="percentage" jdbcType="DOUBLE" />
+    <result column="STATE" property="state" jdbcType="CHAR" />
+    <result column="SUPUSERID" property="supuserid" jdbcType="INTEGER" />
+    <result column="LEVEL" property="level" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <resultMap id="SubAccountMap" type="com.lottery.orm.dto.SubsAccountDto" >
+    <id column="ACCOUNTID" property="accountid" jdbcType="INTEGER" />
+    <result column="USERNAME" property="username" jdbcType="VARCHAR" />
+    <result column="AUSERNAME" property="ausername" jdbcType="VARCHAR" />
+    <result column="PASSWORD" property="password" jdbcType="VARCHAR" />
+    <result column="STATE" property="state" jdbcType="CHAR" />
+    <result column="SUPUSERID" property="supuserid" jdbcType="INTEGER" />
+    <result column="LEVEL" property="level" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <select id="selectOffSupuserId" parameterType="com.lottery.orm.dto.OffsAccountDto" resultMap="OffAccountMap">  
+    select 
+    a.accountid,a.username,a.password,a.ausername,getSupUsername(a.supuserid) AS supusername,a.usermoney,a.percentage,a.state,a.supuserid,a.level
+    FROM account_info a 
+    where supuserid = #{supuserid,jdbcType=INTEGER} and offtype = #{offtype,jdbcType=VARCHAR}
+    <if test="beginrow != null and pageSize !=null">
+	limit #{beginrow,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
+	</if>
+  </select>
+  
+  <select id="selectSubSupuserId" parameterType="com.lottery.orm.dto.SubsAccountDto" resultMap="SubAccountMap">  
+    select 
+    a.accountid,a.username,a.password,a.state,a.supuserid,a.level 
+    FROM account_info a 
+    where supuserid = #{supuserid,jdbcType=INTEGER} and offtype = #{offtype,jdbcType=VARCHAR}
+    <if test="beginrow != null and pageSize !=null">
+	limit #{beginrow,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
+	</if>
+  </select>
+  
   <sql id="Base_Column_List">
     Userid, UserName, AuserName, Password, Limited, Ratio, Percentage, Query, Manage, 
     IP, InputDate, UpdateIP, UpdateDate, State, SupUserName, Level, OffType, RiskAmount, 
     Attribute2
   </sql>
+  
+  
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />

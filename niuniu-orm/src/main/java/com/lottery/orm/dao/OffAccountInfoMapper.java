@@ -5,6 +5,8 @@ import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
 import com.lottery.orm.bo.OffAccountInfo;
+import com.lottery.orm.dto.OffsAccountDto;
+import com.lottery.orm.dto.SubsAccountDto;
 
 public interface OffAccountInfoMapper {
     
@@ -30,6 +32,10 @@ public interface OffAccountInfoMapper {
     OffAccountInfo selectByUserAndId(OffAccountInfo record);
     
     List<OffAccountInfo> selectBySupusername(@Param("supusername")String supusername, @Param("offtype")String offtype,@Param("beginrow")Integer beginrow, @Param("pageSize")Integer pageSize);
+   
+    List<OffsAccountDto> selectOffSupuserId(@Param("supuserid")Integer supuserid, @Param("offtype")String offtype,@Param("beginrow")Integer beginrow, @Param("pageSize")Integer pageSize);
+    
+    List<SubsAccountDto> selectSubSupuserId(@Param("supuserid")Integer supuserid, @Param("offtype")String offtype,@Param("beginrow")Integer beginrow, @Param("pageSize")Integer pageSize);
     
     List<OffAccountInfo> selectBySupuserAndRatio(@Param("supusername")String supusername, @Param("offtype")String offtype);
     

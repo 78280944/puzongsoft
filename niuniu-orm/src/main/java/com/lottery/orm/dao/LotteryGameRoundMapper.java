@@ -16,5 +16,6 @@ public interface LotteryGameRoundMapper {
     List<ResultDataDto> selectGameResultBytime(@Param("sid")Integer sid,@Param("time")String time,@Param("beginRow")Integer beginRow,@Param("pageSize")Integer pageSize);
    
     List<ResultDataDto> selectGameResult(@Param("startTime")Date startTime,@Param("endTime")Date endTime,@Param("sid")Integer sid,@Param("beginRow")Integer beginRow,@Param("pageSize")Integer pageSize);
-    
+   
+    LotteryGameRound selectCurGameResult(@Param("sid")Integer sid,@Param("lotteryterm")String lotteryterm);
 }

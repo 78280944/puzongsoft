@@ -56,8 +56,7 @@ public class AccountInfo {
 
     private String bankaccount;
 
-
-    public Integer getAccountid() {
+	public Integer getAccountid() {
 		return accountid;
 	}
 

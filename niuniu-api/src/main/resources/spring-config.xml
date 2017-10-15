@@ -95,6 +95,7 @@
 		   <mvc:exclude-mapping path="/swagger/**/*" />
 		   <mvc:exclude-mapping path="/api-docs/**/*" />
 		   <mvc:exclude-mapping path="/api-docs" />
+		   <mvc:exclude-mapping path="/account/**"/>
 		   <mvc:exclude-mapping path="/account/getAccountInfo" />
 		   <mvc:exclude-mapping path="/account/getRemarkInfo" />
 		   <mvc:exclude-mapping path="/initService/initData"/>

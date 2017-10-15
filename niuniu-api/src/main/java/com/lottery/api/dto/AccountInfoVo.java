@@ -8,14 +8,16 @@ public class AccountInfoVo  extends PageParamVo{
 	
 	@ApiModelProperty(value = "用户ID", required = true)
 	@Min(value = 0, message = "ID格式不正确")
-    private Integer userid; 
+    private Integer accountid;
 
-    public Integer getUserid() {
-		return userid;
+	public Integer getAccountid() {
+		return accountid;
 	}
 
-	public void setUserid(Integer userid) {
-		this.userid = userid;
-	}
+	public void setAccountid(Integer accountid) {
+		this.accountid = accountid;
+	} 
+
+
 
 }

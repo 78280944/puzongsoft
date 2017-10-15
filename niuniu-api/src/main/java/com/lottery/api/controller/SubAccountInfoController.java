@@ -29,7 +29,10 @@ import com.lottery.orm.bo.OffAccountInfo;
 import com.lottery.orm.dao.AccountDetailMapper;
 import com.lottery.orm.dao.AccountInfoMapper;
 import com.lottery.orm.dao.OffAccountInfoMapper;
+import com.lottery.orm.dto.OffsAccountDto;
 import com.lottery.orm.dto.SubAccountDto;
+import com.lottery.orm.dto.SubsAccountDto;
+import com.lottery.orm.result.OffAccountListResult;
 import com.lottery.orm.result.RestResult;
 import com.lottery.orm.result.SubAccountListResult;
 import com.lottery.orm.service.OffAccountInfoService;
@@ -94,7 +97,7 @@ public class SubAccountInfoController {
 		    	paraInfo.setPassword(DigestUtils.md5Hex(password));
 		    	paraInfo.setLevel(offAccountInfo1.getLevel());
 			    paraInfo.setState("1");//默认状态正常
-			    paraInfo.setOfftype("3");
+			    paraInfo.setOfftype("2");
 			    paraInfo.setInputdate(new Date());
 			    paraInfo.setUsermoney(BigDecimal.valueOf(0.0));
 			    paraInfo.setSupuserid(param.getAccountid());
@@ -102,6 +105,56 @@ public class SubAccountInfoController {
 			    result.success();
 		    }
 
+			LOG.info(result.getMessage());
+		} catch (Exception e) {
+			result.error();
+			LOG.error(e.getMessage(),e);
+		}
+		return result;
+	}
+	
+	
+	@ApiOperation(value = "获取该代理的子账号列表", notes = "获取该代理的子账号列表", httpMethod = "POST")
+	@RequestMapping(value = "/getAllSubAccountInfo", method = RequestMethod.POST)
+	@ResponseBody
+	public SubAccountListResult getAllSubAccountInfo(@ApiParam(value = "Json参数", required = true) @Validated @RequestBody AccountInfoVo param) throws Exception {
+		SubAccountListResult result = new SubAccountListResult();
+		try {
+			
+			AccountInfo offacount = accountInfoMapper.selectByPrimaryKey(param.getAccountid());
+			if(offacount==null){
+				  result.fail(MessageTool.Code_3001);
+			      LOG.info(result.getMessage());
+			      return result;
+			}
+			List<SubsAccountDto> list = offAccountInfoMapper.selectSubSupuserId(offacount.getAccountid(), EnumType.OffType.Sub.ID,param.getBeginRow(), param.getPageSize());
+		    result.success(list);
+			LOG.info(result.getMessage());
+		} catch (Exception e) {
+			result.error();
+			LOG.error(e.getMessage(),e);
+		}
+		return result;
+	}
+	
+	@ApiOperation(value = "代理用户修改子账户密码", notes = "代理用户修改子账户密码", httpMethod = "POST")
+	@RequestMapping(value = "/updateSubAccountPass", method = RequestMethod.POST)
+	@ResponseBody
+	public RestResult updateSubAccountPass(@ApiParam(value = "Json参数", required = true) @Validated @RequestBody UpdatePlayPassVo param) throws Exception {
+		RestResult result = new RestResult();
+		try {			
+			AccountInfo offAccountInfo = accountInfoMapper.selectByPrimaryKey(param.getAccountid());
+			if(offAccountInfo==null){
+			      result.fail(MessageTool.Code_3001);
+			      LOG.info(result.getMessage());
+			      return result;
+			}else{
+				offAccountInfo.setPassword(DigestUtils.md5Hex(param.getPassword()));
+				offAccountInfo.setIp(param.getIp());
+				accountInfoMapper.updateByPrimaryKey(offAccountInfo);
+			    LOG.info("修改密码记录详情为："+" 管理员："+param.getSupuserid()+" IP："+param.getIp()+" 修改子账户ID"+param.getAccountid()+" 密码修改为"+offAccountInfo.getPassword());
+			    result.success();
+			}
 			LOG.info(result.getMessage());
 		} catch (Exception e) {
 			result.error();

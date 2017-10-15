@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lottery.orm.dao.SysLimitMapper" >
+  <resultMap id="BaseResultMap" type="com.lottery.orm.bo.SysLimit" >
+    <id column="SLID" property="slid" jdbcType="INTEGER" />
+    <result column="GAMETYPE" property="gametype" jdbcType="VARCHAR" />
+    <result column="GAMENAME" property="gamename" jdbcType="VARCHAR" />
+    <result column="LIMITED" property="limited" jdbcType="DECIMAL" />
+    <result column="OFFTYPE" property="offtype" jdbcType="VARCHAR" />
+    <result column="STATE" property="state" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    SLID, GAMETYPE, GAMENAME, LIMITED, OFFTYPE, STATE
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from sys_limit
+    where SLID = #{slid,jdbcType=INTEGER}
+  </select>
+  <select id="selectByOrder" resultMap="BaseResultMap" >
+    select 
+    <include refid="Base_Column_List" />
+    from sys_limit
+    where gametype = #{gametype,jdbcType=VARCHAR} and offtype= #{offtype,jdbcType=VARCHAR} and state = '1'
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from sys_limit
+    where SLID = #{slid,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.lottery.orm.bo.SysLimit" >
+    <selectKey resultType="java.lang.Integer" keyProperty="slid" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into sys_limit (GAMETYPE, GAMENAME, LIMITED, 
+      OFFTYPE, STATE)
+    values (#{gametype,jdbcType=VARCHAR}, #{gamename,jdbcType=VARCHAR}, #{limited,jdbcType=DECIMAL}, 
+      #{offtype,jdbcType=VARCHAR}, #{state,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.lottery.orm.bo.SysLimit" >
+    <selectKey resultType="java.lang.Integer" keyProperty="slid" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into sys_limit
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="gametype != null" >
+        GAMETYPE,
+      </if>
+      <if test="gamename != null" >
+        GAMENAME,
+      </if>
+      <if test="limited != null" >
+        LIMITED,
+      </if>
+      <if test="offtype != null" >
+        OFFTYPE,
+      </if>
+      <if test="state != null" >
+        STATE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="gametype != null" >
+        #{gametype,jdbcType=VARCHAR},
+      </if>
+      <if test="gamename != null" >
+        #{gamename,jdbcType=VARCHAR},
+      </if>
+      <if test="limited != null" >
+        #{limited,jdbcType=DECIMAL},
+      </if>
+      <if test="offtype != null" >
+        #{offtype,jdbcType=VARCHAR},
+      </if>
+      <if test="state != null" >
+        #{state,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.lottery.orm.bo.SysLimit" >
+    update sys_limit
+    <set >
+      <if test="gametype != null" >
+        GAMETYPE = #{gametype,jdbcType=VARCHAR},
+      </if>
+      <if test="gamename != null" >
+        GAMENAME = #{gamename,jdbcType=VARCHAR},
+      </if>
+      <if test="limited != null" >
+        LIMITED = #{limited,jdbcType=DECIMAL},
+      </if>
+      <if test="offtype != null" >
+        OFFTYPE = #{offtype,jdbcType=VARCHAR},
+      </if>
+      <if test="state != null" >
+        STATE = #{state,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where SLID = #{slid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.lottery.orm.bo.SysLimit" >
+    update sys_limit
+    set GAMETYPE = #{gametype,jdbcType=VARCHAR},
+      GAMENAME = #{gamename,jdbcType=VARCHAR},
+      LIMITED = #{limited,jdbcType=DECIMAL},
+      OFFTYPE = #{offtype,jdbcType=VARCHAR},
+      STATE = #{state,jdbcType=VARCHAR}
+    where SLID = #{slid,jdbcType=INTEGER}
+  </update>
+</mapper>

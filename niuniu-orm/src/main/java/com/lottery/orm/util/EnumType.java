@@ -60,7 +60,7 @@ public interface EnumType {
   }
   
   enum RalativeType {
-    In("In", "入金"),Out("Out", "出金"), Commision("Commision", "公司损益"),Order("Order", "下注本金"), PlayerWin("PlayerWin", "会员输赢"),AgencyWin("AgencyWin", "代理输赢"), Return("Return", "返利");
+    Trade("Trade","下注"),In("In", "入金"),Out("Out", "出金"), Commision("Commision", "公司损益"),Order("Order", "下注本金"), PlayerWin("PlayerWin", "会员输赢"),AgencyWin("AgencyWin", "代理输赢"), Return("Return", "返利");
     private RalativeType(String ID, String NAME) {
       this.ID = ID;
       this.NAME = NAME;

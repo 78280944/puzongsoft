@@ -24,16 +24,15 @@ public class PasswordInfoVo {
     private String spassword;
 
 	@ApiModelProperty(value = "IP", required = true)
-    private String updateip;
+    private String ip;
 	
 	
-	
-	public String getUpdateip() {
-		return updateip;
+	public String getIp() {
+		return ip;
 	}
 
-	public void setUpdateip(String updateip) {
-		this.updateip = updateip;
+	public void setIp(String ip) {
+		this.ip = ip;
 	}
 
 	public String getUsername() {

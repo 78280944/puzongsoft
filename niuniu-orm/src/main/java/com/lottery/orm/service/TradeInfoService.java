@@ -19,7 +19,6 @@ import com.lottery.orm.dao.AccountInfoMapper;
 import com.lottery.orm.dao.OffAccountInfoMapper;
 import com.lottery.orm.dao.TradeInfoMapper;
 import com.lottery.orm.result.TradeListResult;
-import com.lottery.orm.util.EnumType;
 
 @Service
 @Transactional
@@ -31,6 +30,7 @@ public class TradeInfoService {
     @Autowired
     private AccountDetailMapper accountDetailMapper;
     
+  /*
     // 添加出入金款项并更新账户
     public String addInoutTradeInfo(TradeInfo tradeInfo) {
 	    AccountDetail supAccountDetail = accountDetailMapper.selectByPrimaryKey(tradeInfo.getRelativeid());
@@ -41,7 +41,6 @@ public class TradeInfoService {
 		
 		Double tradeAmount = 0.0;//交易点数
 		Double budgetAmount = 0.0;//预算款
-		
 		if(tradeInfo.getRelativetype().equals(EnumType.RalativeType.In.ID)){
 			if(supAccountAmount>=tradeInfo.getTradeamount()||supAccountDetail.getOfftype().equals(EnumType.OffType.Admin.ID)){
 				if(accountDetail.getOfftype().equals(EnumType.OffType.Agency.ID)){
@@ -87,7 +86,7 @@ public class TradeInfoService {
 		}
 		
     }
-    
+    */
     //查询
     public List<TradeInfo> selectByTrade(String relativeType,String startTime,String overTime,int beginRow,int pageSize) {
     	List<TradeInfo> list = tradeInfoMapper.selectByTrade(relativeType, startTime, overTime, beginRow, pageSize);
@@ -108,9 +107,10 @@ public class TradeInfoService {
     	} 
     	return date;
     }
+    
     public static void main(String args[]){
     	TradeInfoService ts = new TradeInfoService();
-    	System.out.println(ts.getStrtoDate("2017-10-6"));
+    	//System.out.println(ts.getStrtoDate("2017-10-6"));
     	//Unparseable date: "2017-03-10"
     	//Unparseable date: "2017-09-20"
     	

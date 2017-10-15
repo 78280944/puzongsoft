@@ -52,6 +52,16 @@
     <result column="WINAMOUNT" jdbcType="DECIMAL" property="winAmount" />
   </resultMap>
   
+  <resultMap id="InoutAccReportMap" type="com.lottery.orm.dto.InoutAccReportDto">
+    <result column="INPUTTIME" jdbcType="TIMESTAMP" property="inputTime" />
+    <result column="ACCOUNTID" jdbcType="INTEGER" property="accountId" />
+    <result column="USERNAME" jdbcType="VARCHAR" property="userName" />
+    <result column="TRADEAMOUNT" jdbcType="DECIMAL" property="tradeAmount" />
+    <result column="ACCOUNTAMOUNT" jdbcType="DECIMAL" property="accountAmount" />
+    <result column="REMARK" jdbcType="VARCHAR" property="remark" />
+  </resultMap>
+  
+  
   <select id="selectWinReportByPlayer" resultMap="PlayerWinReportMap">
     select 
     a.USERNAME, a.SUPUSERNAME, sum(ORDERAMOUNT) as ORDERAMOUNT, sum(ACTUALAMOUNT) as ACTUALAMOUNT, sum(RETURNAMOUNT) as RETURNAMOUNT, sum(ACTUALAMOUNT+RETURNAMOUNT) as WINAMOUNT, sum(SYSTEMAMOUNT) as SYSTEMAMOUNT
@@ -151,7 +161,7 @@
     from account_detail a, trade_info t
     where a.ACCOUNTID = t.ACCOUNTID and TRADETYPE in ('Inout')
 	<if test="startTime != null and endTime != null">
-		and Date(INPUTTIME) between #{startTime,jdbcType=TIMESTAMP} and #{endTime,jdbcType=TIMESTAMP}
+	and Date(INPUTTIME) between #{startTime,jdbcType=TIMESTAMP} and #{endTime,jdbcType=TIMESTAMP}
 	</if>
 	<if test="startTime != null and endTime == null">
 	and Date(INPUTTIME) <![CDATA[>=]]> #{startTime,jdbcType=TIMESTAMP}
@@ -173,6 +183,50 @@
 	limit #{beginRow,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
 	</if>
   </select>
+  
+  <select id="selectAccInoutReport" resultMap="InoutAccReportMap">
+    select 
+    t.inputtime,a.ACCOUNTID, getSupUsername(a.supuserid) as username, t.TRADEAMOUNT, t.ACCOUNTAMOUNT, t.REMARK
+    from account_info a, trade_info t
+    where a.ACCOUNTID = t.ACCOUNTID and t.TRADETYPE in ('Inout')
+	<if test="startTime != null and endTime != null">
+	and Date(INPUTTIME) between #{startTime,jdbcType=TIMESTAMP} and #{endTime,jdbcType=TIMESTAMP}
+	</if>
+	and a.level= '9'
+	<![CDATA[and FIND_IN_SET(a.accountid, 
+	   (SELECT GROUP_CONCAT(LEVEL SEPARATOR ',') FROM (
+	      SELECT @Ids := (SELECT GROUP_CONCAT(c.accountid SEPARATOR ',') FROM account_info c WHERE FIND_IN_SET(supuserid, @Ids) ) LEVEL
+	      FROM account_info d
+	      JOIN (SELECT @Ids := #{accountId,jdbcType=INTEGER}) temp1
+	      WHERE FIND_IN_SET(d.supuserid, @Ids)
+	   ) temp2 )
+	)]]>
+	order by INPUTTIME desc
+	<if test="beginRow != null and pageSize !=null">
+	limit #{beginRow,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
+	</if>
+  </select>
+  
+    <select id="selectAccInoutReportBytime" resultMap="InoutReportMap">
+    select 
+    t.inputtime,a.ACCOUNTID, getSupUsername(a.supuserid) as username, t.TRADEAMOUNT, t.ACCOUNTAMOUNT, t.REMARK
+    from account_info a, trade_info t
+    where a.ACCOUNTID = t.ACCOUNTID and t.TRADETYPE in ('Inout')
+	and a.level= #{level,jdbcType=VARCHAR} and lottery
+	<![CDATA[and FIND_IN_SET(a.accountid, 
+	   (SELECT GROUP_CONCAT(LEVEL SEPARATOR ',') FROM (
+	      SELECT @Ids := (SELECT GROUP_CONCAT(c.accountid SEPARATOR ',') FROM account_info c WHERE FIND_IN_SET(supuserid, @Ids) ) LEVEL
+	      FROM account_info d
+	      JOIN (SELECT @Ids := #{accountid,jdbcType=INTEGER}) temp1
+	      WHERE FIND_IN_SET(d.supuserid, @Ids)
+	   ) temp2 )
+	)]]>
+	order by INPUTTIME desc
+	<if test="beginRow != null and pageSize !=null">
+	limit #{beginRow,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
+	</if>
+  </select>
+  
   
   <select id="selectByHistoryOrder" resultMap="HistoryOrderMap">
     select 

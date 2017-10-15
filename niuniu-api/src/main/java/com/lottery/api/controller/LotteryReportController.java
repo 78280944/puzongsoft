@@ -14,27 +14,35 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.lottery.api.dto.AgencyWinReVo;
 import com.lottery.api.dto.AgencyWinVo;
 import com.lottery.api.dto.ReportParamVo;
-import com.lottery.api.dto.RoomParamRVo;
+import com.lottery.api.dto.RoomParamVo;
 import com.lottery.api.dto.TradeReportVo;
 import com.lottery.orm.bo.AccountDetail;
 import com.lottery.orm.dao.AccountDetailMapper;
 import com.lottery.orm.dao.CustomLotteryMapper;
 import com.lottery.orm.dao.LotteryReportMapper;
 import com.lottery.orm.dao.LotteryRoomDetailMapper;
+import com.lottery.orm.dto.AccAmountDto;
 import com.lottery.orm.dto.AgencyWinReportDto;
+import com.lottery.orm.dto.InoutAccReportDto;
 import com.lottery.orm.dto.InoutReportDto;
 import com.lottery.orm.dto.PlayerWinReportDto;
+import com.lottery.orm.dto.ProAccAmountDto;
 import com.lottery.orm.dto.QueryDateDto;
 import com.lottery.orm.dto.QueryRoomDateDto;
 import com.lottery.orm.dto.TradeReportDto;
+import com.lottery.orm.result.AccWinReportResult;
 import com.lottery.orm.result.AgencyWinReportResult;
+import com.lottery.orm.result.InoutAccReportResult;
 import com.lottery.orm.result.InoutReportResult;
 import com.lottery.orm.result.PlayerWinReportResult;
 import com.lottery.orm.result.QueryDateResult;
 import com.lottery.orm.result.RoomListResult;
 import com.lottery.orm.result.TradeReportResult;
+import com.lottery.orm.service.LotteryOrderService;
+import com.lottery.orm.service.LotteryReportService;
 import com.lottery.orm.util.EnumType;
 import com.lottery.orm.util.QueryTool;
 import com.wordnik.swagger.annotations.Api;
@@ -59,6 +67,12 @@ public class LotteryReportController {
 	@Autowired
 	LotteryRoomDetailMapper lotteryRoomDetailMapper;
 	
+	@Autowired
+	LotteryOrderService lotteryOrderService;
+	
+	@Autowired
+	LotteryReportService lotteryReportService;
+	
 	@Value("${lottery.initDate}")
     private String initDate;
 	
@@ -67,16 +81,14 @@ public class LotteryReportController {
 	@RequestMapping(value = "/getRoomQueryDate", method = RequestMethod.POST)
 	@ResponseBody
 	public RoomListResult getRoomQueryDate(
-			@ApiParam(value = "Json参数", required = true) @Validated @RequestBody RoomParamRVo param) throws Exception {
+			@ApiParam(value = "Json参数", required = true) @Validated @RequestBody RoomParamVo param) throws Exception {
 		RoomListResult result = new RoomListResult();
 		try {
-				DateTime initDate = new DateTime(this.initDate);
-				Date startTime = QueryTool.getPeroidStartTime(initDate.toDate());
-				Date endTime = (new DateTime(startTime)).plusDays(27).toDate();
-				QueryRoomDateDto queryDate = new QueryRoomDateDto();
-				List<QueryRoomDateDto> list = lotteryRoomDetailMapper.selectLotteryRoomDetail(param.getStartDate(), param.getEndDate(), param.getRmid(), param.getBeginRow(), param.getPageSize());;
-				result.success(list);
-			LOG.info(result.getMessage());
+			DateTime initDate = new DateTime(this.initDate);
+			Date startTime = QueryTool.getPeroidStartTime(initDate.toDate());
+			List<QueryRoomDateDto> list = lotteryOrderService.selectRoomResult(param.getStartDate(), param.getEndDate(), param.getTime(), param.getSid(), param.getRmid(), param.getAccountid(), param.getBeginRow(), param.getPageSize());
+			result.success(list);
+		    LOG.info(result.getMessage());
 		} catch (Exception e) {
 			result.error();
 			LOG.error(e.getMessage(), e);
@@ -86,7 +98,7 @@ public class LotteryReportController {
 	}
 	
 	
-	
+	/*
 	@ApiOperation(value = "获取当期日期", notes = "获取当期日期", httpMethod = "POST")
 	@RequestMapping(value = "/getQueryDate", method = RequestMethod.POST)
 	@ResponseBody
@@ -108,7 +120,8 @@ public class LotteryReportController {
 		return result;
 
 	}
-
+*/
+	/*
 	@ApiOperation(value = "获取玩家输赢报表", notes = "获取输赢报表", httpMethod = "POST")
 	@RequestMapping(value = "/getPlayerWinReport", method = RequestMethod.POST)
 	@ResponseBody
@@ -144,7 +157,8 @@ public class LotteryReportController {
 		return result;
 
 	}
-	
+	*/
+	/*
 	@ApiOperation(value = "获取代理输赢报表", notes = "获取输赢报表", httpMethod = "POST")
 	@RequestMapping(value = "/getAgencyWinReport", method = RequestMethod.POST)
 	@ResponseBody
@@ -181,7 +195,62 @@ public class LotteryReportController {
 		return result;
 
 	}
-
+*/
+	@ApiOperation(value = "获取代理输赢报表", notes = "获取代理输赢报表", httpMethod = "POST")
+	@RequestMapping(value = "/getAgencyWinReport", method = RequestMethod.POST)
+	@ResponseBody
+	public AgencyWinReportResult getAgencyWinReport(
+			@ApiParam(value = "Json参数", required = true) @Validated @RequestBody AgencyWinReVo param) throws Exception {
+		AgencyWinReportResult result = new AgencyWinReportResult();
+		try {	
+			List<ProAccAmountDto> list = lotteryReportService.getProAccWinReport(param.getStartTime(), param.getEndTime(), param.getAccountId(), param.getLevel(), param.getBeginRow(), param.getPageSize());		
+			result.success(list);	
+			LOG.info(result.getMessage());
+		} catch (Exception e) {
+			result.error();
+			LOG.error(e.getMessage(), e);
+		}
+		return result;
+	}
+	
+	@ApiOperation(value = "获取会员输赢报表", notes = "获取会员输赢报表", httpMethod = "POST")
+	@RequestMapping(value = "/getAccWinReport", method = RequestMethod.POST)
+	@ResponseBody
+	public AccWinReportResult getAccWinReport(
+			@ApiParam(value = "Json参数", required = true) @Validated @RequestBody AgencyWinReVo param) throws Exception {
+		AccWinReportResult result = new AccWinReportResult();
+		try {	
+			List<AccAmountDto> list = lotteryReportService.getAccWinReport(param.getStartTime(), param.getEndTime(), param.getAccountId(), param.getLevel(), param.getBeginRow(), param.getPageSize());		
+			result.success(list);	
+			LOG.info(result.getMessage());
+		} catch (Exception e) {
+			result.error();
+			LOG.error(e.getMessage(), e);
+		}
+		return result;
+	}
+	
+	
+	@ApiOperation(value = "获取玩家点数出入报表", notes = "获取玩家点数出入报表", httpMethod = "POST")
+	@RequestMapping(value = "/getPlayerInoutReport", method = RequestMethod.POST)
+	@ResponseBody
+	public InoutAccReportResult getPlayerInoutReport(
+			@ApiParam(value = "Json参数", required = true) @Validated @RequestBody AgencyWinReVo param) throws Exception {
+		InoutAccReportResult result = new InoutAccReportResult();
+		try {
+			List<InoutAccReportDto> list = lotteryReportService.selectAccInoutReport(param.getStartTime(), param.getEndTime(), param.getAccountId(), param.getLevel(),param.getBeginRow(), param.getPageSize());		
+			result.success(list);	
+			LOG.info(result.getMessage());
+		} catch (Exception e) {
+			result.error();
+			LOG.error(e.getMessage(), e);
+		}
+		return result;
+	}
+	
+	
+	
+	/*
 	@ApiOperation(value = "获取玩家点数出入报表", notes = "获取玩家点数出入报表", httpMethod = "POST")
 	@RequestMapping(value = "/getPlayerInoutReport", method = RequestMethod.POST)
 	@ResponseBody
@@ -253,8 +322,9 @@ public class LotteryReportController {
 		return result;
 
 	}
+*/
 
-
+	/*
 	@ApiOperation(value = "获取交易报表", notes = "获取交易报表", httpMethod = "POST")
 	@RequestMapping(value = "/getTradeReport", method = RequestMethod.POST)
 	@ResponseBody
@@ -290,5 +360,5 @@ public class LotteryReportController {
 
 	}
 
-
+*/
 }

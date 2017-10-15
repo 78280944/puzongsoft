@@ -4,7 +4,7 @@ import com.wordnik.swagger.annotations.ApiModelProperty;
 
 public class BaseAccountDto {
 	@ApiModelProperty(value = "(流水号)用户ID", required = true)
-	private Integer userid;
+	private Integer accountid;
 
 	@ApiModelProperty(value = "用户名", required = true)
 	private String username;
@@ -21,7 +21,7 @@ public class BaseAccountDto {
 	@ApiModelProperty(value = "管理账户", required = true)
 	private Integer supuserid;
 
-	@ApiModelProperty(value = "管理账户级别，0：超级管理员，1：一级代理，2：二级代理，3：三级代理", required = true)
+	@ApiModelProperty(value = "管理账户级别，0：超级管理员，1：一级代理，2：二级代理，3：三级代理,9：会员", required = true)
 	private String level;
 
 	public String getLevel() {
@@ -50,12 +50,14 @@ public class BaseAccountDto {
 		this.password = password;
 	}
 
-	public Integer getUserid() {
-		return userid;
+
+
+	public Integer getAccountid() {
+		return accountid;
 	}
 
-	public void setUserid(Integer userid) {
-		this.userid = userid;
+	public void setAccountid(Integer accountid) {
+		this.accountid = accountid;
 	}
 
 	public String getUsername() {
