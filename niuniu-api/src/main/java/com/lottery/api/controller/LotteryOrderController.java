@@ -24,6 +24,7 @@ import com.lottery.api.dto.OrderDetailVo;
 import com.lottery.api.dto.OrderParamVo;
 import com.lottery.api.dto.ReportParamVo;
 import com.lottery.api.dto.ResultParamVo;
+import com.lottery.api.dto.RoomAmountVo;
 import com.lottery.api.dto.RoomOrderVo;
 import com.lottery.orm.bo.AccountDetail;
 import com.lottery.orm.bo.AccountInfo;
@@ -43,6 +44,7 @@ import com.lottery.orm.dao.LotteryRoundMapper;
 import com.lottery.orm.dao.SysLimitMapper;
 import com.lottery.orm.dto.HistoryOrderDto;
 import com.lottery.orm.dto.LotteryOrderDto;
+import com.lottery.orm.dto.RoomAmountDto;
 import com.lottery.orm.dto.RoomHisOrderDto;
 import com.lottery.orm.dto.RoomOrderDto;
 import com.lottery.orm.dto.RoomOrderItemDto;
@@ -54,6 +56,7 @@ import com.lottery.orm.result.HistoryOrderResult;
 import com.lottery.orm.result.OrderListResult;
 import com.lottery.orm.result.OrderResult;
 import com.lottery.orm.result.RestResult;
+import com.lottery.orm.result.RoomAmountResult;
 import com.lottery.orm.service.LotteryOrderService;
 import com.lottery.orm.util.EnumType;
 import com.lottery.orm.util.MessageTool;
@@ -250,12 +253,12 @@ public class LotteryOrderController {
 	@ApiOperation(value = "获取房间收益", notes = "获取房间收益", httpMethod = "POST")
 	@RequestMapping(value = "/getOrderAmount", method = RequestMethod.POST)
 	@ResponseBody
-	public OrderListResult getOrderAmount(
-			@ApiParam(value = "Json参数", required = true) @Validated @RequestBody ResultParamVo param) throws Exception {
-		OrderListResult result = new OrderListResult();
+	public RoomAmountResult getOrderAmount(
+			@ApiParam(value = "Json参数", required = true) @Validated @RequestBody RoomAmountVo param) throws Exception {
+		RoomAmountResult result = new RoomAmountResult();
 		try {
-			List<RoomHisOrderDto> orderList = lotteryOrderService.getLotteryHisOrder(param.getStartDate(), param.getEndDate(),param.getAccountid(), param.getSid(), param.getBeginRow(), param.getPageSize());
-			result.success(orderList);
+			List<RoomAmountDto> list = lotteryGameOrderMapper.selectGameAmount(param.getRmid(), param.getLotteryterm());
+			result.success(list);
 			LOG.info(result.getMessage());
 		} catch (Exception e) {
 			result.error();

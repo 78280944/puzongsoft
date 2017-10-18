@@ -51,6 +51,22 @@
     <result column="RATIO" jdbcType="DECIMAL" property="ratio" />
   </resultMap>
   
+  <resultMap id="GameOrderAmountMap" type="com.lottery.orm.dto.RoomAmountDto">
+    <result column="ORDERNO" jdbcType="INTEGER" property="orderno" />
+    <result column="ACCOUNTID" jdbcType="INTEGER" property="accountid" />
+    <result column="AUSERNAME" jdbcType="VARCHAR" property="ausername" />
+    <result column="LASTAMOUNT" jdbcType="DECIMAL" property="lastamount" />
+  </resultMap>  
+  
+  <select id="selectGameAmount"  resultMap="GameOrderAmountMap">
+    SELECT (@i:=@i+1)  AS orderno,c.accountid as accountid,c.ausername as ausername,c.lastamount as lastamount
+    FROM (SELECT t1.accountid,t3.ausername,SUM(t1.lastamount) AS lastamount 
+    FROM lottery_game_order t1,account_info t3 
+    WHERE t1.accountid = t3.accountid AND rmid = #{rmid,jdbcType=INTEGER} AND lotteryterm = #{lotteryterm,jdbcType=VARCHAR}
+    GROUP BY accountid
+    ORDER BY t1.lastamount DESC) c,(SELECT  @i:=0) t2
+  </select>
+  
   <select id="selectGameOrder"  resultMap="GameOrderMap">
     select 
     a.LGMID,a.ordertime,b.gamename,b.gamelobbyname,c.roomid,

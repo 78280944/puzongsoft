@@ -13,7 +13,10 @@ public interface EnumType {
 	    public final static String enumDesc = "游戏";
 	  }
   enum LotteryType {
-    CQ("01", "重庆快乐十分玉米籽"),GD("02", "广东快乐十分玉米籽"),TJ("03", "天津快乐十分玉米籽");
+	  CQSSC("1001","重庆时时彩"),HLJSSC("1002","黑龙江时时彩"),TJSSC("1003","天津时时彩"),XJSSC("1004","新疆时时彩"),
+	  YNSSC("1005","云南时时彩"),BJSC("2001","北京赛车"),XYFT("2002","幸运飞艇"),
+	  CQ("01", "重庆快乐十分玉米籽"),GD("02", "广东快乐十分玉米籽"),TJ("03", "天津快乐十分玉米籽");
+	 
     private LotteryType(String ID, String NAME) {
       this.ID = ID;
       this.NAME = NAME;

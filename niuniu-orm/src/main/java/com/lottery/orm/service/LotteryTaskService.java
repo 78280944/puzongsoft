@@ -19,9 +19,11 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
+import com.lottery.orm.bo.LotteryGameRound;
 import com.lottery.orm.bo.LotteryRound;
 import com.lottery.orm.dao.CustomLotteryMapper;
 import com.lottery.orm.service.LotteryRoundService;
+import com.lottery.orm.util.CommonUtils;
 import com.lottery.orm.util.EnumType;
 import com.lottery.orm.util.HttpclientTool;
 
@@ -42,11 +44,103 @@ public class LotteryTaskService {
 	@Value("${lottery.apiUrl.cqklsf}")
     private String lotteryApiUrlCQ;
 	
+	@Value("${lottery.apiUrl.cqssc1}")
+	private String lotteryApiUrlCQSSC1;
+	
+	@Value("${lottery.apiUrl.cqssc2}")
+	private String lotteryApiUrlCQSSC2;
+	
+	@Value("${lottery.apiUrl.hljssc1}")
+	private String lotteryApiUrlHLJSSC1;
+	
+	@Value("${lottery.apiUrl.hljssc2}")
+	private String lotteryApiUrlHLJSSC2;
+	
+	@Value("${lottery.apiUrl.tjssc1}")
+	private String lotteryApiUrlTJSSC1;
+	
+	@Value("${lottery.apiUrl.tjssc2}")
+	private String lotteryApiUrlTJSSC2;
+	
+	
+	@Value("${lottery.apiUrl.xjssc1}")
+	private String lotteryApiUrlXJSSC1;
+	
+	@Value("${lottery.apiUrl.xjssc2}")
+	private String lotteryApiUrlXJSSC2;
+	
+	@Value("${lottery.apiUrl.ynssc1}")
+	private String lotteryApiUrlYNSSC1;
+	
+	@Value("${lottery.apiUrl.ynssc2}")
+	private String lotteryApiUrlYNSSC2;
+	
+	@Value("${lottery.apiUrl.bjsc1}")
+	private String lotteryApiUrlBJSC1;
+	
+	@Value("${lottery.apiUrl.bjsc2}")
+	private String lotteryApiUrlBJSC2;
+
+	@Value("${lottery.apiUrl.xyft1}")
+	private String lotteryApiUrlXYFT1;
+	
+	@Value("${lottery.apiUrl.xyft2}")
+	private String lotteryApiUrlXYFT2;
+	
 	@Value("${lottery.apiUrl.gdklsf}")
     private String lotteryApiUrlGD;
 	
 	@Value("${lottery.apiUrl.tjklsf}")
     private String lotteryApiUrlTJ;
+	
+	
+	/**
+	 * 获取重庆时时彩
+	 * @throws Exception 
+	 */
+	@Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor=Exception.class)
+	public void getCQSSCLotteryResult() throws Exception{
+		System.out.println("00--------------------"+lotteryApiUrlCQSSC2);
+		getLotteryOriginResult1(EnumType.LotteryType.CQSSC.ID, lotteryApiUrlCQSSC1);
+		
+	}
+	/**
+	 * 获取开奖结果
+	 * @throws Exception 
+	 */
+	private void getLotteryOriginResult1(String lotteryType, String apiUrl) throws Exception {
+		String result = HttpclientTool.get(apiUrl);
+		System.out.println("8---------------"+result);
+		//{"success":true,"data":[{"preDrawCode":"26570","drawIssue":"20171018074",
+		//"drawTime":"2017/10/18 18:20:45","preDrawTime":"2017-10-18 18:10:45",
+		//"preDrawIssue":"20171018073","drawCount":"47","totalCount":"120"}]}
+		LotteryGameRound lgr = new LotteryGameRound();
+		LotteryGameRound gRound = new LotteryGameRound();
+		if(StringUtils.isNotBlank(result)&&result.trim().startsWith("{")){
+			JSONObject jObj = new JSONObject(result);
+			JSONArray jArray = jObj.getJSONArray("data");
+			//上期
+			lgr.setSid(Integer.valueOf(lotteryType));
+			lgr.setLotteryterm(jArray.getString(5));
+			lgr.setLotteryresult(CommonUtils.getArrayString(jArray.getString(1)));
+			lgr.setStarttime(CommonUtils.getStringToDate(jArray.getString(4)));
+			lgr.setOpentime(CommonUtils.getStringToDate(jArray.getString(4)));
+			gRound = lotteryRoundService.getLotteryTermResult(lgr.getSid(), lgr.getLotteryterm());
+			if (gRound!=null){
+				if (gRound.getLotteryresult().equals("")){
+					//更新结果
+					
+				}
+			}else{
+				
+			}
+			//本期
+			
+			System.out.println("2----"+jObj.getJSONArray("data"));
+			//System.out.println("1--"+jObj.getString("preDrawCode")+".."+jObj.getString("drawIssue")+".."+jObj.getString("preDrawIssue"));
+			//JSONObject openObj = openArray.getJSONObject(i);
+		}
+	}
 	
 	/**
 	 * 获取广西快乐十分开奖结果
@@ -54,8 +148,8 @@ public class LotteryTaskService {
 	 */
 	@Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor=Exception.class)
 	public void getCQLotteryResult() throws Exception{
-		System.out.println("00--------------------"+lotteryApiUrlCQ);
-		getLotteryOriginResult(EnumType.LotteryType.CQ.ID, lotteryApiUrlCQ);
+		//System.out.println("00--------------------"+lotteryApiUrlCQ);
+		//getLotteryOriginResult(EnumType.LotteryType.CQ.ID, lotteryApiUrlCQ);
 	}
 	
 	/**
@@ -64,7 +158,7 @@ public class LotteryTaskService {
 	 */
 	@Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor=Exception.class)
 	public void getGDLotteryResult() throws Exception{
-		getLotteryOriginResult(EnumType.LotteryType.GD.ID, lotteryApiUrlGD);
+		//getLotteryOriginResult(EnumType.LotteryType.GD.ID, lotteryApiUrlGD);
 	}
 	
 	/**

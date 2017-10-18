@@ -21,7 +21,7 @@
 	<bean id="lotteryCQTaskJob"
 		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
 		<property name="targetObject" ref="lotteryTaskService" />
-		<property name="targetMethod" value="getCQLotteryResult" />
+		<property name="targetMethod" value="getCQSSCLotteryResult" />
 		<property name="concurrent" value="false" />
 	</bean>
 	<bean id="lotteryTJTaskJob"
@@ -61,7 +61,7 @@
 	
 	<bean id="openCQCronTrigger" class="com.lottery.api.timer.DataBaseCronTriggerBean">
 		<property name="jobDetail" ref="lotteryCQTaskJob" />
-		<property name="cronExpression" value="0/10 * * * * ?" />
+		<property name="cronExpression" value="0/10 * 17,18 * * ?" />
 	</bean>
 	
 	<bean id="openTJCronTrigger" class="com.lottery.api.timer.DataBaseCronTriggerBean">
@@ -98,7 +98,7 @@
 		<property name="triggers">
 			<list>
 				<ref bean="openCQCronTrigger" />
-				<ref bean="closeCQCronTrigger" />
+				<!--  ref bean="closeCQCronTrigger" />-->
 				<!-- <ref bean="openTJCronTrigger" />
 				<ref bean="openGDCronTrigger" />
 				<ref bean="closeTJCronTrigger" />

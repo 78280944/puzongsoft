@@ -139,9 +139,32 @@ public class CommonUtils {
 	    return sTime;
 	}
 	
+	public static String getArrayString(String str){
+		String res = "";
+		for (int i = 0; i < str.length(); i++) {
+		    res += ("," + str.charAt(i));
+		}
+		return res.substring(1, res.length());
+	}
+	
+	public static Date getStringToDate(String dateString){
+		 Date date = new Date();
+		 dateString = dateString.replaceAll("/", "-");
+	    try  
+	    {  
+	        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");  
+	        date = sdf.parse(dateString);  
+	    }  
+	    catch (ParseException e)  
+	    {  
+	        System.out.println(e.getMessage());  
+	    }  
+	    return date;
+	}
+	
 	public static void main(String args[]) throws Exception{
 		String m = (CommonUtils.getCurrentMills());
-		System.out.println(".."+m);
+		System.out.println(".."+CommonUtils.getStringToDate("2017/10/18 18:20:45"));
 		Date[] data = CommonUtils.getDateBetween(new Date(),new Date(),"03");
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		System.out.println(data[0]+".."+data[1]+"..."+sdf.format(data[0])+".."+sdf.format(data[1]));

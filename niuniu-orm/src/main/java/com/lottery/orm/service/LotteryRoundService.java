@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.lottery.orm.bo.LotteryGameRound;
 import com.lottery.orm.bo.LotteryItem;
 import com.lottery.orm.bo.LotteryOrder;
 import com.lottery.orm.bo.LotteryRound;
@@ -249,4 +250,10 @@ public class LotteryRoundService {
 		*/	
 		return roundList;
 	}
+	
+	//获取是否有游戏结果
+	public LotteryGameRound getLotteryTermResult(Integer sid,String lotteryterm) throws Exception{
+		LotteryGameRound lotteryGameRound = lotteryGameRoundMapper.selectCurGameRound(sid, lotteryterm);
+		return lotteryGameRound;
+	} 
 }
