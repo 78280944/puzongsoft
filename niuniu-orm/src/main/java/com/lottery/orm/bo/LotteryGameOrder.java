@@ -6,65 +6,63 @@ import java.util.Date;
 public class LotteryGameOrder {
     private Integer lgmid;
 
-    private Integer sid;
+	private Integer sid;
 
-    private Integer accountid;
+	private Integer accountid;
 
-    private Integer rmid;
+	private Integer rmid;
 
-    private Integer ltdid;
+	private Integer ltdid;
 
-    private Integer noid;
+	private Integer noid;
 
-    private String playoridle;
+	private String playoridle;
 
-    private String lotteryterm;
+	private String lotteryterm;
 
-    private BigDecimal orderamount;
+	private BigDecimal orderamount;
 
-    private Date ordertime;
+	private Date ordertime;
 
-    private Date opentime;
+	private Date opentime;
 
-    private String result;
+	private String result;
 
-    private BigDecimal lastamount;
+	private BigDecimal lastamount;
 
-    public Integer getLgmid() {
-        return lgmid;
-    }
+	public Integer getLgmid() {
+		return lgmid;
+	}
 
-    public void setLgmid(Integer lgmid) {
-        this.lgmid = lgmid;
-    }
+	public void setLgmid(Integer lgmid) {
+		this.lgmid = lgmid;
+	}
 
-    public Integer getSid() {
-        return sid;
-    }
+	public Integer getSid() {
+		return sid;
+	}
 
-    public void setSid(Integer sid) {
-        this.sid = sid;
-    }
+	public void setSid(Integer sid) {
+		this.sid = sid;
+	}
 
-    public Integer getAccountid() {
-        return accountid;
-    }
+	public Integer getAccountid() {
+		return accountid;
+	}
 
-    public void setAccountid(Integer accountid) {
-        this.accountid = accountid;
-    }
+	public void setAccountid(Integer accountid) {
+		this.accountid = accountid;
+	}
 
-    public Integer getRmid() {
-        return rmid;
-    }
+	public Integer getRmid() {
+		return rmid;
+	}
 
-    public void setRmid(Integer rmid) {
-        this.rmid = rmid;
-    }
+	public void setRmid(Integer rmid) {
+		this.rmid = rmid;
+	}
 
-
-
-    public Integer getLtdid() {
+	public Integer getLtdid() {
 		return ltdid;
 	}
 
@@ -73,56 +71,54 @@ public class LotteryGameOrder {
 	}
 
 	public Integer getNoid() {
-        return noid;
-    }
+		return noid;
+	}
 
-    public void setNoid(Integer noid) {
-        this.noid = noid;
-    }
+	public void setNoid(Integer noid) {
+		this.noid = noid;
+	}
 
-    public String getPlayoridle() {
-        return playoridle;
-    }
+	public String getPlayoridle() {
+		return playoridle;
+	}
 
-    public void setPlayoridle(String playoridle) {
-        this.playoridle = playoridle == null ? null : playoridle.trim();
-    }
+	public void setPlayoridle(String playoridle) {
+		this.playoridle = playoridle;
+	}
 
-    public String getLotteryterm() {
-        return lotteryterm;
-    }
+	public String getLotteryterm() {
+		return lotteryterm;
+	}
 
-    public void setLotteryterm(String lotteryterm) {
-        this.lotteryterm = lotteryterm == null ? null : lotteryterm.trim();
-    }
+	public void setLotteryterm(String lotteryterm) {
+		this.lotteryterm = lotteryterm;
+	}
 
-    public BigDecimal getOrderamount() {
-        return orderamount;
-    }
+	public BigDecimal getOrderamount() {
+		return orderamount;
+	}
 
-    public void setOrderamount(BigDecimal orderamount) {
-        this.orderamount = orderamount;
-    }
+	public void setOrderamount(BigDecimal orderamount) {
+		this.orderamount = orderamount;
+	}
 
-    public Date getOrdertime() {
-        return ordertime;
-    }
+	public Date getOrdertime() {
+		return ordertime;
+	}
 
-    public void setOrdertime(Date ordertime) {
-        this.ordertime = ordertime;
-    }
+	public void setOrdertime(Date ordertime) {
+		this.ordertime = ordertime;
+	}
 
-    public Date getOpentime() {
-        return opentime;
-    }
+	public Date getOpentime() {
+		return opentime;
+	}
 
-    public void setOpentime(Date opentime) {
-        this.opentime = opentime;
-    }
+	public void setOpentime(Date opentime) {
+		this.opentime = opentime;
+	}
 
-
-
-    public String getResult() {
+	public String getResult() {
 		return result;
 	}
 
@@ -131,10 +127,12 @@ public class LotteryGameOrder {
 	}
 
 	public BigDecimal getLastamount() {
-        return lastamount;
-    }
+		return lastamount;
+	}
 
-    public void setLastamount(BigDecimal lastamount) {
-        this.lastamount = lastamount;
-    }
+	public void setLastamount(BigDecimal lastamount) {
+		this.lastamount = lastamount;
+	}
+
+	
 }

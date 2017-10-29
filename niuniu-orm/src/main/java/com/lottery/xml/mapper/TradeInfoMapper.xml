@@ -151,7 +151,7 @@
     where TRADEID = #{tradeid,jdbcType=INTEGER}
   </update>
   
-  <select id="getTradeInfo" resultMap="BaseResultMap">  
+  <select id="selectByTrade" resultMap="BaseResultMap">  
     select 
     <include refid="Base_Column_List" />
     from trade_info 

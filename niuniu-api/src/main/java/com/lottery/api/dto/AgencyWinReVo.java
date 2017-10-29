@@ -21,7 +21,7 @@ public class AgencyWinReVo  extends PageParamVo {
 	@JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
 	private Date endTime;
 	
-	@ApiModelProperty(value = "管理账户级别,0：超级管理员,1: 一级代理,2：二级代理,3：三级代理", required = true)
+	@ApiModelProperty(value = "管理账户级别,0：超级管理员,1: 一级代理,2：二级代理,3：三级代理,9:玩家", required = true)
     private String level;
 
 	public Integer getAccountId() {

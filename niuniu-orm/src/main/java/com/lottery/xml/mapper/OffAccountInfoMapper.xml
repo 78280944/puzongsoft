@@ -58,7 +58,7 @@
   
   <select id="selectSubSupuserId" parameterType="com.lottery.orm.dto.SubsAccountDto" resultMap="SubAccountMap">  
     select 
-    a.accountid,a.username,a.password,a.state,a.supuserid,a.level 
+    a.accountid,a.username,a.ausername,a.password,a.state,a.supuserid,a.level 
     FROM account_info a 
     where supuserid = #{supuserid,jdbcType=INTEGER} and offtype = #{offtype,jdbcType=VARCHAR}
     <if test="beginrow != null and pageSize !=null">

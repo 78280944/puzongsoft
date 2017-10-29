@@ -17,6 +17,9 @@ public class RoomAmountDto {
 	
 	@ApiModelProperty(value = "收益", required = true)
 	private BigDecimal lastamount;
+	
+	@ApiModelProperty(value = "庄闲", required = true)
+	private String playoridle;
 
 	public Integer getOrderno() {
 		return orderno;
@@ -48,6 +51,14 @@ public class RoomAmountDto {
 
 	public void setLastamount(BigDecimal lastamount) {
 		this.lastamount = lastamount;
+	}
+
+	public String getPlayoridle() {
+		return playoridle;
+	}
+
+	public void setPlayoridle(String playoridle) {
+		this.playoridle = playoridle;
 	}
 	
 }

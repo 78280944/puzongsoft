@@ -6,115 +6,124 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.wordnik.swagger.annotations.ApiModelProperty;
 
 public class LotteryGameRound {
-    private Integer lgrid;
-
-    private Integer sid;
-
-    private String lotteryterm;
-
-    private String lotteryresult;
-    
-	@ApiModelProperty(value = "游戏开始时间", required = true)
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    private Date starttime;
 	
+	@ApiModelProperty(value = "ID", required = true)
+    private Integer lgrid;
+	
+	@ApiModelProperty(value = "游戏ID", required = true)
+	private Integer sid;
+
+	@ApiModelProperty(value = "游戏期次", required = true)
+	private String lotteryterm;
+
+	@ApiModelProperty(value = "游戏结果", required = true)
+	private String lotteryresult;
+
+	@ApiModelProperty(value = "游戏开始时间", required = true)
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+	private Date starttime;
+
+	@ApiModelProperty(value = "游戏封盘时间", required = true)
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+	private Date overtime;
+
+	@ApiModelProperty(value = "游戏开奖时间", required = true)
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+	private Date opentime;
+
 	@ApiModelProperty(value = "游戏结束时间", required = true)
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    private Date overtime;
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+	private Date closetime;
 
-	@ApiModelProperty(value = "接口游戏开始时间", required = true)
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    private Date opentime;
+	@ApiModelProperty(value = "游戏实际开奖时间", required = true)
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+	private Date actopentime;
 
-	@ApiModelProperty(value = "接口游戏结束时间", required = true)
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    private Date closetime;
+	@ApiModelProperty(value = "游戏实际结束时间", required = true)
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+	private Date actclosetime;
 
-	@ApiModelProperty(value = "接口实际游戏开始时间", required = true)
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    private Date actopentime;
+	public Integer getLgrid() {
+		return lgrid;
+	}
 
-	@ApiModelProperty(value = "接口实际游戏结束时间", required = true)
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    private Date actclosetime;
+	public void setLgrid(Integer lgrid) {
+		this.lgrid = lgrid;
+	}
 
-    public Integer getLgrid() {
-        return lgrid;
-    }
+	public Integer getSid() {
+		return sid;
+	}
 
-    public void setLgrid(Integer lgrid) {
-        this.lgrid = lgrid;
-    }
+	public void setSid(Integer sid) {
+		this.sid = sid;
+	}
 
-    public Integer getSid() {
-        return sid;
-    }
+	public String getLotteryterm() {
+		return lotteryterm;
+	}
 
-    public void setSid(Integer sid) {
-        this.sid = sid;
-    }
+	public void setLotteryterm(String lotteryterm) {
+		this.lotteryterm = lotteryterm;
+	}
 
-    public String getLotteryterm() {
-        return lotteryterm;
-    }
+	public String getLotteryresult() {
+		return lotteryresult;
+	}
 
-    public void setLotteryterm(String lotteryterm) {
-        this.lotteryterm = lotteryterm == null ? null : lotteryterm.trim();
-    }
+	public void setLotteryresult(String lotteryresult) {
+		this.lotteryresult = lotteryresult;
+	}
 
-    public String getLotteryresult() {
-        return lotteryresult;
-    }
+	public Date getStarttime() {
+		return starttime;
+	}
 
-    public void setLotteryresult(String lotteryresult) {
-        this.lotteryresult = lotteryresult == null ? null : lotteryresult.trim();
-    }
+	public void setStarttime(Date starttime) {
+		this.starttime = starttime;
+	}
 
-    public Date getStarttime() {
-        return starttime;
-    }
+	public Date getOvertime() {
+		return overtime;
+	}
 
-    public void setStarttime(Date starttime) {
-        this.starttime = starttime;
-    }
+	public void setOvertime(Date overtime) {
+		this.overtime = overtime;
+	}
 
-    public Date getOvertime() {
-        return overtime;
-    }
+	public Date getOpentime() {
+		return opentime;
+	}
 
-    public void setOvertime(Date overtime) {
-        this.overtime = overtime;
-    }
+	public void setOpentime(Date opentime) {
+		this.opentime = opentime;
+	}
 
-    public Date getOpentime() {
-        return opentime;
-    }
+	public Date getClosetime() {
+		return closetime;
+	}
 
-    public void setOpentime(Date opentime) {
-        this.opentime = opentime;
-    }
+	public void setClosetime(Date closetime) {
+		this.closetime = closetime;
+	}
 
-    public Date getClosetime() {
-        return closetime;
-    }
+	public Date getActopentime() {
+		return actopentime;
+	}
 
-    public void setClosetime(Date closetime) {
-        this.closetime = closetime;
-    }
+	public void setActopentime(Date actopentime) {
+		this.actopentime = actopentime;
+	}
 
-    public Date getActopentime() {
-        return actopentime;
-    }
+	public Date getActclosetime() {
+		return actclosetime;
+	}
 
-    public void setActopentime(Date actopentime) {
-        this.actopentime = actopentime;
-    }
+	public void setActclosetime(Date actclosetime) {
+		this.actclosetime = actclosetime;
+	}
 
-    public Date getActclosetime() {
-        return actclosetime;
-    }
 
-    public void setActclosetime(Date actclosetime) {
-        this.actclosetime = actclosetime;
-    }
+
+	
 }

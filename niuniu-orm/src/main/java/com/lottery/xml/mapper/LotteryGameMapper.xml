@@ -34,6 +34,11 @@
     lottery_game 
     where gametype = #{gametype,jdbcType=VARCHAR}
   </select> 
+  
+  <update id="updateLotteryTime" parameterType="com.lottery.orm.bo.LotteryGame">
+  update lottery_game set gameterm=#{gameterm,jdbcType=VARCHAR}, gamestarttime = #{gamestarttime,jdbcType=TIMESTAMP},gameovertime = #{gameovertime,jdbcType=TIMESTAMP} 
+  where sid = #{sid,jdbcType=INTEGER} 
+  </update>
    
   <insert id="insert" parameterType="com.lottery.orm.bo.LotteryGame" >
     <selectKey resultType="java.lang.Integer" keyProperty="sid" order="AFTER" >

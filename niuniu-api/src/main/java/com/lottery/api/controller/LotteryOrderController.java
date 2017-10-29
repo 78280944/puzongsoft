@@ -23,6 +23,7 @@ import com.lottery.api.dto.HisOrderVo;
 import com.lottery.api.dto.OrderDetailVo;
 import com.lottery.api.dto.OrderParamVo;
 import com.lottery.api.dto.ReportParamVo;
+import com.lottery.api.dto.ResultAmountVo;
 import com.lottery.api.dto.ResultParamVo;
 import com.lottery.api.dto.RoomAmountVo;
 import com.lottery.api.dto.RoomOrderVo;
@@ -44,6 +45,7 @@ import com.lottery.orm.dao.LotteryRoundMapper;
 import com.lottery.orm.dao.SysLimitMapper;
 import com.lottery.orm.dto.HistoryOrderDto;
 import com.lottery.orm.dto.LotteryOrderDto;
+import com.lottery.orm.dto.ResultAmountDto;
 import com.lottery.orm.dto.RoomAmountDto;
 import com.lottery.orm.dto.RoomHisOrderDto;
 import com.lottery.orm.dto.RoomOrderDto;
@@ -53,11 +55,13 @@ import com.lottery.orm.result.GameOrderGrListResult;
 import com.lottery.orm.result.GameOrderList;
 import com.lottery.orm.result.GameOrderListResult;
 import com.lottery.orm.result.HistoryOrderResult;
+import com.lottery.orm.result.OrderAmountResult;
 import com.lottery.orm.result.OrderListResult;
 import com.lottery.orm.result.OrderResult;
 import com.lottery.orm.result.RestResult;
 import com.lottery.orm.result.RoomAmountResult;
 import com.lottery.orm.service.LotteryOrderService;
+import com.lottery.orm.util.CommonUtils;
 import com.lottery.orm.util.EnumType;
 import com.lottery.orm.util.MessageTool;
 import com.wordnik.swagger.annotations.Api;
@@ -111,6 +115,7 @@ public class LotteryOrderController {
 		String checkInfo = "";
 		try {
 			LotteryGameOrder order = mapper.map(param, LotteryGameOrder.class);
+			System.out.println("8------------------"+order.getLotteryterm());
 			AccountInfo accountInfo = accountInfoMapper.selectByPrimaryKey(order.getAccountid());
 			if (accountInfo == null){
 				result.fail(MessageTool.Code_3001);
@@ -135,6 +140,10 @@ public class LotteryOrderController {
 				//账户变动
 				lotteryOrderService.changeAccountAmount(accountInfo, order);
 				
+				//投注
+				System.out.println("123-------------"+order.getLotteryterm());
+				lotteryOrderService.insertLotteryGameOrder(order);
+				
 			}
 			result.success();
 			LOG.info(result.getMessage());
@@ -144,6 +153,8 @@ public class LotteryOrderController {
 		}
 		return result;
 	}
+	
+	
 	
 	/*
 	@ApiOperation(value = "新增投注记录", notes = "新增投注记录", httpMethod = "POST")
@@ -186,6 +197,7 @@ public class LotteryOrderController {
 		return result;
 	}
 	*/
+	
 	@ApiOperation(value = "获取投注明细", notes = "获取投注明细", httpMethod = "POST")
 	@RequestMapping(value = "/getOrderItem", method = RequestMethod.POST)
 	@ResponseBody
@@ -221,6 +233,7 @@ public class LotteryOrderController {
 			@ApiParam(value = "Json参数", required = true) @Validated @RequestBody CurResultParamVo param) throws Exception {
 		GameOrderListResult result = new GameOrderListResult();
 		try {
+
 			List<RoomOrderDto> orderList = lotteryGameOrderMapper.selectGameOrder(param.getAccountid(), param.getSid(), param.getBeginRow(), param.getPageSize());
 			result.success(orderList);
 			LOG.info(result.getMessage());
@@ -239,8 +252,16 @@ public class LotteryOrderController {
 			@ApiParam(value = "Json参数", required = true) @Validated @RequestBody ResultParamVo param) throws Exception {
 		OrderListResult result = new OrderListResult();
 		try {
-			List<RoomHisOrderDto> orderList = lotteryOrderService.getLotteryHisOrder(param.getStartDate(), param.getEndDate(),param.getAccountid(), param.getSid(), param.getBeginRow(), param.getPageSize());
-			result.success(orderList);
+			Date[] param1 = CommonUtils.getDateTime(param.getStartDate(), param.getEndDate());
+			List<RoomHisOrderDto> orderList =null;
+			if (param.getSid()==9999){
+				System.out.println("111111-------------"+param.getSid());
+			   orderList = lotteryOrderService.getLotteryHisAllOrder(param1[0], param1[1],param.getAccountid(), param.getSid(), param.getBeginRow(), param.getPageSize());
+			}else{
+				System.out.println("222222-------------"+param.getSid());
+			   orderList = lotteryOrderService.getLotteryHisOrder(param1[0], param1[1],param.getAccountid(), param.getSid(), param.getBeginRow(), param.getPageSize());
+			}
+				result.success(orderList);
 			LOG.info(result.getMessage());
 		} catch (Exception e) {
 			result.error();
@@ -248,6 +269,24 @@ public class LotteryOrderController {
 		}
 		return result;
 
+	}
+	
+	@ApiOperation(value = "获取注单汇总金额", notes = "获取注单汇总金额", httpMethod = "POST")
+	@RequestMapping(value = "/getHisOrderAmount", method = RequestMethod.POST)
+	@ResponseBody
+	public OrderAmountResult getHisOrderAmount(
+			@ApiParam(value = "Json参数", required = true) @Validated @RequestBody ResultAmountVo param) throws Exception {
+		OrderAmountResult result = new OrderAmountResult();
+		try {
+			Date[] param1 = CommonUtils.getDateTime(param.getStartDate(), param.getEndDate());
+			ResultAmountDto ra  = lotteryGameOrderMapper.selectGameHisAmount(param.getAccountid(),param.getSid(),param1[0], param1[1]);
+			result.success(ra);
+			LOG.info(result.getMessage());
+		} catch (Exception e) {
+			result.error();
+			LOG.error(e.getMessage(), e);
+		}
+		return result;
 	}
 	
 	@ApiOperation(value = "获取房间收益", notes = "获取房间收益", httpMethod = "POST")
@@ -290,6 +329,7 @@ public class LotteryOrderController {
 	}
 	*/
 	
+	/*
 	@ApiOperation(value = "兑奖订单", notes = "游戏已开奖，由于各种因素导致某一笔订单没有兑奖，则手工通过该接口兑奖", httpMethod = "POST")
 	@RequestMapping(value = "/endLotteryOrder", method = RequestMethod.POST)
 	@ResponseBody
@@ -318,4 +358,5 @@ public class LotteryOrderController {
 		}
 		return result;
 	}
+	*/
 }

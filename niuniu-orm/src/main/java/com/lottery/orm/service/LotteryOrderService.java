@@ -436,6 +436,12 @@ public class LotteryOrderService {
 		return roundList;
 	}
 	
+	public List<RoomHisOrderDto> getLotteryHisAllOrder(Date startTime, Date endTime, Integer accountid,Integer sid, Integer beginRow, Integer pageSize) throws ParseException {
+		List<RoomHisOrderDto> roundList = new ArrayList<RoomHisOrderDto>();
+		Date[] sTime = CommonUtils.getDateTime(startTime, endTime);
+		roundList = lotteryGameOrderMapper.selectGameHisAllOrder(sTime[0], sTime[1], accountid,sid,  beginRow, pageSize);	
+		return roundList;
+	}
 	/*
 	// 投注结果
 	public List<RoomHisOrderDto> getLotteryHisOrder(Date startTime, Date endTime, Integer accountid,Integer sid, String time, Integer beginRow, Integer pageSize) throws ParseException {
@@ -502,5 +508,9 @@ public class LotteryOrderService {
 			roundList = lotteryRoomDetailMapper.selectRoomDetailByTime(sid,rmid,time, beginRow, pageSize);
 		}
 		return roundList;
+	}
+	
+	public void insertLotteryGameOrder(LotteryGameOrder record) throws Exception{
+		lotteryGameOrderMapper.insertSelective(record);
 	}
 }

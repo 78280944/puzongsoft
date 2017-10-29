@@ -36,7 +36,7 @@ public class CommonUtils {
    public static Date[] getDateTime(Date startTime,Date endTime) throws ParseException {
 			Date[] sTime = new Date[2];
 			DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-			String imptimeBegin = sdf.format(startTime)+" 00:00:00"; 
+			String imptimeBegin = sdf.format(startTime)+" 00:00:01"; 
 			String imptimeEnd = sdf.format(endTime)+" 23:59:59";
 			sTime[0] = sdf.parse(imptimeBegin);
 			sTime[1] = sdf.parse(imptimeEnd);
@@ -79,7 +79,7 @@ public class CommonUtils {
 	     calendar2.add(Calendar.DATE, offset2 - 7);  
 	     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 	     // System.out.println(sdf.format(calendar1.getTime()));// last Monday  
-	     String lastBeginDate = sdf.format(calendar1.getTime())+" 00:00:00";  
+	     String lastBeginDate = sdf.format(calendar1.getTime())+" 00:00:01";  
 	     // System.out.println(sdf.format(calendar2.getTime()));// last Sunday  
 	     String lastEndDate = sdf.format(calendar2.getTime())+" 23:59:59"; 
 	     return lastBeginDate + "," + lastEndDate;  
@@ -110,7 +110,7 @@ public class CommonUtils {
 	     int day = cal.get(Calendar.DAY_OF_WEEK);  
 	     // 根据日历的规则，给当前日期减去星期几与一个星期第一天的差值  
 	     cal.add(Calendar.DATE, cal.getFirstDayOfWeek() - day);  
-	     String imptimeBegin = sdf.format(cal.getTime())+" 00:00:00";  
+	     String imptimeBegin = sdf.format(cal.getTime())+" 00:00:01";  
 	     // System.out.println("所在周星期一的日期：" + imptimeBegin);  
 	     cal.add(Calendar.DATE, 6);  
 	     String imptimeEnd = sdf.format(cal.getTime())+" 23:59:59";
@@ -124,7 +124,7 @@ public class CommonUtils {
 	     cal.setTime(date);  
 	     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 	     // 判断要计算的日期是否是周日，如果是则减一天计算周六的，否则会出问题，计算到下一周去了  
-	     String imptimeBegin = sdf.format(cal.getTime())+" 00:00:00";  
+	     String imptimeBegin = sdf.format(cal.getTime())+" 00:00:01";  
 	     // System.out.println("所在周星期一的日期：" + imptimeBegin);  
 	    
 	     String imptimeEnd = sdf.format(cal.getTime())+ " 23:59:59";  
@@ -162,9 +162,207 @@ public class CommonUtils {
 	    return date;
 	}
 	
+	public static Date getStringToMillon(String dateString,Integer seconds){
+		 Date date = new Date();
+		 dateString = dateString.replaceAll("/", "-");
+	    try  
+	    {  
+	        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");  
+	        date = sdf.parse(dateString);  
+	        long times = date.getTime() - seconds*1000;
+	        date = new Date(times);
+	        //dateStr = sdf.format(date);
+	    }  
+	    catch (ParseException e)  
+	    {  
+	        System.out.println(e.getMessage());  
+	    }  
+	    return date;
+	}
+	
+	public static String[] getStringResult(String[] results,String orders,String type){
+		String[] ors = orders.split(",");
+		String result = "";
+		int count = 0;
+		int mod = 0;
+		for (int i =0;i<results.length;i++){
+			for (int j=0;j<ors.length;j++){
+				if (i==Integer.valueOf(ors[j])-1){
+					System.out.println("..."+i+"..."+j+".."+results[i]);
+					result = result + results[i]+",";
+					count = count + Integer.valueOf(results[i]);
+				
+					break;
+				}
+			}
+		}
+	    String [] value = new String[8];
+	    String [] strs = new String[3];
+	    String [] order = new String[3];
+	    value[0] = result.substring(0,result.length()-1);
+	    value[1] = String.valueOf(count);
+		mod = count%10;
+		//value[2]=String.valueOf(mod);
+		order = getOrdeNum(value[0],type);
+		value[2] = order[0];
+		value[3] = order[1];
+		value[4] = order[2];
+		strs = getStringResultNo(value[0],mod,type);
+		value[5] = strs[0];
+		value[6] = strs[1];
+		value[7] = strs[2];
+	    return value;
+	}
+	
+	public static String[] getOrdeNum(String result,String type){
+		String[] str = result.split(",");
+		String[] stemp = new String[3];
+
+		String t ="";
+		if (type.equals("01")&&str.length==3){
+			stemp[0] = str[0];
+			stemp[1] = str[1];
+			stemp[2] = str[2];
+			if(Integer.valueOf(stemp[0])<Integer.valueOf(stemp[1])){
+				t=stemp[0];
+				stemp[0]=stemp[1];
+				stemp[1]=t;
+			}//取得a b 大的
+			if(Integer.valueOf(stemp[0])<Integer.valueOf(stemp[2])){
+				t=stemp[0];
+				stemp[0]=stemp[2];
+				stemp[2]=t;
+		    }
+			if(Integer.valueOf(stemp[1])<Integer.valueOf(stemp[2])){
+				t=stemp[1];
+				stemp[1]=stemp[2];
+				stemp[2]=t;
+			}
+		} else if (type.equals("02")&&str.length==2){
+			stemp[0] = str[0];
+			stemp[1] = str[1];
+			stemp[2] = null;
+			if(Integer.valueOf(stemp[0])<Integer.valueOf(stemp[1])){
+				t = stemp[0];
+				stemp[0] = stemp[1];
+				stemp[1] = t;
+			}
+		
+		}
+		return stemp;
+	}
+	
+	public static String[] getStringResultNo(String result,int mod,String type){
+		String[] str = new String[3];
+		if (type.equals("01")){
+		    String[] re = result.split(",");
+			if (re[0].equals(re[1])&&re[0].equals(re[2])&&re[1].equals(re[2])){
+			    str[0] = EnumType.LotteryResultNiu.Result_niuniu_bz.ID;
+			    str[1] = EnumType.LotteryResultNiu.Result_niuniu_bz.NAME;
+			    str[2] = String.valueOf(EnumType.LotteryResultNiu.Result_niuniu_bz.RATIO);
+			    return str;
+			}
+			if (mod==0){
+			    str[0] = EnumType.LotteryResultNiu.Result_niuniu_nn.ID;
+			    str[1] = EnumType.LotteryResultNiu.Result_niuniu_nn.NAME;
+			    str[2] = String.valueOf(EnumType.LotteryResultNiu.Result_niuniu_nn.RATIO);
+			    return str;
+			}
+			if (Integer.valueOf(re[2])>Integer.valueOf(re[1])&&Integer.valueOf(re[1])>Integer.valueOf(re[0])){
+				if ((Integer.valueOf(re[2])==Integer.valueOf(re[1])+1)&&(Integer.valueOf(re[1])==Integer.valueOf(re[0])+1)){
+				    str[0] = EnumType.LotteryResultNiu.Result_niuniu_sz.ID;
+				    str[1] = EnumType.LotteryResultNiu.Result_niuniu_sz.NAME;
+				    str[2] = String.valueOf(EnumType.LotteryResultNiu.Result_niuniu_sz.RATIO);
+			        return str;
+				}
+			}
+			if (Integer.valueOf(re[0])>Integer.valueOf(re[1])&&Integer.valueOf(re[1])>Integer.valueOf(re[2])){
+				if ((Integer.valueOf(re[0])==Integer.valueOf(re[1])+1)&&(Integer.valueOf(re[1])==Integer.valueOf(re[2])+1)){
+				    str[0] = EnumType.LotteryResultNiu.Result_niuniu_ds.ID;
+				    str[1] = EnumType.LotteryResultNiu.Result_niuniu_ds.NAME;
+				    str[2] = String.valueOf(EnumType.LotteryResultNiu.Result_niuniu_ds.RATIO);
+				    return str;
+				}
+			}
+			System.out.println("0--"+re[0]+".."+re[1]+".."+re[2]);
+			if (re[0].equals(re[1])||re[0].equals(re[2])||re[1].equals(re[2])){
+			    str[0] = EnumType.LotteryResultNiu.Result_niuniu_dz.ID;
+			    str[1] = EnumType.LotteryResultNiu.Result_niuniu_dz.NAME;
+			    str[2] = String.valueOf(EnumType.LotteryResultNiu.Result_niuniu_dz.RATIO);
+			    return str;
+			}
+			if (mod==1){
+			    str[0] = EnumType.LotteryResultNiu.Result_niuniu_n1.ID;
+			    str[1] = EnumType.LotteryResultNiu.Result_niuniu_n1.NAME;
+			    str[2] = String.valueOf(EnumType.LotteryResultNiu.Result_niuniu_n1.RATIO);
+			    return str;
+			}
+			if (mod==2){
+			    str[0] = EnumType.LotteryResultNiu.Result_niuniu_n2.ID;
+			    str[1] = EnumType.LotteryResultNiu.Result_niuniu_n2.NAME;
+			    str[2] = String.valueOf(EnumType.LotteryResultNiu.Result_niuniu_n2.RATIO);
+			    return str;
+			}
+			if (mod==3){
+			    str[0] = EnumType.LotteryResultNiu.Result_niuniu_n3.ID;
+			    str[1] = EnumType.LotteryResultNiu.Result_niuniu_n3.NAME;
+			    str[2] = String.valueOf(EnumType.LotteryResultNiu.Result_niuniu_n3.RATIO);
+			    return str;
+			}
+			if (mod==4){
+			    str[0] = EnumType.LotteryResultNiu.Result_niuniu_n4.ID;
+			    str[1] = EnumType.LotteryResultNiu.Result_niuniu_n4.NAME;
+			    str[2] = String.valueOf(EnumType.LotteryResultNiu.Result_niuniu_n4.RATIO);
+			    return str;
+			}
+			if (mod==5){
+			    str[0] = EnumType.LotteryResultNiu.Result_niuniu_n5.ID;
+			    str[1] = EnumType.LotteryResultNiu.Result_niuniu_n5.NAME;
+			    str[2] = String.valueOf(EnumType.LotteryResultNiu.Result_niuniu_n5.RATIO);
+			    return str;
+			}
+			if (mod==6){
+			    str[0] = EnumType.LotteryResultNiu.Result_niuniu_n6.ID;
+			    str[1] = EnumType.LotteryResultNiu.Result_niuniu_n6.NAME;
+			    str[2] = String.valueOf(EnumType.LotteryResultNiu.Result_niuniu_n6.RATIO);
+			    return str;
+			}
+			if (mod==7){
+			    str[0] = EnumType.LotteryResultNiu.Result_niuniu_n7.ID;
+			    str[1] = EnumType.LotteryResultNiu.Result_niuniu_n7.NAME;
+			    str[2] = String.valueOf(EnumType.LotteryResultNiu.Result_niuniu_n7.RATIO);
+			    return str;
+			}
+			if (mod==8){
+			    str[0] = EnumType.LotteryResultNiu.Result_niuniu_n8.ID;
+			    str[1] = EnumType.LotteryResultNiu.Result_niuniu_n8.NAME;
+			    str[2] = String.valueOf(EnumType.LotteryResultNiu.Result_niuniu_n8.RATIO);
+			    return str;
+			}
+			if (mod==9){
+			    str[0] = EnumType.LotteryResultNiu.Result_niuniu_n9.ID;
+			    str[1] = EnumType.LotteryResultNiu.Result_niuniu_n9.NAME;
+			    str[2] = String.valueOf(EnumType.LotteryResultNiu.Result_niuniu_n9.RATIO);
+			    return str;
+			}
+		}else if (type.equals("02")){
+			str[0] = null;
+			str[1] = null;
+			str[2] = "1";
+		}
+        return str;
+	}
+	
 	public static void main(String args[]) throws Exception{
+		String[] a = "2,9,2,2,7".split(",");
+		String[] c =CommonUtils.getOrdeNum("2,10","02");
+		System.out.println("7----"+c[0]+".."+c[1]+".."+c[2]);
+		//public static String[] getStringResultNo(String result,int mod,String type){
+		String[] b = CommonUtils.getStringResultNo("5,9,5", 9,"01");
+		int t = 9%10;
+		System.out.println(".."+b[0]+"..."+b[1]+".."+b[2]+"..");
 		String m = (CommonUtils.getCurrentMills());
-		System.out.println(".."+CommonUtils.getStringToDate("2017/10/18 18:20:45"));
+		System.out.println(".."+CommonUtils.getStringToMillon("2017-10-21 22:40:45",470));
 		Date[] data = CommonUtils.getDateBetween(new Date(),new Date(),"03");
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		System.out.println(data[0]+".."+data[1]+"..."+sdf.format(data[0])+".."+sdf.format(data[1]));

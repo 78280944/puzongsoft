@@ -35,10 +35,13 @@ import com.lottery.orm.bo.LotteryRoom;
 import com.lottery.orm.bo.LotteryRound;
 import com.lottery.orm.dao.CustomLotteryMapper;
 import com.lottery.orm.dao.LotteryGameMapper;
+import com.lottery.orm.dao.LotteryGameResultsMapper;
 import com.lottery.orm.dao.LotteryGameRoundMapper;
 import com.lottery.orm.dao.LotteryRoomMapper;
 import com.lottery.orm.dao.LotteryRoundMapper;
+import com.lottery.orm.dto.LotteryGameCurDto;
 import com.lottery.orm.dto.LotteryGameDto;
+import com.lottery.orm.dto.LotteryResultDto;
 import com.lottery.orm.dto.ResultDataDto;
 import com.lottery.orm.result.BaseRestResult;
 import com.lottery.orm.result.GameCurResult;
@@ -46,6 +49,8 @@ import com.lottery.orm.result.GameItemResult;
 import com.lottery.orm.result.GameResult;
 import com.lottery.orm.result.GameRoomResult;
 import com.lottery.orm.result.HisRoundResult;
+import com.lottery.orm.result.LotteryGameResult;
+import com.lottery.orm.result.LotterySidResult;
 import com.lottery.orm.result.ResultListResult;
 import com.lottery.orm.result.RoundResult;
 import com.lottery.orm.service.LotteryOrderService;
@@ -85,6 +90,9 @@ public class LotteryRoundController {
 	
 	@Autowired
 	LotteryGameMapper lotteryGameMapper;
+	
+	@Autowired
+	LotteryGameResultsMapper lotteryGameResultsMapper;
 	
 	@Autowired
 	LotteryRoomMapper lotteryRoomMapper;
@@ -132,14 +140,14 @@ public class LotteryRoundController {
 		return result;
 	}
 	
-	@ApiOperation(value = "获取当期游戏结果", notes = "获取当期游戏结果", httpMethod = "POST")
-	@RequestMapping(value = "/getLotteryCurResult", method = RequestMethod.POST)
+	@ApiOperation(value = "获取期次游戏结果", notes = "获取期次游戏结果", httpMethod = "POST")
+	@RequestMapping(value = "/getLotteryTermResult", method = RequestMethod.POST)
 	@ResponseBody
-	public GameCurResult getLotteryCurResult(
+	public GameCurResult getLotteryTermResult(
 			@ApiParam(value = "Json参数", required = true) @Validated @RequestBody GameCurVo param) throws Exception {
 		GameCurResult result = new GameCurResult();
 		try {
-			LotteryGameRound lgr = lotteryGameRoundMapper.selectCurGameResult(param.getSid(),param.getLotteryterm());
+			LotteryGameRound lgr = lotteryGameRoundMapper.selectLotteryGameResult(param.getSid(),param.getLotteryterm());
             result.success(lgr);
 			LOG.info(result.getMessage());
 		} catch (Exception e) {
@@ -191,7 +199,7 @@ public class LotteryRoundController {
 		return result;
 	}
 	*/
-
+/*
 	@ApiOperation(value = "获取游戏及赔率信息", notes = "获取游戏及赔率信息", httpMethod = "POST")
 	@RequestMapping(value = "/getLotteryRound/{lotteryType}", method = RequestMethod.POST)
 	@ResponseBody
@@ -216,7 +224,8 @@ public class LotteryRoundController {
 		}
 		return result;
 	}
-	
+	*/
+	/*
 	@ApiOperation(value = "获取历史游戏信息", notes = "获取历史游戏信息", httpMethod = "POST")
 	@RequestMapping(value = "/getHistoryRound", method = RequestMethod.POST)
 	@ResponseBody
@@ -236,7 +245,8 @@ public class LotteryRoundController {
 		}
 		return result;
 	}
-
+*/
+	/*
 	@ApiOperation(value = "游戏封盘", notes = "游戏封盘", httpMethod = "POST")
 	@RequestMapping(value = "/closeLotteryRound/{roundId}", method = RequestMethod.POST)
 	@ResponseBody
@@ -258,6 +268,7 @@ public class LotteryRoundController {
 		}
 		return result;
 	}
+	*/
  /*
 	@ApiOperation(value = "兑奖并结束游戏", notes = "兑奖并结束游戏", httpMethod = "POST")
 	@RequestMapping(value = "/endLotteryRound", method = RequestMethod.POST)
@@ -324,6 +335,38 @@ public class LotteryRoundController {
 		
 		try {
 			List<ResultDataDto> list = lotteryRoundService.getLotteryResult(param.getStartDate(), param.getEndDate(), param.getSid(), param.getBeginRow(), param.getPageSize());
+			result.success(list);
+		} catch (Exception e) {
+			result.fail(MessageTool.ErrorCode);
+			LOG.error(e.getMessage(), e);
+		}
+		return result;
+	}
+	
+	@ApiOperation(value = "获取游戏当期接口结果", notes = "获取游戏当期接口结果", httpMethod = "POST")
+	@RequestMapping(value = "/getLotteryCurResult", method = RequestMethod.POST)
+	@ResponseBody
+	public LotterySidResult getLotteryCurResult(
+			@ApiParam(value = "Json参数", required = true) @Validated @RequestBody GameLobbyVo param) throws Exception {
+		LotterySidResult result = new LotterySidResult();	
+		try {
+			LotteryGameCurDto lgc = lotteryRoundService.getLotteyCurResult(param.getSid());
+			result.success(lgc);
+		} catch (Exception e) {
+			result.fail(MessageTool.ErrorCode);
+			LOG.error(e.getMessage(), e);
+		}
+		return result;
+	}
+	
+	@ApiOperation(value = "获取游戏主界面结果", notes = "获取游戏主界面结果", httpMethod = "POST")
+	@RequestMapping(value = "/getLotteryGameResults", method = RequestMethod.POST)
+	@ResponseBody
+	public LotteryGameResult getLotteryGameResults(
+			@ApiParam(value = "Json参数", required = true) @Validated @RequestBody GameCurVo param) throws Exception {
+		LotteryGameResult result = new LotteryGameResult();	
+		try {
+			List<LotteryResultDto> list = lotteryGameResultsMapper.selectSidGameResult(param.getSid(), param.getLotteryterm());
 			result.success(list);
 		} catch (Exception e) {
 			result.fail(MessageTool.ErrorCode);

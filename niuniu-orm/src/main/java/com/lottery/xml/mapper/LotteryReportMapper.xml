@@ -192,7 +192,7 @@
 	<if test="startTime != null and endTime != null">
 	and Date(INPUTTIME) between #{startTime,jdbcType=TIMESTAMP} and #{endTime,jdbcType=TIMESTAMP}
 	</if>
-	and a.level= '9'
+	and (a.level= '9' or a.level = #{level,jdbcType=VARCHAR}) or (a.accountid = #{accountId,jdbcType=INTEGER})
 	<![CDATA[and FIND_IN_SET(a.accountid, 
 	   (SELECT GROUP_CONCAT(LEVEL SEPARATOR ',') FROM (
 	      SELECT @Ids := (SELECT GROUP_CONCAT(c.accountid SEPARATOR ',') FROM account_info c WHERE FIND_IN_SET(supuserid, @Ids) ) LEVEL

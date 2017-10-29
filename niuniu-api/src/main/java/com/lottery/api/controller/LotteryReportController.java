@@ -43,6 +43,7 @@ import com.lottery.orm.result.RoomListResult;
 import com.lottery.orm.result.TradeReportResult;
 import com.lottery.orm.service.LotteryOrderService;
 import com.lottery.orm.service.LotteryReportService;
+import com.lottery.orm.util.CommonUtils;
 import com.lottery.orm.util.EnumType;
 import com.lottery.orm.util.QueryTool;
 import com.wordnik.swagger.annotations.Api;
@@ -86,7 +87,8 @@ public class LotteryReportController {
 		try {
 			DateTime initDate = new DateTime(this.initDate);
 			Date startTime = QueryTool.getPeroidStartTime(initDate.toDate());
-			List<QueryRoomDateDto> list = lotteryOrderService.selectRoomResult(param.getStartDate(), param.getEndDate(), param.getTime(), param.getSid(), param.getRmid(), param.getAccountid(), param.getBeginRow(), param.getPageSize());
+			Date[] param1 = CommonUtils.getDateTime(param.getStartDate(), param.getEndDate());
+			List<QueryRoomDateDto> list = lotteryOrderService.selectRoomResult(param1[0], param1[1], param.getTime(), param.getSid(), param.getRmid(), param.getAccountid(), param.getBeginRow(), param.getPageSize());
 			result.success(list);
 		    LOG.info(result.getMessage());
 		} catch (Exception e) {
@@ -203,7 +205,8 @@ public class LotteryReportController {
 			@ApiParam(value = "Json参数", required = true) @Validated @RequestBody AgencyWinReVo param) throws Exception {
 		AgencyWinReportResult result = new AgencyWinReportResult();
 		try {	
-			List<ProAccAmountDto> list = lotteryReportService.getProAccWinReport(param.getStartTime(), param.getEndTime(), param.getAccountId(), param.getLevel(), param.getBeginRow(), param.getPageSize());		
+			Date[] param1 = CommonUtils.getDateTime(param.getStartTime(), param.getEndTime());
+			List<ProAccAmountDto> list = lotteryReportService.getProAccWinReport(param1[0], param1[1], param.getAccountId(), param.getLevel(), param.getBeginRow(), param.getPageSize());		
 			result.success(list);	
 			LOG.info(result.getMessage());
 		} catch (Exception e) {
@@ -220,7 +223,8 @@ public class LotteryReportController {
 			@ApiParam(value = "Json参数", required = true) @Validated @RequestBody AgencyWinReVo param) throws Exception {
 		AccWinReportResult result = new AccWinReportResult();
 		try {	
-			List<AccAmountDto> list = lotteryReportService.getAccWinReport(param.getStartTime(), param.getEndTime(), param.getAccountId(), param.getLevel(), param.getBeginRow(), param.getPageSize());		
+			Date[] param1 = CommonUtils.getDateTime(param.getStartTime(), param.getEndTime());
+			List<AccAmountDto> list = lotteryReportService.getAccWinReport(param1[0], param1[1], param.getAccountId(), param.getLevel(), param.getBeginRow(), param.getPageSize());		
 			result.success(list);	
 			LOG.info(result.getMessage());
 		} catch (Exception e) {
@@ -238,7 +242,9 @@ public class LotteryReportController {
 			@ApiParam(value = "Json参数", required = true) @Validated @RequestBody AgencyWinReVo param) throws Exception {
 		InoutAccReportResult result = new InoutAccReportResult();
 		try {
-			List<InoutAccReportDto> list = lotteryReportService.selectAccInoutReport(param.getStartTime(), param.getEndTime(), param.getAccountId(), param.getLevel(),param.getBeginRow(), param.getPageSize());		
+			Date[] param1 = CommonUtils.getDateTime(param.getStartTime(), param.getEndTime());
+			System.out.println("9---------------"+param1[0]+"..."+param1[1]);
+			List<InoutAccReportDto> list = lotteryReportService.selectAccInoutReport(param1[0], param1[1], param.getAccountId(), param.getLevel(),param.getBeginRow(), param.getPageSize());		
 			result.success(list);	
 			LOG.info(result.getMessage());
 		} catch (Exception e) {

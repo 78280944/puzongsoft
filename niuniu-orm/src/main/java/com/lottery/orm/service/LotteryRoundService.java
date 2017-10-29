@@ -25,6 +25,7 @@ import com.lottery.orm.dao.LotteryRoundItemMapper;
 import com.lottery.orm.dao.LotteryRoundMapper;
 import com.lottery.orm.dao.ScheduleJobMapper;
 import com.lottery.orm.dao.TSTimeTaskMapper;
+import com.lottery.orm.dto.LotteryGameCurDto;
 import com.lottery.orm.dto.ResultDataDto;
 import com.lottery.orm.util.CommonUtils;
 import com.lottery.orm.util.EnumType;
@@ -253,7 +254,28 @@ public class LotteryRoundService {
 	
 	//获取是否有游戏结果
 	public LotteryGameRound getLotteryTermResult(Integer sid,String lotteryterm) throws Exception{
-		LotteryGameRound lotteryGameRound = lotteryGameRoundMapper.selectCurGameRound(sid, lotteryterm);
+		LotteryGameRound lotteryGameRound = lotteryGameRoundMapper.selectLotteryGameResult(sid, lotteryterm);
 		return lotteryGameRound;
 	} 
+	
+	//获取当前游戏接口信息
+	public LotteryGameCurDto getLotteyCurResult(Integer sid) throws Exception{
+		List<LotteryGameRound> list = lotteryGameRoundMapper.selectLotteryOrderResult(sid);
+		LotteryGameCurDto lgc = new LotteryGameCurDto();
+		for (int i = 0;i<list.size();i++){
+			LotteryGameRound lgr = list.get(i);
+			if (i==0){
+				lgc.setSid(lgr.getSid());
+				lgc.setStarttime(lgr.getStarttime());
+				lgc.setOvertime(lgr.getOvertime());
+				lgc.setOpentime(lgr.getOpentime());
+				lgc.setLotteryterm(lgr.getLotteryterm());
+			}
+			if (i==1){
+				lgc.setLastlotteryterm(lgr.getLotteryterm());
+				lgc.setLastlotteryresult(lgr.getLotteryresult());
+			}
+		}
+		return lgc;
+	}
 }

@@ -19,28 +19,28 @@ public class LotteryServiceDto {
     private String playservice;
 
     @ApiModelProperty(value = "牛牛房间数设置")
-    private Integer lotteryniuroom = 18;
+    private Integer lotteryniuroom = 30;
     
     @ApiModelProperty(value = "牛牛房间数人数设置")
-    private Integer lotteryniunpman = 60;
+    private Integer lotteryniunpman = 50;
     
     @ApiModelProperty(value = "牛牛上庄金额设置")
-    private BigDecimal lotteryniunbanker = BigDecimal.valueOf(10000);
+    private BigDecimal lotteryniunbanker = BigDecimal.valueOf(20000);
     
     @ApiModelProperty(value = "牛牛投注金额设置")
-    private BigDecimal lotteryniunpbet = BigDecimal.valueOf(2000);
+    private BigDecimal lotteryniunpbet = BigDecimal.valueOf(5000);
     
     @ApiModelProperty(value = "板九房间数设置")
-    private Integer lotterybjroom = 18;
+    private Integer lotterybjroom = 30;
     
     @ApiModelProperty(value = "板九房间人数设置")
-    private Integer lotterybjman = 10;
+    private Integer lotterybjman = 50;
     
     @ApiModelProperty(value = "板九上庄金额设置")
     private  BigDecimal lotterybjbanker = BigDecimal.valueOf(10000);
     
     @ApiModelProperty(value = "板九投注金额设置")
-    private BigDecimal lotterybjbet = BigDecimal.valueOf(2000);
+    private BigDecimal lotterybjbet = BigDecimal.valueOf(10000);
 
 	public String getLoginservice() {
 		return loginservice;
