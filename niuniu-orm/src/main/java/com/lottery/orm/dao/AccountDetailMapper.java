@@ -1,5 +1,7 @@
 package com.lottery.orm.dao;
 
+import java.math.BigDecimal;
+
 import org.apache.ibatis.annotations.Param;
 
 import com.lottery.orm.bo.AccountDetail;
@@ -24,4 +26,5 @@ public interface AccountDetailMapper {
     
     AccountDetail selectByUserId(@Param("userid")Integer userid, @Param("offtype")String offtype);
     
+   
 }

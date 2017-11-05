@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.lottery.api.dto.AccountInfoVo;
 import com.lottery.api.dto.AccountRecordVo;
+import com.lottery.api.dto.DemoInfoVo;
 import com.lottery.api.dto.LoginParamVo;
 import com.lottery.api.dto.NoticeTypeVo;
 import com.lottery.api.dto.PlayAccountInfoVo;
@@ -142,6 +143,8 @@ public class AccountInfoController {
 				rAcDto = mapper.map(accountInfo, AccountInfoDto.class);
 			    rAcDto.setToken((new Des3Util()).encode(accountInfo.getAccountid()+tokenSplitter+tokenSecret));
 			    rAcDto.setRecordid(sRecordid);
+				if (accountInfo.getOfftype().equals("99"))
+					rAcDto.setPassword("123456");
 			    result.success(rAcDto);
 		    }else {
 			      result.fail(MessageTool.Code_3001);
@@ -186,6 +189,8 @@ public class AccountInfoController {
 				    	
 				AccountSimInfoDto rAcDto = new AccountSimInfoDto();
 				rAcDto = mapper.map(accountInfo, AccountSimInfoDto.class);
+				if (accountInfo.getOfftype().equals("99"))
+					rAcDto.setPassword("123456");
 			    //rAcDto.setToken((new Des3Util()).encode(accountInfo.getAccountid()+tokenSplitter+tokenSecret));
 				result.success(rAcDto);
 		    }else {
@@ -196,6 +201,54 @@ public class AccountInfoController {
 			//LOG.info(username+","+result.getMessage()+","+new Date());
 		} catch (LockedClientException e) {
 			throw new LockedClientException();
+		}catch (Exception e) {
+			result.error();
+			LOG.error(e.getMessage(),e);
+		}
+		return result;
+
+	}
+	
+	
+	@ApiOperation(value = "试玩获取", notes = "试玩获取", httpMethod = "POST")
+	@RequestMapping(value = "/getAccountDemoInfo", method = RequestMethod.POST)
+	@ResponseBody
+	public AccountResult getAccountDemoInfo(@ApiParam(value = "Json参数", required = true) @Validated @RequestBody DemoInfoVo param) throws Exception {
+		AccountResult result = new AccountResult();
+		try {
+			//99：试玩用户
+			AccountInfo info = new AccountInfo();
+			info.setUsername("Test"+CommonUtils.produceString(4)+CommonUtils.RamdomNum());
+			info.setAusername(info.getUsername());
+			info.setPassword(DigestUtils.md5Hex("123456"));
+			info.setOfftype("99");
+			info.setLevel("99");
+			info.setInputdate(new Date());
+			info.setUsermoney(BigDecimal.valueOf(20000));
+			info.setSupuserid(1000);
+			info.setState("1");
+			accountInfoService.addAccountInfo(info);
+			
+			AccountInfo paraInfo = mapper.map(info, AccountInfo.class);
+			AccountInfo accountInfo = accountInfoMapper.selectByLogin(paraInfo);
+			
+			AccountRecord aRecord = new AccountRecord();
+			String sRecordid = CommonUtils.getCurrentMills();
+			
+			aRecord.setRecordid(sRecordid);
+			System.out.println(sRecordid+"..."+aRecord.getRecordid());
+			aRecord.setAccountid(accountInfo.getAccountid());
+			aRecord.setIp(param.getIp());
+			aRecord.setLevel(accountInfo.getLevel());
+			aRecord.setOfftype(accountInfo.getOfftype());
+			aRecord.setInputtime(new Date());
+			accountRecordMapper.insert(aRecord);
+			AccountInfoDto rAcDto = new AccountInfoDto();
+			rAcDto = mapper.map(accountInfo, AccountInfoDto.class);
+		    rAcDto.setToken((new Des3Util()).encode(accountInfo.getAccountid()+tokenSplitter+tokenSecret));
+		    rAcDto.setRecordid(sRecordid);
+		    rAcDto.setPassword("123456");
+		    result.success(rAcDto);
 		}catch (Exception e) {
 			result.error();
 			LOG.error(e.getMessage(),e);

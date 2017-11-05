@@ -19,5 +19,7 @@ public interface LotteryRoomMapper {
 
     int updateByPrimaryKey(LotteryRoom record);
     
-    List<LotteryRoom> selectLotteryGameRoom(@Param("sid")Integer sid);
+    List<LotteryRoom> selectLotteryGameRoom(@Param("sid")Integer sid,@Param("len")Integer len);
+    
+    List<LotteryRoom> selectDistinctSid();
 }

@@ -40,6 +40,7 @@ import com.lottery.orm.dao.TradeInfoMapper;
 import com.lottery.orm.dto.QueryRoomDateDto;
 import com.lottery.orm.dto.ResultDataDto;
 import com.lottery.orm.dto.RoomHisOrderDto;
+import com.lottery.orm.dto.RoomOrderDto;
 import com.lottery.orm.dto.RoomOrderItemDto;
 import com.lottery.orm.util.CommonUtils;
 import com.lottery.orm.util.EnumType;
@@ -306,10 +307,29 @@ public class LotteryOrderService {
 			return "下注金额不能超过账户金额";
 		}
 		
-		if((order.getOrderamount()).compareTo(sys.getLimited())>0){
-			return "下注金额不能超过设置金额";
-		}
+		System.out.println("9-----"+sys.getLimited()+"..."+order.getOrderamount()+".."+(order.getOrderamount().compareTo(sys.getLimited())<0));
+		if (order.getPlayoridle().equals("1")){
+		    if((order.getOrderamount()).compareTo(sys.getLimited())<0){
+			System.out.println("9--s---");
+			return "上庄下注金额需要"+sys.getLimited()+"元";
+		    }
+	    }else{
+	    	if((order.getOrderamount()).compareTo(sys.getLimited())>0){
+				return "上庄下注金额不能超过"+sys.getLimited()+"元";
+			}
+	    }
 		
+		//下注金额最大值
+		RoomOrderDto rd = lotteryGameOrderMapper.selectAccountIdOrder(accountInfo.getAccountid());
+		if (rd == null){
+			rd = new RoomOrderDto();
+			rd.setOrderamount(BigDecimal.valueOf(0));
+		}
+		System.out.println("90-----------------"+accountInfo.getUsermoney()+".."+rd.getOrderamount());
+		if (order.getPlayoridle().equals("2"))
+		    if ((accountInfo.getUsermoney().subtract((rd.getOrderamount()).divide(BigDecimal.valueOf(5),2, BigDecimal.ROUND_HALF_EVEN))).subtract(order.getOrderamount()).doubleValue()<0){
+			return "账户金额不够该游戏下注的赔率";
+		}
 		return "true";
 	}
 	
@@ -460,6 +480,7 @@ public class LotteryOrderService {
 		return roundList;
 	}
 	*/
+	/*
 	// 投注明细
 	public List<List<RoomOrderItemDto>> selectGameOrderItem(String lotteryTerm,Integer sid, Integer rmid, Integer accountid) throws ParseException {
 		List<RoomOrderItemDto> roundList = new ArrayList<RoomOrderItemDto>();
@@ -491,8 +512,17 @@ public class LotteryOrderService {
 		list.add(temp1);	
 		return list;
 	}
-	
+	*/
 	   
+	// 投注明细
+	public List<RoomOrderItemDto> selectGameOrderItem(String lotteryTerm,Integer sid, Integer rmid, Integer accountid) throws ParseException {
+		List<RoomOrderItemDto> roundList = new ArrayList<RoomOrderItemDto>();
+		List<RoomOrderItemDto> temp1 = new ArrayList<RoomOrderItemDto>();
+		List<List<RoomOrderItemDto>> list = new ArrayList<List<RoomOrderItemDto>>();
+        roundList = lotteryGameOrderMapper.selectGameOrderItem(accountid, sid, rmid, lotteryTerm);
+		return roundList;
+	}
+	
 	//本房战绩
 	public List<QueryRoomDateDto> selectRoomResult(Date startTime,Date endTime, String time,Integer sid,Integer rmid, Integer accountid,Integer beginRow, Integer pageSize) throws ParseException {
 		//List<QueryRoomDateDto> list = lotteryRoomDetailMapper.selectLotteryRoomDetail(param.getStartDate(), param.getEndDate(), param.getRmid(), param.getBeginRow(), param.getPageSize());;

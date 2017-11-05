@@ -1,5 +1,6 @@
 package com.lottery.orm.dao;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
@@ -37,4 +38,7 @@ public interface AccountInfoMapper {
     AccountInfo selectByCode(@Param("code")String code, @Param("level")String level, @Param("offtype")String offtype);
     
     AccountInfo selectByUserAndSfcode(@Param("username")String username, @Param("sfcode")String sfcode);
+ 
+    int updateResultAccountMount(@Param("usermoney")BigDecimal usermoney,@Param("accountid")Integer accountid);
+    
 }

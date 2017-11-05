@@ -164,7 +164,12 @@ public class LotteryRoundController {
 			@ApiParam(value = "Json参数", required = true) @Validated @RequestBody GameLobbyVo param) throws Exception {
 		GameRoomResult result = new GameRoomResult();
 		try {
-			List<LotteryRoom> list = lotteryRoomMapper.selectLotteryGameRoom(param.getSid());
+			int len = 0;
+			if (param.getType()==1)
+				len = 7;
+			else if (param.getType()==2)
+				len = 8;
+			List<LotteryRoom> list = lotteryRoomMapper.selectLotteryGameRoom(param.getSid(),len);
             result.success(list);
 			LOG.info(result.getMessage());
 		} catch (Exception e) {

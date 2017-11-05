@@ -1,12 +1,17 @@
 package com.lottery.orm.service;
 
+import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+
 import org.apache.commons.lang3.StringUtils;
+import org.apache.ibatis.annotations.Param;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.json.JSONArray;
@@ -14,27 +19,37 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
+import com.lottery.orm.bo.AccountInfo;
 import com.lottery.orm.bo.LotteryGame;
+import com.lottery.orm.bo.LotteryGameOrder;
 import com.lottery.orm.bo.LotteryGameResults;
 import com.lottery.orm.bo.LotteryGameRound;
 import com.lottery.orm.bo.LotteryRoom;
 import com.lottery.orm.bo.LotteryRoomDetail;
 import com.lottery.orm.bo.LotteryRound;
+import com.lottery.orm.bo.SysCom;
 import com.lottery.orm.dao.CustomLotteryMapper;
 import com.lottery.orm.dao.LotteryGameMapper;
+import com.lottery.orm.dao.LotteryGameOrderMapper;
 import com.lottery.orm.dao.LotteryGameResultsMapper;
 import com.lottery.orm.dao.LotteryGameRoundMapper;
 import com.lottery.orm.dao.LotteryRoomDetailMapper;
+import com.lottery.orm.dao.LotteryRoomMapper;
+import com.lottery.orm.dao.SysComMapper;
+import com.lottery.orm.dto.LotteryAmountDto;
 import com.lottery.orm.service.LotteryRoundService;
 import com.lottery.orm.util.CommonUtils;
 import com.lottery.orm.util.EnumType;
 import com.lottery.orm.util.HttpclientTool;
+import com.lottery.orm.util.MessageTool;
+import com.wordnik.swagger.annotations.ApiModelProperty;
 
 @Service
 @Transactional
@@ -54,6 +69,12 @@ public class LotteryTaskService {
 	private LotteryGameMapper lotteryGameMapper;
 	
 	@Autowired
+	private SysComMapper sysComMapper;
+	
+	@Autowired
+	private LotteryRoomMapper lotteryRoomMapper;
+	
+	@Autowired
 	private LotteryGameRoundMapper lotteryGameRoundMapper;
 	
 	@Autowired
@@ -61,6 +82,12 @@ public class LotteryTaskService {
 	
 	@Autowired
 	private LotteryRoomDetailMapper lotteryRoomDetailMapper;
+	
+	@Autowired
+	private LotteryGameOrderMapper lotteryGameOrderMapper;
+	
+	@Autowired
+	private AccountInfoService accountInfoService;
 	
 	@Value("${lottery.apiUrl.cqklsf}")
     private String lotteryApiUrlCQ;
@@ -121,7 +148,7 @@ public class LotteryTaskService {
 	 */
 	@Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor=Exception.class)
 	public void getCQSSCLotteryResult() throws Exception{
-		System.out.println("00--------------------"+lotteryApiUrlCQSSC2);
+		System.out.println("00--------------------"+lotteryApiUrlCQSSC1);
 		getLotteryOriginResult1(EnumType.LotteryType.CQSSC.ID, lotteryApiUrlCQSSC1);
 		
 	}
@@ -198,8 +225,15 @@ public class LotteryTaskService {
 	 * @throws Exception 
 	 */
 	private synchronized void getLotteryOriginResult1(String lotteryType, String apiUrl) throws Exception {
+		System.out.println("8--d-------------"+apiUrl+"..."+lotteryType);
 		String result = HttpclientTool.get(apiUrl);
 		System.out.println("8---------------"+result+"..."+lotteryType);
+		result = "{\"success\":true,\"data\":[{\"preDrawCode\":\"69754\","
+				+ "\"drawIssue\":\"20171105082\",\"drawTime\":\"2017/11/5 19:40:45\","
+				+ "\"preDrawTime\":\"2017-11-05 19:30:45\",\"preDrawIssue\":\"20171105081\","
+				+ "\"drawCount\":\"39\",\"totalCount\":\"120\"}]}";
+          //result = "{\"sucess\":true,";
+
 		log.info("批处理测试中....."+result);
 		//{"success":true,"data":[{"preDrawCode":"26570","drawIssue":"20171018074",
 		//"drawTime":"2017/10/18 18:20:45","preDrawTime":"2017-10-18 18:10:45",
@@ -213,15 +247,19 @@ public class LotteryTaskService {
 			lgr.setSid(Integer.valueOf(lotteryType));
 			lgr.setLotteryterm(jArray.getJSONObject(0).getString("preDrawIssue"));
 			lgr.setLotteryresult(jArray.getJSONObject(0).getString("preDrawCode").contains(",")?jArray.getJSONObject(0).getString("preDrawCode"):CommonUtils.getArrayString(jArray.getJSONObject(0).getString("preDrawCode")));
-			lgr.setStarttime(CommonUtils.getStringToMillon(jArray.getJSONObject(0).getString("preDrawTime"),470));
-			lgr.setOvertime(CommonUtils.getStringToMillon(jArray.getJSONObject(0).getString("preDrawTime"),70));
+			if ((lgr.getSid()==1001&&CommonUtils.dateRange())||lgr.getSid()==2001||lgr.getSid()==2002)
+			    lgr.setStarttime(CommonUtils.getStringToMillon(jArray.getJSONObject(0).getString("preDrawTime"),4*60));
+			else
+				lgr.setStarttime(CommonUtils.getStringToMillon(jArray.getJSONObject(0).getString("preDrawTime"),9*60));
+			lgr.setOvertime(CommonUtils.getStringToMillon(jArray.getJSONObject(0).getString("preDrawTime"),60));
 			lgr.setOpentime(CommonUtils.getStringToDate(jArray.getJSONObject(0).getString("preDrawTime")));
-			lgr.setClosetime(CommonUtils.getStringToMillon(jArray.getJSONObject(0).getString("preDrawTime"),10));
+			lgr.setClosetime(CommonUtils.getStringToMillon(jArray.getJSONObject(0).getString("preDrawTime"),80));
 			try{
 			gRound = lotteryRoundService.getLotteryTermResult(lgr.getSid(), lgr.getLotteryterm());
 			if (gRound!=null){
 				//System.out.println("9----------------"+gRound.getLotteryresult());
-				if ((null == gRound.getLotteryresult()) ||gRound.getLotteryresult().equals("")){
+				if (gRound.getLotteryterm().length()>0){
+				//if ((null == gRound.getLotteryresult()) ||gRound.getLotteryresult().equals("")){
 					//更新结果
 					//System.out.println("9----------------"+lgr.getLotteryresult());
 					gRound.setLotteryresult(lgr.getLotteryresult());
@@ -231,10 +269,15 @@ public class LotteryTaskService {
 					//结果更新
 					LotteryResultHandle2(gRound);
 					//结果排名
-					LotteryResultHandle3(gRound);
-					//结果处理
-					
+					LotteryResultHandle3(gRound);	
 					//账户处理
+					List<LotteryGameOrder> list = lotteryGameOrderMapper.selectGameRmid(lgr.getSid(), lgr.getLotteryterm());
+					for (int i = 0;i<list.size();i++){
+						LotteryGameOrder lg = new LotteryGameOrder();
+						lg = list.get(i);
+						LotteryResultHandle5(lgr.getLotteryterm(),lgr.getSid(),lg.getRmid());	
+					}
+					
 					
 				}
 			}else{
@@ -247,7 +290,10 @@ public class LotteryTaskService {
 			LotteryGameRound lgr1 = new LotteryGameRound();
 			lgr1.setSid(Integer.valueOf(lotteryType));
 			lgr1.setLotteryterm(jArray.getJSONObject(0).getString("drawIssue"));
-			lgr1.setStarttime(CommonUtils.getStringToMillon(jArray.getJSONObject(0).getString("drawTime"),8*60));
+			if ((lgr.getSid()==1001&&CommonUtils.dateRange())||lgr.getSid()==2001||lgr.getSid()==2002)
+			    lgr1.setStarttime(CommonUtils.getStringToMillon(jArray.getJSONObject(0).getString("drawTime"),4*60));
+			else
+			    lgr1.setStarttime(CommonUtils.getStringToMillon(jArray.getJSONObject(0).getString("drawTime"),9*60));
 			lgr1.setOvertime(CommonUtils.getStringToMillon(jArray.getJSONObject(0).getString("drawTime"),1*60));
 			lgr1.setOpentime(CommonUtils.getStringToDate(jArray.getJSONObject(0).getString("drawTime")));
 			lgr1.setClosetime(CommonUtils.getStringToMillon(jArray.getJSONObject(0).getString("drawTime"),80));
@@ -266,6 +312,8 @@ public class LotteryTaskService {
 				System.out.println("9----hello-----"+lgr1.getSid()+".."+lr.getGamestarttime());
 		        //结果处理1
 				LotteryResultHandle1(lr);
+				//试玩处理
+				LotteryResultHandle4(lgr1);
 			}
 			}catch(Exception e){
 				System.out.println(e);
@@ -378,7 +426,112 @@ public class LotteryTaskService {
 	    	//System.out.println("123-3444----");
      }
 		
+	/**
+	 * 结果处理4,试玩
+	 * @throws Exception 
+	 */
+	public synchronized void LotteryResultHandle4(LotteryGameRound lottery) throws Exception{
+		java.util.Random random=new java.util.Random();// 定义随机类
+		//int result=random.nextInt(10);// 返回[0,10)集合中的整数，注意不包括10 
+		int result;
+		LotteryGameOrder order = new LotteryGameOrder();
+	    List<LotteryRoom> list = lotteryRoomMapper.selectDistinctSid();
+	    for (int m=991;m<=993;m++){
+	    	order.setAccountid(m);
+		    for (int i=0;i<list.size();i++){
+		    	for (int j=0;j<3;j++){
+		    	LotteryRoom lr = new LotteryRoom();
+		    	lr = list.get(i);
+		    	order.setSid(lr.getSid());
+		    	order.setRmid(lr.getRmid());
+		    	result = random.nextInt(10);
+		    	order.setLtdid(result+1);
+		    	order.setNoid(result+1);
+		    	order.setPlayoridle("2");
+		    	order.setLotteryterm(lottery.getLotteryterm());
+		    	order.setOrderamount(BigDecimal.valueOf(100));
+		    	order.setOrdertime(new Date());
+		    	order.setOpentime(lottery.getOpentime());
+		        lotteryGameOrderMapper.insertSelective(order);
+		    	}
+		    }
+	    }
+	}
+	    
+		/**
+		 * 结果处理5,比较
+		 * @throws Exception 
+		 */
+		public synchronized void LotteryResultHandle5(String lotteryterm,Integer sid,Integer rmid) throws Exception{
+			
+			List<LotteryAmountDto> list =  lotteryGameOrderMapper.selectGameAmountResult(lotteryterm, sid, rmid);
+		
+			int m = list.size();			
+			LotteryAmountDto last = null;
+			String[][] str = new String[list.size()][9];
+			String type = "";
+		    for (int i = 0;i<list.size();i++){
+		    	last = new LotteryAmountDto();
+		    	last = list.get(i);
+		    	str[i][0]=String.valueOf(last.getOrderamount()).replaceAll("\\.00", "");
+		        str[i][1]=String.valueOf(last.getOrderamount()).replaceAll("\\.00", "");
+		        str[i][2]=String.valueOf(last.getOrderamount()).replaceAll("\\.00", "");
+		        str[i][3]=String.valueOf(last.getAccountid());
+		        str[i][4]=String.valueOf(last.getLgmid());
+		        str[i][5]="0";
+		        str[i][6]=String.valueOf(last.getRatio()).replaceAll("\\.0", "");
+		        str[i][7]="0";
+		        str[i][8]=last.getResultvalue();	
+		        if (i==0){
+		        	type = last.getType();
+		        }
+		    }	
+		    
+			SysCom sc = sysComMapper.selectByGameType(type);
+			System.out.println("9---"+sc+".."+type);
+			str = CommonUtils.doNoBankerHandle(str);
+			Date now = new Date();
+			BigDecimal fee = BigDecimal.valueOf(0);
+		    for (int j = 0;j<list.size();j++){
+		        if (Integer.valueOf(str[j][2])>0)
+		        	fee = BigDecimal.valueOf(Integer.valueOf(str[j][2]) * sc.getCommission());
+		        else 
+		        	fee = BigDecimal.valueOf(0);
+		        lotteryGameOrderMapper.updateOrderResult(Integer.valueOf(str[j][4]), now, str[j][8], BigDecimal.valueOf(Integer.valueOf(str[j][2])).subtract(fee));
+		    	accountInfoService.updateResultAccountMount(BigDecimal.valueOf(Integer.valueOf(str[j][2])).subtract(fee), Integer.valueOf(str[j][3]));   
+		    	accountInfoService.updateResultAccountMount(fee, 1000);
+		    }
+		    }
+	    
 	
+	    /*
+	     * 
+		for (OrderDetailVo orderDetailVo : param.getOrderDetails()) {
+			order.setOrdertime(new Date());
+			order.setNoid(orderDetailVo.getNoId());
+			order.setLtdid(orderDetailVo.getNoId());
+			order.setOrderamount(orderDetailVo.getOrderAmount());
+			order.setPlayoridle(orderDetailVo.getPlayOridle());
+			
+		List<LotteryGameResults> list = lotteryGameResultsMapper.selectGameResults(lottery.getSid(),lottery.getLotteryterm());
+	    String[] com = new String[5];
+	    
+	    	    @ApiModelProperty(value = "账户ID", required = true)
+	    @NotNull(message = "账户ID不能为空")
+	    @Min(value=0, message = "账户ID格式不正确")
+	    private Integer accountId;
+
+	    @ApiModelProperty(value = "游戏ID", required = true)
+	    private Integer sid;
+
+	    @ApiModelProperty(value = "房间ID", required = true)
+	    private Integer rmid;
+	    
+		@ApiModelProperty(value = "游戏期次", required = true)
+	    private String lotteryTerm;
+	    
+	    @ApiModelProperty(value = "投注详情", required = true)
+	*/
 	
 	
 	/**

@@ -159,7 +159,7 @@
       o.NO10
     from LOTTERY_ROOM_DETAIL o 
     where (Date(o.GAMESTARTTIME) between #{startTime,jdbcType=TIMESTAMP} and #{endTime,jdbcType=TIMESTAMP})
-	and o.sid = #{sid,jdbcType=INTEGER} and o.rmid = #{rmid,jdbcType=INTEGER} order by o.LOTTERYTERM desc
+	and o.sid = #{sid,jdbcType=INTEGER} order by o.LOTTERYTERM desc
 	<if test="beginRow != null and pageSize !=null">
 	limit #{beginRow,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
 	</if>
@@ -171,7 +171,7 @@
       o.NO6, o.NO7, o.NO8, o.NO9, 
       o.NO10
     from LOTTERY_ROOM_DETAIL o 
-    where o.rmid=#{rmid,jdbcType=INTEGER} and o.sid = #{sid,jdbcType=INTEGER}
+    where o.sid = #{sid,jdbcType=INTEGER}
 	and o.lotteryterm  = getLotteryTerm(#{time,jdbcType=VARCHAR}) order by o.LOTTERYTERM desc
 	<if test="beginRow != null and pageSize !=null">
 	limit #{beginRow,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}

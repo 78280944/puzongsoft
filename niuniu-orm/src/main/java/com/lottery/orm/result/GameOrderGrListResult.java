@@ -8,18 +8,18 @@ import com.wordnik.swagger.annotations.ApiModelProperty;
 
 public class GameOrderGrListResult extends RestResult{
 	@ApiModelProperty(value = "投注明细", required = true)
-	private List<List<RoomOrderItemDto>> data = null;
+	private List<RoomOrderItemDto> data = null;
 
-	public void success(List<List<RoomOrderItemDto>> data) {
+	public void success(List<RoomOrderItemDto> data) {
 		success();
 		this.data = data;
 	}
 
-	public List<List<RoomOrderItemDto>> getData() {
+	public List<RoomOrderItemDto> getData() {
 		return data;
 	}
 
-	public void setData(List<List<RoomOrderItemDto>> list) {
+	public void setData(List<RoomOrderItemDto> list) {
 		this.data = list;
 	}
 }

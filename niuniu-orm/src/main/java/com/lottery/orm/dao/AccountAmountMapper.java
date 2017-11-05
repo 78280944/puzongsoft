@@ -1,5 +1,7 @@
 package com.lottery.orm.dao;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.Date;
 import java.util.List;
 
@@ -29,6 +31,6 @@ public interface AccountAmountMapper {
     List<AccAmountDto> selectAccWinReport(@Param("startTime")Date startTime,@Param("endTime")Date endTime,@Param("accountid")Integer accountid,@Param("beginRow")Integer beginRow,@Param("pageSize")Integer pageSize);
    
     List<AccAmountDto> selectAccWinReportBytime(@Param("accountid")Integer accountid,@Param("time")String time,@Param("beginRow")Integer beginRow,@Param("pageSize")Integer pageSize);
+	
    
-    
 }

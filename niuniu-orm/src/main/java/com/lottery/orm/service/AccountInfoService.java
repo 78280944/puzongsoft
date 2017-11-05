@@ -1,6 +1,7 @@
 package com.lottery.orm.service;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -51,5 +52,10 @@ public class AccountInfoService {
 	public void updateAccountMount(AccountDetail accountDetail) {
 	    accountDetailMapper.updateByPrimaryKeySelective(accountDetail);
 	}
-
+	
+	//客户Id，更新账户余额
+	public void updateResultAccountMount(BigDecimal amount,Integer accountid) {
+	    accountInfoMapper.updateResultAccountMount(amount, accountid);
+	}
+	
 }

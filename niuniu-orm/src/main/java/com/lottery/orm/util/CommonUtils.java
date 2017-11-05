@@ -6,6 +6,7 @@ import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Random;
 import java.util.TimeZone;
 
 
@@ -353,10 +354,326 @@ public class CommonUtils {
         return str;
 	}
 	
+	 public static int RamdomNum(){    
+	        Date date = new Date();    
+	        long timeMill = date.getTime();    
+	        System.out.println(timeMill);    
+	        Random rand = new Random(timeMill);    
+	       /*
+	        for(int i = 0; i < 20; i++)    
+	        {    
+	            System.out.println(rand.nextInt(50));    
+	        }
+	        */
+	        return rand.nextInt(50);
+	    }    
+	 
+	   /**
+      * 随机产生几位字符串：例：maxLength=3,则结果可能是 aAz
+      * @param maxLength 传入数必须是正数。
+      */
+     public static String produceString(int maxLength){
+             String source = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+             return doProduce(maxLength, source);
+     }
+	
+     /**
+      * 生产结果
+      */
+     private static String doProduce(int maxLength, String source) {
+             StringBuffer sb = new StringBuffer(100);
+             for (int i = 0; i < maxLength; i++) {
+                     final int number =  produceNumber(source.length());
+                     sb.append(source.charAt(number));
+             }
+             return sb.toString();
+     }
+     
+     /**
+      * 随机产生几位数字：例：maxLength=3,则结果可能是 012
+      */
+     public static final int produceNumber(int maxLength){
+             Random random = new Random();
+             return random.nextInt(maxLength);
+     }
+     
+    	 
+     /**
+      * 判断给定时间在否在给定两个时间之前
+      */
+     public static boolean dateRange(){
+    	 Calendar cal = Calendar.getInstance();// 当前日期
+    	 int hour = cal.get(Calendar.HOUR_OF_DAY);// 获取小时
+    	 int minute = cal.get(Calendar.MINUTE);// 获取分钟
+    	
+    	 if (hour >= 22 || hour < 2)
+    	 {
+    	   // 晚上22点（含）到凌晨2点（不含）之间
+    		 return true;
+    	 }
+    	 else
+    	 {
+    		 return false;
+    	   // 上述之外的时间段
+    	 }
+     }
+     
+     /**
+      * 判断比较
+      */
+     public static String[][] doHandle(String[][] str){
+    	 String[][] d = new String[2][5];
+    	 d[0][0] = "";
+    	 d[0][1] = "";
+    	 d[0][2] = "";
+    	 d[0][3]="";
+    	 d[0][4] = "";
+         str[0][0]="4000";
+         str[0][1]="4000";
+         str[0][2]="4000";
+         str[0][3]="1019";
+         str[0][4]="1001";
+         str[0][5]="0";
+         str[0][6]="5";
+         str[1][0]="5000";
+         str[1][1]="5000";
+         str[1][2]="5000";
+         str[1][3]="1020";
+         str[1][4]="1001";
+         str[1][5]="0";
+         str[1][6]="4";
+         str[2][0]="8000";
+         str[2][1]="8000";
+         str[2][2]="8000";
+         str[2][3]="1011";
+         str[2][4]="1001";
+         str[2][5]="0";
+         str[2][6]="2";
+         String[][] str1 = str;
+         int i = 0;
+         int j=str.length-1;
+         System.out.println("7---"+j);
+         int tmp = Integer.valueOf(str[0][1]);
+         while (i<j){
+        	 if (tmp>=Integer.valueOf(str[j][1])){
+        		 tmp = tmp - Integer.valueOf(str[j][1]);
+        		 str[j][1] = "0";
+        		 str[j][5] = "1";
+        		 j--;
+        		 if(i==j){
+        			 str[i][1] = String.valueOf(Integer.valueOf(str[i][1]) - tmp);
+        		 }
+        			System.out.println("98---"+tmp);
+        	 }else{
+        		 str[j][1] = String.valueOf((Integer.valueOf(str[j][1]) - tmp));
+        		 str[j][5] = "1";
+        		 i++;
+        		 tmp = Integer.valueOf(str[i][1]);
+        		//System.out.println("9---"+tmp);
+        	 }
+         }
+         for (i=0;i<=str.length-1;i++){
+         	System.out.println("1----"+i+".."+str[i][1]);
+         }
+         for (i=str.length-1;i>=j;i--){
+        	 if(str[i][5].equals("1")){
+        		 str[i][1] = String.valueOf(Integer.valueOf(str[i][1])  - Integer.valueOf(str[i][0]));
+        		 // System.out.println("0----0-"+i+".."+str1[i][1]);
+        	 }
+         }
+        for (i=0;i<=str1.length-1;i++){
+        	System.out.println("0----"+i+".."+str[i][1]);
+        }
+         
+         return str;
+         
+     }
+     
+     /**
+      * 判断比较,无庄逻辑处理
+      */
+     public static String[][] doNoBankerHandle(String[][] str){
+    	/*
+         str[0][0]="1200";
+         str[0][1]="1200";
+         str[0][2]="1200";
+         str[0][3]="1019";
+         str[0][4]="1001";
+         str[0][5]="0";
+         str[0][6]="5";
+         str[0][7]="0";
+         str[0][8]="牛牛";
+         str[1][0]="2000";
+         str[1][1]="2000";
+         str[1][2]="2000";
+         str[1][3]="1020";
+         str[1][4]="1001";
+         str[1][5]="0";
+         str[1][6]="5";
+         str[1][7]="0";
+         str[1][8]="牛牛";
+         str[2][0]="2000";
+         str[2][1]="2000";
+         str[2][2]="2000";
+         str[2][3]="1011";
+         str[2][4]="1001";
+         str[2][5]="0";
+         str[2][6]="1";
+         str[2][7]="0";
+         str[2][8]="牛牛";
+         str[3][0]="700";
+         str[3][1]="700";
+         str[3][2]="700";
+         str[3][3]="1011";
+         str[3][4]="1001";
+         str[3][5]="0";
+         str[3][6]="1";
+         str[3][7]="0";
+         str[3][8]="牛牛";
+         */
+         int i = 0;
+         int j=str.length-1;
+        // System.out.println("7---"+j);
+         str[0][1] = String.valueOf(Integer.valueOf(str[0][0])*Integer.valueOf(str[0][6]));
+         str[j][1] = String.valueOf(Integer.valueOf(str[j][0])*Integer.valueOf(str[0][6]));
+         str[j][6] = str[0][6];
+         str[j][7] = String.valueOf(1);
+         int tmp = Integer.valueOf(str[0][1]);
+         //System.out.println("7ddd---"+i+".."+j);
+         while (i<j){
+        	 if (tmp>=Integer.valueOf(str[j][1])){
+        		 tmp = tmp - Integer.valueOf(str[j][1]);
+        		 str[j][1] = "0";
+        		 str[j][5] = "1";
+        		 if (Integer.valueOf(str[j][7]) == 0){
+        			 str[j][6] = str[i][6];
+        			 str[j][7] = String.valueOf(1);
+        		 }
+        		 j--;
+        		 if(i==j){
+        			 str[i][1] = String.valueOf(Integer.valueOf(str[i][0])*Integer.valueOf(str[i][6]) - tmp);
+        			 str[i][2] = str[i][1];
+        		 }else{
+        			 str[j][1] = String.valueOf(Integer.valueOf(str[j][0])*Integer.valueOf(str[i][6]));
+        		 }
+        	 }else{
+        		 str[j][1] = String.valueOf((Integer.valueOf(str[j][1]) - tmp));
+        		 str[j][5] = "1";
+        		 if (Integer.valueOf(str[j][7]) == 0){
+        			 str[j][6] = str[i][6];
+        			 str[j][7] = String.valueOf(1);
+        		 }
+        		 i++;
+        		 if(i < j){
+	        		 str[i][1] = String.valueOf(Integer.valueOf(str[i][0])*Integer.valueOf(str[i][6])); 		
+	        		 tmp = Integer.valueOf(str[i][1]);
+        		 }
+        		//System.out.println("9---"+tmp);
+        	 }
+         }
+        // System.out.println("7ddd-sdsd--"+i+".."+j);
+         for (i=str.length-1;i>=j;i--){
+        	 if(str[i][5].equals("1")){
+        		 str[i][2] = String.valueOf(Integer.valueOf(str[i][1])  - Integer.valueOf(str[i][0])*Integer.valueOf(str[i][6]));
+        		  //System.out.println("0----0-"+i+".."+str1[i][1]);
+        	 }
+         }
+        for (i=0;i<j;i++){
+        	 str[i][2] =  str[i][1] ;
+        	//System.out.println("0----"+i+".."+str[i][1]);
+        }
+
+         return str;
+         
+     }
+     
+     
+     /**
+      * 庄判断比较,输庄
+      */
+     public static String[][] doBankerHandle1(String[][] str){
+    	 String[][] d = new String[2][5];
+    	 d[0][0] = "";
+    	 d[0][1] = "";
+    	 d[0][2] = "";
+    	 d[0][3]="";
+    	 d[0][4] = "";
+    	 int count = 25000;
+    	 int times = 5;
+    	 str[0][0]="100";
+         str[0][1]="100";
+         str[0][2]="100";
+         str[0][3]="1019";
+         str[0][4]="1001";
+         str[0][5]="0";
+         str[0][6]="5";
+         str[0][7]="0";
+         str[0][8]="牛牛";
+         str[1][0]="200";
+         str[1][1]="200";
+         str[1][2]="200";
+         str[1][3]="1020";
+         str[1][4]="1001";
+         str[1][5]="0";
+         str[1][6]="5";
+         str[1][7]="0";
+         str[1][8]="牛牛";
+         str[2][0]="5000";
+         str[2][1]="5000";
+         str[2][2]="5000";
+         str[2][3]="1011";
+         str[2][4]="1001";
+         str[2][5]="0";
+         str[2][6]="1";
+         str[2][7]="0";
+         String[][] str1 = str;
+         int i = 0;
+         int j=str.length-1;
+         System.out.println("7---"+j);
+         int base = count;
+         for (;j>=0;j--){
+        	 //System.out.println("90---"+str[j][1]);
+        	 if (Integer.valueOf(str[j][1])*times<base){
+        		 base = base - Integer.valueOf(str[j][0])*times;
+        		 str[j][1] = "0";
+        	 }else{
+        		 str[j][1] = String.valueOf((Integer.valueOf(str[j][0])*times - base));
+                 break;
+        	 }
+         }
+         for (i=0;i<=str.length-1;i++){
+         	if (i<j)
+         		str[i][2] = String.valueOf(0);
+         	else{
+         		str[i][2] = String.valueOf(Integer.valueOf(str[i][1]) - Integer.valueOf(str[i][0])*times);
+         	    count = count - Integer.valueOf(str[i][2]);
+         	}
+         }
+  
+         /*
+        for (i=0;i<=str.length-1;i++){
+        	System.out.println("0----"+i+".."+str[i][2]+"..");
+        }
+        */
+        System.out.println("0----"+count);
+         
+         return str;
+         
+     }
+     
+     
+	/**
+	 * @param args
+	 * @throws Exception
+	 */
 	public static void main(String args[]) throws Exception{
+		//testDate();
+		System.out.println(",---------"+Integer.parseInt("100.00".replaceAll("\\.00", "")));
+		String[][] d =new String[3][9];
+		System.out.println(doBankerHandle1(d));
 		String[] a = "2,9,2,2,7".split(",");
 		String[] c =CommonUtils.getOrdeNum("2,10","02");
-		System.out.println("7----"+c[0]+".."+c[1]+".."+c[2]);
+		//System.out.println("7----"+c[0]+".."+c[1]+".."+c[2]+"..."+System.currentTimeMillis());
 		//public static String[] getStringResultNo(String result,int mod,String type){
 		String[] b = CommonUtils.getStringResultNo("5,9,5", 9,"01");
 		int t = 9%10;

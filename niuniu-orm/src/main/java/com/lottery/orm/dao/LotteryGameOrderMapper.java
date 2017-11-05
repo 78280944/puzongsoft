@@ -1,11 +1,14 @@
 package com.lottery.orm.dao;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
 
 import com.lottery.orm.bo.LotteryGameOrder;
+import com.lottery.orm.dto.LotteryAmountDto;
+import com.lottery.orm.dto.LotteryNoidDto;
 import com.lottery.orm.dto.ResultAmountDto;
 import com.lottery.orm.dto.RoomAmountDto;
 import com.lottery.orm.dto.RoomHisOrderDto;
@@ -38,4 +41,19 @@ public interface LotteryGameOrderMapper {
     List<RoomAmountDto> selectGameAmount(@Param("rmid")Integer rmid,@Param("lotteryterm")String lotteryterm);
     
     ResultAmountDto selectGameHisAmount(@Param("accountid")Integer accountid,@Param("sid")Integer sid,@Param("startTime")Date startTime,@Param("endTime")Date endTime);
+    
+    ResultAmountDto selectGameAllHisAmount(@Param("accountid")Integer accountid,@Param("sid")Integer sid,@Param("startTime")Date startTime,@Param("endTime")Date endTime);
+     
+    RoomOrderDto selectAccountIdOrder(@Param("accountid")Integer accountid);
+    
+    List<LotteryNoidDto> selectGameNoid(@Param("sid")Integer sid,@Param("rmid")Integer rmid,@Param("lotteryterm")String lotteryterm);
+	
+    int updatePlayOridle(@Param("sid")Integer sid,
+			@Param("rmid")Integer rmid,@Param("noid")Integer noid,@Param("lotteryterm")String lotteryterm);
+    
+    List<LotteryAmountDto> selectGameAmountResult(@Param("lotteryterm")String lotteryterm,@Param("sid")Integer sid,@Param("rmid")Integer rmid);
+    
+    int updateOrderResult(@Param("lgmid")Integer lgmid,@Param("opentime")Date opentime,@Param("result")String result,@Param("lastamount")BigDecimal lastamount);
+    
+    List<LotteryGameOrder> selectGameRmid(@Param("sid")Integer sid,@Param("lotteryterm")String lotteryterm);
 }

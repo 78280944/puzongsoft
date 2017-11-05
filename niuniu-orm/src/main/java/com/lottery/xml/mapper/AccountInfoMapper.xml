@@ -308,6 +308,12 @@
     </set>
     where ACCOUNTID = #{accountid,jdbcType=INTEGER}
   </update>
+  
+  <update id="updateResultAccountMount" >
+  update account_info a
+  set  USERMONEY = a.USERMONEY + (#{usermoney,jdbcType=DECIMAL})
+  where ACCOUNTID = #{accountid,jdbcType=INTEGER}
+  </update>
   <update id="updateByPrimaryKey" parameterType="com.lottery.orm.bo.AccountInfo" >
     update account_info
     set USERNAME = #{username,jdbcType=VARCHAR},
