@@ -137,7 +137,7 @@ public class LotteryOrderController {
 					result.fail(MessageTool.Code_2002);
 					return result;
 				}
-				
+			
 				//投注检查
 				checkInfo = lotteryOrderService.checkLotteryOrderInfo(accountInfo, order, sys);
 				if ((!"true".equals(checkInfo))){

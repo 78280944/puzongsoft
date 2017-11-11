@@ -99,13 +99,16 @@ public interface EnumType {
   }
   
   enum RalativeType {
-    Trade("Trade","下注"),In("In", "入金"),Out("Out", "出金"), Commision("Commision", "公司损益"),Order("Order", "下注本金"), PlayerWin("PlayerWin", "会员输赢"),AgencyWin("AgencyWin", "代理输赢"), Return("Return", "返利");
-    private RalativeType(String ID, String NAME) {
+    Trade("Trade",1001,"下注"),In("In", 1002,"入金"),Out("Out", 1003,"出金"), Commision("Commision",1004, "公司损益"),
+    Order("Order",1005, "下注本金"), PlayerWin("PlayerWin", 1006,"会员输赢"),AgencyWin("AgencyWin",1007, "代理输赢"), Return("Return", 1008,"返利");
+    private RalativeType(String ID, int NOID,String NAME) {
       this.ID = ID;
+      this.NOID  = NOID;
       this.NAME = NAME;
     }
 
     public final String ID;
+    public final int NOID;
     public final String NAME;
     public final static String enumDesc = "业务相关类型";
   }

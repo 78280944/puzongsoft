@@ -51,5 +51,7 @@
 		<mapper resource="com/lottery/xml/mapper/LotteryRoomMapper.xml" />
         <mapper resource="com/lottery/xml/mapper/LotteryGameResultsMapper.xml" />
         <mapper resource="com/lottery/xml/mapper/SysComMapper.xml" />
+        <mapper resource="com/lottery/xml/mapper/LotteryOrderRecordMapper.xml" />
+        
 	</mappers>
 </configuration>

@@ -31,6 +31,8 @@ public interface AccountInfoMapper {
     
     List<AccountInfo> selectBySupusername(@Param("supusername")String supusername, @Param("beginrow")Integer beginrow, @Param("pageSize")Integer pageSize);
     
+    List<AccountInfo> selectAgencyInfo(@Param("accountid")Integer accountid);
+    
     AccountInfo selectByUsername(String username);
     
     AccountInfo selectByUserAndId(AccountInfo record);

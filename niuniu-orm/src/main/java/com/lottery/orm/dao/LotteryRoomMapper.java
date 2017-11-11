@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
 import com.lottery.orm.bo.LotteryRoom;
+import com.lottery.orm.dto.LotteryRoomPlayerDto;
 
 public interface LotteryRoomMapper {
     int deleteByPrimaryKey(Integer rmid);
@@ -19,7 +20,7 @@ public interface LotteryRoomMapper {
 
     int updateByPrimaryKey(LotteryRoom record);
     
-    List<LotteryRoom> selectLotteryGameRoom(@Param("sid")Integer sid,@Param("len")Integer len);
+    List<LotteryRoomPlayerDto> selectLotteryGameRoom(@Param("sid")Integer sid,@Param("len")Integer len);
     
     List<LotteryRoom> selectDistinctSid();
 }

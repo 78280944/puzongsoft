@@ -10,9 +10,12 @@ import org.apache.ibatis.annotations.Param;
 import com.lottery.orm.bo.AccountAmount;
 import com.lottery.orm.dto.AccAmountDto;
 import com.lottery.orm.dto.ProAccAmountDto;
+import com.lottery.orm.bo.AccountAmountKey;
 
 public interface AccountAmountMapper {
-    int deleteByPrimaryKey(Integer aaid);
+   
+
+	int deleteByPrimaryKey(Integer aaid);
 
     int insert(AccountAmount record);
 

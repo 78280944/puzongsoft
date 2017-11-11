@@ -10,10 +10,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.lottery.orm.bo.AccountAmount;
 import com.lottery.orm.bo.AccountDetail;
 import com.lottery.orm.bo.AccountInfo;
 import com.lottery.orm.bo.OffAccountInfo;
 import com.lottery.orm.bo.TradeInfo;
+import com.lottery.orm.dao.AccountAmountMapper;
 import com.lottery.orm.dao.AccountDetailMapper;
 import com.lottery.orm.dao.AccountInfoMapper;
 import com.lottery.orm.dao.OffAccountInfoMapper;
@@ -29,6 +31,12 @@ public class TradeInfoService {
 
     @Autowired
     private AccountDetailMapper accountDetailMapper;
+    
+    @Autowired
+    private AccountInfoMapper accountInfoMapper;
+    
+    @Autowired
+	private AccountAmountMapper accountAmountMapper;
     
   /*
     // 添加出入金款项并更新账户
@@ -87,6 +95,74 @@ public class TradeInfoService {
 		
     }
     */
+    // 添加出入金款项并更新账户
+    public String addInoutTradeInfo(TradeInfo tradeInfo) {
+    	AccountInfo aInfo = accountInfoMapper.selectByPrimaryKey(tradeInfo.getAccountid());
+    	tradeInfo.setAccountamount(aInfo.getUsermoney().add(BigDecimal.valueOf(tradeInfo.getTradeamount())));
+    	tradeInfoMapper.insertSelective(tradeInfo);
+    	aInfo.setUsermoney(aInfo.getUsermoney().add(BigDecimal.valueOf(tradeInfo.getTradeamount())));
+    	accountInfoMapper.updateByPrimaryKey(aInfo);
+    	return "sucess";
+    }
+    
+    
+    //代理金款项并更新账户
+    public String addAgencyTradeInfo(TradeInfo tradeInfo,Double fee,int sid,String lotteryterm,Double comission) {
+    	List<AccountInfo> aInfo = accountInfoMapper.selectAgencyInfo(tradeInfo.getAccountid());
+    	Double cfee = 0.0;
+    	Double profits = 0.0;
+    	Double percentage = 0.0;
+    	Double tradeamount = tradeInfo.getTradeamount().doubleValue();
+    	System.out.println("12--------------"+aInfo.size()+"..."+tradeamount+".."+fee);
+    	for (int i = 0;i<aInfo.size();i++){
+    		AccountInfo ac = new AccountInfo();
+    		ac = aInfo.get(i);
+    		cfee =  (Math.abs(tradeamount)+fee)/2*comission;
+    		profits = cfee * (ac.getPercentage() - percentage);
+    		percentage = ac.getPercentage();
+    		if (i+1 != aInfo.size()){
+    			accountInfoMapper.updateResultAccountMount(BigDecimal.valueOf(profits), ac.getAccountid());
+    			tradeInfo.setAccountid(ac.getAccountid());
+    			tradeInfo.setAccountamount(ac.getUsermoney().add(BigDecimal.valueOf(profits)));
+    			tradeInfo.setTradeamount(profits);
+    	    	tradeInfoMapper.insertSelective(tradeInfo);
+		        AccountAmount aa = new AccountAmount();
+		        aa.setAccountid(ac.getAccountid());
+		        aa.setSid(sid);
+		        aa.setLotteryterm(lotteryterm);
+		        aa.setLoss(BigDecimal.valueOf(0));
+		        aa.setEarns(BigDecimal.valueOf(0));
+		        aa.setGains(BigDecimal.valueOf(0));
+		        aa.setCfee(BigDecimal.valueOf(cfee));
+		        aa.setProfits(BigDecimal.valueOf(profits));
+		        aa.setStarttime(new Date());
+		        aa.setOvertime(new Date());
+		        accountAmountMapper.insert(aa);
+    	    	
+    		}else{
+    			accountInfoMapper.updateResultAccountMount(BigDecimal.valueOf(profits), 1000);
+    			tradeInfo.setAccountid(1000);
+    			tradeInfo.setAccountamount(ac.getUsermoney().add(BigDecimal.valueOf(profits)));
+    			tradeInfo.setTradeamount(profits);
+    	    	tradeInfoMapper.insertSelective(tradeInfo);
+		        AccountAmount aa = new AccountAmount();
+		        aa.setAccountid(1000);
+		        aa.setSid(sid);
+		        aa.setLotteryterm(lotteryterm);
+		        aa.setLoss(BigDecimal.valueOf(0));
+		        aa.setEarns(BigDecimal.valueOf(0));
+		        aa.setGains(BigDecimal.valueOf(0));
+		        aa.setCfee(BigDecimal.valueOf(0));
+		        aa.setProfits(BigDecimal.valueOf(profits));
+		        aa.setStarttime(new Date());
+		        aa.setOvertime(new Date());
+		        accountAmountMapper.insert(aa);
+    	    	
+    		}
+    	}
+    	return "sucess";
+    }
+    
     //查询
     public List<TradeInfo> selectByTrade(String relativeType,String startTime,String overTime,int beginRow,int pageSize) {
     	List<TradeInfo> list = tradeInfoMapper.selectByTrade(relativeType, startTime, overTime, beginRow, pageSize);

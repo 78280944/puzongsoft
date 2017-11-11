@@ -3,64 +3,20 @@ package com.lottery.orm.bo;
 import java.math.BigDecimal;
 import java.util.Date;
 
-public class AccountAmount {
-	private Integer aaid;
+public class AccountAmount extends AccountAmountKey {
+	private BigDecimal loss;
 
-    private Integer accountid;
+	private BigDecimal earns;
 
-    private String lotteryterm;
+	private BigDecimal gains;
 
-    private BigDecimal loss;
+	private BigDecimal cfee;
 
-    private BigDecimal earns;
+	private BigDecimal profits;
 
-    private BigDecimal gains;
+	private Date starttime;
 
-    private BigDecimal profits;
-
-    private Date starttime;
-
-    private Date overtime;
-
-	public String getLotteryterm() {
-		return lotteryterm;
-	}
-
-	public void setLotteryterm(String lotteryterm) {
-		this.lotteryterm = lotteryterm;
-	}
-
-	public Date getStarttime() {
-		return starttime;
-	}
-
-	public void setStarttime(Date starttime) {
-		this.starttime = starttime;
-	}
-
-	public Date getOvertime() {
-		return overtime;
-	}
-
-	public void setOvertime(Date overtime) {
-		this.overtime = overtime;
-	}
-
-	public Integer getAaid() {
-		return aaid;
-	}
-
-	public void setAaid(Integer aaid) {
-		this.aaid = aaid;
-	}
-
-	public Integer getAccountid() {
-		return accountid;
-	}
-
-	public void setAccountid(Integer accountid) {
-		this.accountid = accountid;
-	}
+	private Date overtime;
 
 	public BigDecimal getLoss() {
 		return loss;
@@ -86,6 +42,14 @@ public class AccountAmount {
 		this.gains = gains;
 	}
 
+	public BigDecimal getCfee() {
+		return cfee;
+	}
+
+	public void setCfee(BigDecimal cfee) {
+		this.cfee = cfee;
+	}
+
 	public BigDecimal getProfits() {
 		return profits;
 	}
@@ -94,4 +58,21 @@ public class AccountAmount {
 		this.profits = profits;
 	}
 
+	public Date getStarttime() {
+		return starttime;
+	}
+
+	public void setStarttime(Date starttime) {
+		this.starttime = starttime;
+	}
+
+	public Date getOvertime() {
+		return overtime;
+	}
+
+	public void setOvertime(Date overtime) {
+		this.overtime = overtime;
+	}
+
+	
 }

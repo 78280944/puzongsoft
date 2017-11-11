@@ -29,7 +29,6 @@ public class LotteryAmountDto {
 	private  BigDecimal lastamount;
 	
 	
-	
 	public BigDecimal getLastamount() {
 		return lastamount;
 	}

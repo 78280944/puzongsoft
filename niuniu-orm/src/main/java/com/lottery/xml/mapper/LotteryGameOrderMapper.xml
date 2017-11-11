@@ -42,6 +42,21 @@
     where LGMID = #{lgmid,jdbcType=INTEGER}
   </select>
   
+  <select id="selectByResultValue"  resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from lottery_game_order
+    where lastamount >0 AND sid = #{sid,jdbcType=INTEGER} and lotteryterm = #{lotteryterm,jdbcType=VARCHAR}
+  </select>
+  
+  <select id="selectByNoResultValue"  resultMap="BaseResultMap">
+    select 
+    rmid,noid,playoridle 
+    from lottery_game_order
+    where sid = #{sid,jdbcType=INTEGER}  and lotteryterm = #{lotteryterm,jdbcType=VARCHAR}
+    AND rmid NOT LIKE '9%' GROUP BY noid,rmid
+  </select> 
+  
   <select id="selectGameRmid" resultMap="BaseResultMap">
     select distinct(rmid),lgmid,lotteryterm 
     from lottery_game_order 
@@ -236,7 +251,7 @@
     <result column="ORDERAMOUNT" jdbcType="DECIMAL" property="orderamount" />
   </resultMap>
   
-    <resultMap id="GameHisOrderMap" type="com.lottery.orm.dto.RoomHisOrderDto">
+  <resultMap id="GameHisOrderMap" type="com.lottery.orm.dto.RoomHisOrderDto">
     <id column="LGMID" jdbcType="INTEGER" property="lgmid" />
     <result column="GAMENAME" jdbcType="VARCHAR" property="gamename" />
     <result column="GAMELOBBYNAME" jdbcType="VARCHAR" property="gamelobbyname" />
@@ -295,9 +310,9 @@
     FROM
     ((lottery_game_order a LEFT JOIN lottery_game b ON a.sid = b.sid) LEFT JOIN lottery_room c ON a.rmid = c.rmid )
     WHERE 
-    a.lotteryterm  = (SELECT lotteryterm FROM LOTTERY_game_round ORDER BY LOTTERYTERM DESC LIMIT 1) 
+    a.lotteryterm  = (SELECT lotteryterm FROM LOTTERY_game_round where sid =#{sid,jdbcType=INTEGER}  ORDER BY LOTTERYTERM DESC LIMIT 1) 
     AND a.accountid =#{accountid,jdbcType=INTEGER} AND a.sid=#{sid,jdbcType=INTEGER} 
-    order by lotteryterm desc
+    order by lotteryterm desc,ordertime desc
   </select>
   
   <select id="selectGameHisOrderBytime" resultMap="GameHisOrderMap">
@@ -326,7 +341,7 @@
     WHERE 
     a.accountid =#{accountid,jdbcType=INTEGER} AND a.sid=#{sid,jdbcType=INTEGER} 
     AND (Date(a.ordertime) BETWEEN #{startTime,jdbcType=TIMESTAMP} and #{endTime,jdbcType=TIMESTAMP}) 
-    order by lotteryterm desc 
+    order by lotteryterm desc,ordertime DESC 
     <if test="beginRow != null and pageSize !=null">
 	limit #{beginRow,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
 	</if>
@@ -342,6 +357,7 @@
     WHERE 
     a.accountid =#{accountid,jdbcType=INTEGER} 
     AND (Date(a.ordertime) BETWEEN #{startTime,jdbcType=TIMESTAMP} and #{endTime,jdbcType=TIMESTAMP}) 
+    ORDER BY a.ordertime DESC
     <if test="beginRow != null and pageSize !=null">
 	limit #{beginRow,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
 	</if>
@@ -393,29 +409,88 @@
 	WHERE a.lotteryterm=#{lotteryTerm,jdbcType=VARCHAR} AND a.sid=#{sid,jdbcType=INTEGER} AND a.rmid=#{rmid,jdbcType=INTEGER} AND m.noid=a.noid ORDER BY noid,lgmid
 	) AS c left join account_info d on c.accountid = d.accountid,
 	(SELECT @orderno:=1,@noid:='') AS b
-	ORDER BY c.noid,c.lgmid DESC
-
+	ORDER BY c.noid,c.orderamount ASC,c.lgmid ASC
   </select>
   
+
   <select id="selectAccountIdOrder" resultMap="GameOrderMap">
     SELECT 
     SUM(ORDERAMOUNT*b.itemname) AS ORDERAMOUNT
     FROM lottery_game_order a,code_library b 
     WHERE 
-    a.accountid =#{accountid,jdbcType=INTEGER} AND result IS NULL AND (b.codeno='Times' AND a.sid = b.itemno) GROUP BY accountid
+    a.accountid =#{accountid,jdbcType=INTEGER} AND result IS NULL AND (b.codeno='Times' AND a.sid = b.itemno) and a.playoridle = '2' GROUP BY accountid
+    union
+    SELECT 
+    SUM(ORDERAMOUNT) AS ORDERAMOUNT
+    FROM lottery_game_order a
+    WHERE 
+    a.accountid =#{accountid,jdbcType=INTEGER} AND result IS NULL AND a.playoridle = '1' 
   </select>
+  
+ <select id="selectNoIdOrder" resultMap="GameOrderMap">
+    SELECT SUM(orderamount) as ORDERAMOUNT
+    FROM lottery_game_order 
+    WHERE sid = #{sid,jdbcType=INTEGER} AND lotteryterm = #{lotteryterm,jdbcType=VARCHAR} AND noid = #{noid,jdbcType=INTEGER} AND result IS NULL 
+  </select>
+  
   
   <sql id="Game_Order_List">
     LGMID, ORDERTIME, GAMENAME, GAMELOBBYNAME, ROOMID, LOTTERYTERM, NO, PLAYORIDLE, ORDERAMOUNT
   </sql>
   
-
-  <select id="selectGameAmountResult" resultMap="AmountGameResultMap">
-   SELECT a.lgmid,a.accountid,b.usermoney, a.PLAYORIDLE,a.orderamount,a.lastamount,c.resultvalue,c.ascc,c.ratio,d.gametype AS TYPE
+<select id="selectGameAmountResult" resultMap="AmountGameResultMap">
+   SELECT a.lgmid,a.accountid,b.usermoney, a.PLAYORIDLE,a.orderamount,a.lastamount,c.resultvalue,c.ascc,c.ratio,d.gametype AS type
    FROM lottery_game_order a,account_info b,lottery_game_results  c,lottery_game d
    WHERE a.accountid = b.accountid AND a.lotteryterm=#{lotteryterm,jdbcType=VARCHAR} AND a.lotteryterm=c.lotteryterm AND a.sid=c.sid AND a.noid=c.noid AND a.sid = d.sid  
    and a.sid=#{sid,jdbcType=INTEGER} and a.rmid = #{rmid,jdbcType=INTEGER}
    ORDER BY c.ascc,a.orderamount,a.noid ASC
   </select>
+  
+  <select id="selectGameAmountLessResult" resultMap="AmountGameResultMap">
+   SELECT a.lgmid,a.accountid,b.usermoney, a.PLAYORIDLE,a.orderamount,a.lastamount,c.resultvalue,c.ascc,c.ratio,d.gametype AS type
+   FROM lottery_game_order a,account_info b,lottery_game_results  c,lottery_game d
+   WHERE a.accountid = b.accountid AND a.lotteryterm=#{lotteryterm,jdbcType=VARCHAR} AND a.lotteryterm=c.lotteryterm AND a.sid=c.sid AND a.noid=c.noid AND a.sid = d.sid  
+   AND a.sid=#{sid,jdbcType=INTEGER} AND a.rmid = #{rmid,jdbcType=INTEGER} AND 
+   c.ascc>(SELECT e.ascc FROM lottery_game_order d ,lottery_game_results e 
+   WHERE d.lotteryterm=#{lotteryterm,jdbcType=VARCHAR} AND d.rmid = #{rmid,jdbcType=INTEGER} AND d.playoridle = '1' 
+   AND d.noid = e.noid and d.sid = #{sid,jdbcType=INTEGER} 
+   AND d.lotteryterm = e.lotteryterm ORDER BY ascc LIMIT 1 )
+   ORDER BY c.ascc,a.orderamount desc,a.noid ASC
+  </select>
+  
+  <select id="selectGameAmountMoreResult" resultMap="AmountGameResultMap">
+   SELECT a.lgmid,a.accountid,b.usermoney, a.PLAYORIDLE,a.orderamount,a.lastamount,c.resultvalue,c.ascc,c.ratio,d.gametype AS type
+   FROM lottery_game_order a,account_info b,lottery_game_results  c,lottery_game d
+   WHERE a.accountid = b.accountid AND a.lotteryterm=#{lotteryterm,jdbcType=VARCHAR} AND a.lotteryterm=c.lotteryterm AND a.sid=c.sid AND a.noid=c.noid AND a.sid = d.sid  
+   AND a.sid=#{sid,jdbcType=INTEGER} AND a.rmid = #{rmid,jdbcType=INTEGER} 
+   <![CDATA[AND 
+   c.ascc<(SELECT e.ascc FROM lottery_game_order d ,lottery_game_results e 
+   WHERE d.lotteryterm=#{lotteryterm,jdbcType=VARCHAR} AND d.rmid = #{rmid,jdbcType=INTEGER} AND d.playoridle = '1' 
+   AND d.noid = e.noid and d.sid = #{sid,jdbcType=INTEGER} 
+   AND d.lotteryterm = e.lotteryterm ORDER BY ascc LIMIT 1 )]]>
+   ORDER BY c.ascc,a.orderamount asc,a.noid ASC
+  </select>  
+  
+ <select id="selectGameAmountEqualResult" resultMap="AmountGameResultMap">
+   SELECT a.lgmid,a.accountid,b.usermoney, a.PLAYORIDLE,a.orderamount,a.lastamount,c.resultvalue,c.ascc,c.ratio,d.gametype AS TYPE
+   FROM lottery_game_order a,account_info b,lottery_game_results  c,lottery_game d
+   WHERE a.accountid = b.accountid AND a.lotteryterm=#{lotteryterm,jdbcType=VARCHAR} AND a.lotteryterm=c.lotteryterm AND a.sid=c.sid AND a.noid=c.noid AND a.sid = d.sid  
+   AND a.sid=#{sid,jdbcType=INTEGER} AND a.rmid = #{rmid,jdbcType=INTEGER} AND 
+   c.ascc = (SELECT e.ascc FROM lottery_game_order d ,lottery_game_results e 
+   WHERE d.lotteryterm=#{lotteryterm,jdbcType=VARCHAR} AND d.rmid = #{rmid,jdbcType=INTEGER} AND d.playoridle = '1' 
+   AND d.noid = e.noid and d.sid = #{sid,jdbcType=INTEGER} 
+   AND d.lotteryterm = e.lotteryterm ORDER BY ascc LIMIT 1 )
+   ORDER BY c.ascc,a.orderamount asc,a.noid ASC
+  </select>  
+  
+  <select id="selectGameIsOrNotBank" resultMap="AmountGameResultMap">
+   SELECT a.lgmid,a.accountid,b.usermoney, a.PLAYORIDLE,a.orderamount,a.lastamount,c.resultvalue,c.ascc,c.ratio,d.gametype AS type
+   FROM lottery_game_order a,account_info b,lottery_game_results  c,lottery_game d
+   WHERE a.accountid = b.accountid AND a.lotteryterm=#{lotteryterm,jdbcType=VARCHAR} AND a.lotteryterm=c.lotteryterm AND a.sid=c.sid AND a.noid=c.noid AND a.sid = d.sid  
+   and a.sid=#{sid,jdbcType=INTEGER} and a.rmid = #{rmid,jdbcType=INTEGER} and a.playoridle = '1' 
+   ORDER BY c.ascc,a.orderamount,a.noid ASC
+  </select>
+  
+  
   
 </mapper>

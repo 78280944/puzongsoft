@@ -17,7 +17,9 @@ public class ProAccAmountDto {
     private BigDecimal earns;
 
     private BigDecimal gains;
-
+    
+    private BigDecimal cfee;
+    
     private BigDecimal profits;
 
 	public Integer getAaid() {
@@ -82,6 +84,14 @@ public class ProAccAmountDto {
 
 	public void setProfits(BigDecimal profits) {
 		this.profits = profits;
+	}
+
+	public BigDecimal getCfee() {
+		return cfee;
+	}
+
+	public void setCfee(BigDecimal cfee) {
+		this.cfee = cfee;
 	}
 
 }

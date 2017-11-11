@@ -42,6 +42,7 @@ import com.lottery.orm.dao.LotteryRoundMapper;
 import com.lottery.orm.dto.LotteryGameCurDto;
 import com.lottery.orm.dto.LotteryGameDto;
 import com.lottery.orm.dto.LotteryResultDto;
+import com.lottery.orm.dto.LotteryRoomPlayerDto;
 import com.lottery.orm.dto.ResultDataDto;
 import com.lottery.orm.result.BaseRestResult;
 import com.lottery.orm.result.GameCurResult;
@@ -140,6 +141,7 @@ public class LotteryRoundController {
 		return result;
 	}
 	
+	
 	@ApiOperation(value = "获取期次游戏结果", notes = "获取期次游戏结果", httpMethod = "POST")
 	@RequestMapping(value = "/getLotteryTermResult", method = RequestMethod.POST)
 	@ResponseBody
@@ -169,7 +171,7 @@ public class LotteryRoundController {
 				len = 7;
 			else if (param.getType()==2)
 				len = 8;
-			List<LotteryRoom> list = lotteryRoomMapper.selectLotteryGameRoom(param.getSid(),len);
+			List<LotteryRoomPlayerDto> list = lotteryRoomMapper.selectLotteryGameRoom(param.getSid(),len);
             result.success(list);
 			LOG.info(result.getMessage());
 		} catch (Exception e) {

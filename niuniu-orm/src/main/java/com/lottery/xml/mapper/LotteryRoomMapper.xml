@@ -7,6 +7,14 @@
     <result column="ROOMID" property="roomid" jdbcType="INTEGER" />
     <result column="ROOMNUMBER" property="roomnumber" jdbcType="INTEGER" />
   </resultMap>
+  <resultMap id="PlayerResultMap" type="com.lottery.orm.dto.LotteryRoomPlayerDto" >
+    <id column="RMID" property="rmid" jdbcType="INTEGER" />
+    <result column="SID" property="sid" jdbcType="INTEGER" />
+    <result column="ROOMID" property="roomid" jdbcType="INTEGER" />
+    <result column="ROOMNUMBER" property="roomnumber" jdbcType="INTEGER" />
+    <result column="COUNT" property="count" jdbcType="INTEGER" />
+  </resultMap>
+  
   <sql id="Base_Column_List" >
     RMID, SID, ROOMID, ROOMNUMBER
   </sql>
@@ -16,13 +24,16 @@
     from lottery_room
     where RMID = #{rmid,jdbcType=INTEGER}
   </select>
- 
-  <select id="selectLotteryGameRoom" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
-    select 
-    <include refid="Base_Column_List" />
-    from lottery_room
-    where SID = #{sid,jdbcType=INTEGER} and length(rmid) = #{len,jdbcType=INTEGER} 
-  </select>
+
+  <select id="selectLotteryGameRoom" resultMap="PlayerResultMap" >
+   SELECT DISTINCT(a.rmid),a.sid,a.roomid,a.roomnumber,IF(ISNULL(d.count),0,d.count) AS COUNT FROM lottery_room a LEFT JOIN 
+   (SELECT b.sid, b.rmid,COUNT(distinct accountid) AS COUNT FROM lottery_game_order b WHERE 
+   b.lotteryterm = (SELECT lotteryterm FROM LOTTERY_game_round where sid =#{sid,jdbcType=INTEGER}  ORDER BY LOTTERYTERM DESC LIMIT 1) 
+   AND b.sid = #{sid,jdbcType=INTEGER}  
+   AND b.rmid NOT LIKE '9%' group by rmid) d
+   ON (a.sid = d.sid AND a.rmid = d.rmid)
+   WHERE a.sid =#{sid,jdbcType=INTEGER} and length(a.rmid) = #{len,jdbcType=INTEGER}  ORDER BY rmid
+  </select>  
   
   <select id="selectDistinctSid"  resultMap="BaseResultMap" >
     SELECT rmid,sid,roomid,roomnumber FROM lottery_room WHERE LENGTH(rmid)=8 GROUP BY sid

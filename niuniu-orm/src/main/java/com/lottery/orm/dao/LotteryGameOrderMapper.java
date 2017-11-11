@@ -44,7 +44,9 @@ public interface LotteryGameOrderMapper {
     
     ResultAmountDto selectGameAllHisAmount(@Param("accountid")Integer accountid,@Param("sid")Integer sid,@Param("startTime")Date startTime,@Param("endTime")Date endTime);
      
-    RoomOrderDto selectAccountIdOrder(@Param("accountid")Integer accountid);
+    List<RoomOrderDto> selectAccountIdOrder(@Param("accountid")Integer accountid);
+
+    RoomOrderDto selectNoIdOrder(@Param("sid")Integer sid,@Param("lotteryterm")String lotteryterm,@Param("noid")Integer noid);
     
     List<LotteryNoidDto> selectGameNoid(@Param("sid")Integer sid,@Param("rmid")Integer rmid,@Param("lotteryterm")String lotteryterm);
 	
@@ -53,7 +55,19 @@ public interface LotteryGameOrderMapper {
     
     List<LotteryAmountDto> selectGameAmountResult(@Param("lotteryterm")String lotteryterm,@Param("sid")Integer sid,@Param("rmid")Integer rmid);
     
+    List<LotteryAmountDto> selectGameAmountMoreResult(@Param("lotteryterm")String lotteryterm,@Param("sid")Integer sid,@Param("rmid")Integer rmid);
+    List<LotteryAmountDto> selectGameAmountLessResult(@Param("lotteryterm")String lotteryterm,@Param("sid")Integer sid,@Param("rmid")Integer rmid);
+    List<LotteryAmountDto> selectGameAmountEqualResult(@Param("lotteryterm")String lotteryterm,@Param("sid")Integer sid,@Param("rmid")Integer rmid);
+    
+    List<LotteryAmountDto> selectGameIsOrNotBank(@Param("lotteryterm")String lotteryterm,@Param("sid")Integer sid,@Param("rmid")Integer rmid);
+    
+    
     int updateOrderResult(@Param("lgmid")Integer lgmid,@Param("opentime")Date opentime,@Param("result")String result,@Param("lastamount")BigDecimal lastamount);
     
     List<LotteryGameOrder> selectGameRmid(@Param("sid")Integer sid,@Param("lotteryterm")String lotteryterm);
+    
+    List<LotteryGameOrder> selectByResultValue(@Param("sid")Integer sid,@Param("lotteryterm")String lotteryterm,@Param("accountids")String accountids);
+    
+    List<LotteryGameOrder> selectByNoResultValue(@Param("sid")Integer sid,@Param("lotteryterm")String lotteryterm);
+    
 }

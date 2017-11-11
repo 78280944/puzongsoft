@@ -365,11 +365,28 @@
     where username = #{username,jdbcType=VARCHAR} and sfcode = #{sfcode,jdbcType=VARCHAR}
   </select>
   
-    <select id="selectByLogin" parameterType="com.lottery.orm.bo.AccountInfo" resultMap="BaseResultMap">  
+  <select id="selectByLogin" parameterType="com.lottery.orm.bo.AccountInfo" resultMap="BaseResultMap">  
     select 
     <include refid="Base_Column_List" />
     from account_info
     where username = #{username,jdbcType=VARCHAR} and password = #{password,jdbcType=VARCHAR}
+  </select>
+  
+  <select id="selectAgencyInfo" parameterType="java.lang.Integer" resultMap="BaseResultMap">  
+	SELECT T2.accountid, T2.username,T2.level,T2.offtype,T2.PERCENTAGE,T2.usermoney
+	FROM ( 
+	<![CDATA[
+	    SELECT 
+	        @r AS _id, 
+	        (SELECT @r := supuserid FROM account_info WHERE accountid = _id) AS parent_id, 
+	        @l := @l + 1 AS lvl 
+	    FROM 
+	        (SELECT @r := #{accountid,jdbcType=INTEGER}, @l := 0) vars, 
+	        account_info h 
+	    WHERE @r <> 0) T1 
+	JOIN account_info T2 
+	ON T1._id = T2.accountid WHERE accountid <>#{accountid,jdbcType=INTEGER}]]>
+	ORDER BY T1.lvl ASC   
   </select>
   
 </mapper>

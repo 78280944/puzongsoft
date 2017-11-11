@@ -303,31 +303,42 @@ public class LotteryOrderService {
 
 	//投注金额检查
 	public String checkLotteryOrderInfo(AccountInfo accountInfo, LotteryGameOrder order,SysLimit sys) {
+		System.out.println("9-3333333----"+sys.getLimited()+"..."+order.getOrderamount()+".."+accountInfo.getUsermoney()+".."+(order.getOrderamount().compareTo(accountInfo.getUsermoney())<0));
+		
 		if((order.getOrderamount()).compareTo(accountInfo.getUsermoney())>0){
 			return "下注金额不能超过账户金额";
 		}
 		
-		System.out.println("9-----"+sys.getLimited()+"..."+order.getOrderamount()+".."+(order.getOrderamount().compareTo(sys.getLimited())<0));
-		if (order.getPlayoridle().equals("1")){
+		int value = 0;
+		RoomOrderDto rod = lotteryGameOrderMapper.selectNoIdOrder(order.getSid(),order.getLotteryterm(),order.getNoid());
+		if (rod == null)
+			value = 0;
+		else
+			value = rod.getOrderamount().intValue(); 
+		if (order.getPlayoridle().equals("1")&&value<sys.getLimited().intValue()){
 		    if((order.getOrderamount()).compareTo(sys.getLimited())<0){
 			System.out.println("9--s---");
 			return "上庄下注金额需要"+sys.getLimited()+"元";
 		    }
-	    }else{
-	    	if((order.getOrderamount()).compareTo(sys.getLimited())>0){
-				return "上庄下注金额不能超过"+sys.getLimited()+"元";
-			}
 	    }
 		
 		//下注金额最大值
-		RoomOrderDto rd = lotteryGameOrderMapper.selectAccountIdOrder(accountInfo.getAccountid());
-		if (rd == null){
-			rd = new RoomOrderDto();
-			rd.setOrderamount(BigDecimal.valueOf(0));
+		List<RoomOrderDto>  list = lotteryGameOrderMapper.selectAccountIdOrder(accountInfo.getAccountid());
+		RoomOrderDto rd = null;
+		int count = 0;
+		if (list == null){
+			count = 0;
+		}else{
+			for (int i = 0;i<list.size();i++){
+				rd = new RoomOrderDto();
+				rd = list.get(i);
+				count = count + rd.getOrderamount().intValue();
+			}
+			
 		}
 		System.out.println("90-----------------"+accountInfo.getUsermoney()+".."+rd.getOrderamount());
 		if (order.getPlayoridle().equals("2"))
-		    if ((accountInfo.getUsermoney().subtract((rd.getOrderamount()).divide(BigDecimal.valueOf(5),2, BigDecimal.ROUND_HALF_EVEN))).subtract(order.getOrderamount()).doubleValue()<0){
+		    if (((accountInfo.getUsermoney().subtract(BigDecimal.valueOf(count))).divide(BigDecimal.valueOf(5),2, BigDecimal.ROUND_HALF_EVEN)).subtract(order.getOrderamount()).doubleValue()<0){
 			return "账户金额不够该游戏下注的赔率";
 		}
 		return "true";
