@@ -98,6 +98,7 @@ public class TradeInfoService {
     // 添加出入金款项并更新账户
     public String addInoutTradeInfo(TradeInfo tradeInfo) {
     	AccountInfo aInfo = accountInfoMapper.selectByPrimaryKey(tradeInfo.getAccountid());
+    	//System.out.println("345---------------"+aInfo.getUsermoney()+".."+tradeInfo.getTradeamount());
     	tradeInfo.setAccountamount(aInfo.getUsermoney().add(BigDecimal.valueOf(tradeInfo.getTradeamount())));
     	tradeInfoMapper.insertSelective(tradeInfo);
     	aInfo.setUsermoney(aInfo.getUsermoney().add(BigDecimal.valueOf(tradeInfo.getTradeamount())));
@@ -113,7 +114,7 @@ public class TradeInfoService {
     	Double profits = 0.0;
     	Double percentage = 0.0;
     	Double tradeamount = tradeInfo.getTradeamount().doubleValue();
-    	System.out.println("12--------------"+aInfo.size()+"..."+tradeamount+".."+fee);
+    	//System.out.println("12--------------"+aInfo.size()+"..."+tradeamount+".."+fee);
     	for (int i = 0;i<aInfo.size();i++){
     		AccountInfo ac = new AccountInfo();
     		ac = aInfo.get(i);

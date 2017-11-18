@@ -156,6 +156,7 @@
     <include refid="Base_Column_List" />
     from trade_info 
     where relativetype = #{relativetype,jdbcType=VARCHAR} and (inputtime between #{starttime,jdbcType=TIMESTAMP} and #{overtime,jdbcType=TIMESTAMP})
+    order by inputtime desc 
 	<if test="beginrow != null and pageSize !=null">
 	limit #{beginrow,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
 	</if>

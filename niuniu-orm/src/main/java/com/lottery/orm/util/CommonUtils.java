@@ -39,9 +39,12 @@ public class CommonUtils {
 	//01,本日;02,上周;03,本周;04,上期;05,本期;
    public static Date[] getDateTime(Date startTime,Date endTime) throws ParseException {
 			Date[] sTime = new Date[2];
+			DateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd");
+			String imptimeBegin = sdf1.format(startTime);
+			String imptimeEnd = sdf1.format(endTime);
 			DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-			String imptimeBegin = sdf.format(startTime)+" 00:00:01"; 
-			String imptimeEnd = sdf.format(endTime)+" 23:59:59";
+			imptimeBegin = imptimeBegin+" 00:00:01"; 
+			imptimeEnd = imptimeEnd+" 23:59:59";
 			sTime[0] = sdf.parse(imptimeBegin);
 			sTime[1] = sdf.parse(imptimeEnd);
 			return sTime;  
@@ -121,6 +124,27 @@ public class CommonUtils {
 	     // System.out.println("所在周星期日的日期：" + imptimeEnd);  
 	     return imptimeBegin + "," + imptimeEnd;  
 	}  
+	
+	public static String[] getResultValue(int order){
+		String[] str = new String[2];
+		if (order == 1){
+			str[0] = EnumType.LotteryResultBan.Result_banjiu_01.ID;
+			str[1] = EnumType.LotteryResultBan.Result_banjiu_01.NAME;
+		}else if (order ==2){
+			str[0] = EnumType.LotteryResultBan.Result_banjiu_02.ID;
+			str[1] = EnumType.LotteryResultBan.Result_banjiu_02.NAME;
+		}else if (order ==3){
+			str[0] = EnumType.LotteryResultBan.Result_banjiu_03.ID;
+			str[1] = EnumType.LotteryResultBan.Result_banjiu_03.NAME;
+		}else if (order ==4){
+			str[0] = EnumType.LotteryResultBan.Result_banjiu_04.ID;
+			str[1] = EnumType.LotteryResultBan.Result_banjiu_04.NAME;
+		}else if (order ==5){
+			str[0] = EnumType.LotteryResultBan.Result_banjiu_05.ID;
+			str[1] = EnumType.LotteryResultBan.Result_banjiu_05.NAME;
+		}
+		return str;
+	}
 	
 	public static String getCurrentTime() {  
 		 Date date = new Date();
@@ -350,8 +374,8 @@ public class CommonUtils {
 			    return str;
 			}
 		}else if (type.equals("02")){
-			str[0] = null;
-			str[1] = null;
+			str[0] = String.valueOf(9-mod);
+			str[1] = String.valueOf(mod)+"点";
 			str[2] = "1";
 		}
         return str;
@@ -475,19 +499,22 @@ public class CommonUtils {
         		//System.out.println("9---"+tmp);
         	 }
          }
+         /*
          for (i=0;i<=str.length-1;i++){
          	System.out.println("1----"+i+".."+str[i][1]);
          }
+         */
          for (i=str.length-1;i>=j;i--){
         	 if(str[i][5].equals("1")){
         		 str[i][1] = String.valueOf(Integer.valueOf(str[i][1])  - Integer.valueOf(str[i][0]));
         		 // System.out.println("0----0-"+i+".."+str1[i][1]);
         	 }
          }
+         /*
         for (i=0;i<=str1.length-1;i++){
         	System.out.println("0----"+i+".."+str[i][1]);
         }
-         
+         */
          return str;
          
      }
@@ -496,6 +523,427 @@ public class CommonUtils {
       * 判断比较,无庄逻辑处理
       */
      public static String[][] doNoBankerHandle(String[][] str){
+    		
+    /*
+         str[0][0]="200";
+         str[0][1]="0";
+         str[0][2]="0";
+         str[0][3]="1019";
+         str[0][4]="1001";
+         str[0][5]="0";  //对于赔付用户，是否需要显示负值
+         str[0][6]="5";
+         str[0][7]="0";  //对于赔付用户，倍率是否更新
+         str[0][8]="牛牛";
+         str[0][9]="2";
+         str[1][0]="100";
+         str[1][1]="0";
+         str[1][2]="0";
+         str[1][3]="1020";
+         str[1][4]="1001";
+         str[1][5]="0";
+         str[1][6]="2";
+         str[1][7]="0";
+         str[1][8]="牛牛";
+         str[1][9]="3";
+         str[2][0]="300";
+         str[2][1]="0";
+         str[2][2]="0";
+         str[2][3]="1011";
+         str[2][4]="1001";
+         str[2][5]="0";
+         str[2][6]="2";
+         str[2][7]="0";
+         str[2][8]="牛牛";
+         str[2][9]="3";
+         str[3][0]="300";
+         str[3][1]="0";
+         str[3][2]="0";
+         str[3][3]="1011";
+         str[3][4]="1001";
+         str[3][5]="0";
+         str[3][6]="1";
+         str[3][7]="0";
+         str[3][8]="牛牛";
+         str[3][9]="1";
+          */
+         int i = 0;
+         int j=str.length-1;
+         System.out.println("j--------------"+j);
+        // System.out.println("7---"+j);
+         if (str[0][9] == str[j][9])
+        	 return str;
+         
+         str[0][1] = String.valueOf(Integer.valueOf(str[0][0])*Integer.valueOf(str[0][6]));
+         str[j][1] = String.valueOf(Integer.valueOf(str[j][0])*Integer.valueOf(str[0][6]));
+         str[j][6] = str[0][6];
+         str[j][7] = String.valueOf(1);
+         int tmp = Integer.valueOf(str[0][1]);
+         //System.out.println("7ddd---"+i+".."+j);
+         while ((i<j) && (!str[i][9].equals(str[j][9]))){
+        	 if (tmp>=Integer.valueOf(str[j][1])){
+        		 tmp = tmp - Integer.valueOf(str[j][1]);
+        		 str[j][1] = "0";
+        		 str[j][5] = "1";
+        		// System.out.println("j1--------------"+j);
+        		// System.out.println("tmp1--------------"+tmp);
+        		 if (Integer.valueOf(str[j][7]) == 0){
+        			 str[j][6] = str[i][6];
+        			 str[j][7] = String.valueOf(1);
+        		 }
+        		 j--;
+        		 if(i==j){
+        			 str[i][1] = String.valueOf(Integer.valueOf(str[i][0])*Integer.valueOf(str[i][6]) - tmp);
+        			 str[i][2] = str[i][1];
+        		 }else{
+        			 if (!str[i][9].equals(str[j][9])){
+        			     str[j][1] = String.valueOf(Integer.valueOf(str[j][0])*Integer.valueOf(str[i][6]));
+        			     //System.out.println("j2--------------"+j);
+        			 }
+        			 else{
+            			 str[i][1] = String.valueOf(Integer.valueOf(str[i][0])*Integer.valueOf(str[i][6]) - tmp);
+            			 str[i][2] = str[i][1];
+            			 //System.out.println("i1--------------"+i);
+            			 //System.out.println("stri2--------------"+str[i][2]+".."+tmp);
+            		 }
+        		 }
+        	 }else{
+        		 str[j][1] = String.valueOf((Integer.valueOf(str[j][1]) - tmp));
+        		// System.out.println("i2--------------"+i);
+        		// System.out.println("strj1--------------"+str[j][1]);
+        		 str[j][5] = "1";
+        		 if (Integer.valueOf(str[j][7]) == 0){
+        			 str[j][6] = str[i][6];
+        			 str[j][7] = String.valueOf(1);
+        		 }
+        		 i++;
+        		 if(i < j){
+        			 //System.out.println("indexi--------------"+i);
+        			// System.out.println("indexj--------------"+j);
+        			// System.out.println("tablei--------------"+str[i][9]);
+        			// System.out.println("tablej--------------"+str[j][9]);
+        			 if (!str[i][9].equals(str[j][9])){
+		        		 str[i][1] = String.valueOf(Integer.valueOf(str[i][0])*Integer.valueOf(str[i][6])); 		
+		        		 tmp = Integer.valueOf(str[i][1]);
+		        		// System.out.println("i21--------------"+i);
+		        		// System.out.println("stri1--------------"+str[i][1]);
+            			// System.out.println("tmp2--------------"+tmp);
+        			 }
+        		 }
+        		//System.out.println("9---"+tmp);
+        	 }
+         }
+        // System.out.println("7ddd-sdsd--"+i+".."+j);
+         for (i=str.length-1;i>=j;i--){
+        	 if(str[i][5].equals("1")){
+        		 str[i][2] = String.valueOf(Integer.valueOf(str[i][1])  - Integer.valueOf(str[i][0])*Integer.valueOf(str[i][6]));
+        		  //System.out.println("0----0-"+i+".."+str1[i][1]);
+        	 }
+         }
+       //  System.out.println("12----------"+j);
+        for (i=0;i<j;i++){
+        	 str[i][2] =  str[i][1]; 	 
+        }
+        for (i=0;i<str.length;i++){
+       	    str[i][1] =  str[i][0]; 	
+       	    
+       }
+   /*
+       for (int w = 0;w<str.length;w++)
+       System.out.println("90------------"+str[w][0]+"..."+str[w][1]);
+        */
+         return str;
+        
+     }
+     
+     
+     
+     
+     
+     /**
+      * 庄判断比较,输庄
+      */
+     public static Map<Integer, Object> doBankerHandleLess(int gains,int count,int values,int times,String[][] str){
+        /*
+    	 str[0][0]="2000";
+         str[0][1]="2000";
+         str[0][2]="2000";
+         str[0][3]="1019";
+         str[0][4]="1001";
+         str[0][5]="0";
+         str[0][6]="5";
+         str[0][7]="0";
+         str[0][8]="牛牛";
+         str[0][9]="1";
+         str[1][0]="200";
+         str[1][1]="200";
+         str[1][2]="200";
+         str[1][3]="1020";
+         str[1][4]="1001";
+         str[1][5]="0";
+         str[1][6]="5";
+         str[1][7]="0";
+         str[1][8]="牛牛";
+         str[1][9]="1";
+         str[2][0]="2000";
+         str[2][1]="2000";
+         str[2][2]="2000";
+         str[2][3]="1011";
+         str[2][4]="1001";
+         str[2][5]="0";
+         str[2][6]="1";
+         str[2][7]="0";
+         str[2][9]="1";
+        */
+         int i = 0;
+         int j=str.length-1;
+         Map<Integer, Object> map = new HashMap<Integer, Object>();
+         System.out.println("7---"+j);
+         int base = values-gains-count;
+         int tempgain = base;
+         
+         if (base == 0){
+             map.put(1, gains);
+             map.put(2, count);
+             map.put(3, values);
+             map.put(4, str); 
+         }
+         for (;j>=0;j--){
+        	 System.out.println("90---"+str[j][1]+".."+times+".."+base);
+        	 if (Integer.valueOf(str[j][1])*times<base){
+        		 base = base - Integer.valueOf(str[j][0])*times;
+        		 str[j][1] = "0";
+        	 }else{
+        		 str[j][1] = String.valueOf((Integer.valueOf(str[j][0])*times - base));
+        		 base = 0;
+                 break;
+        	 }
+         }
+         for (i=0;i<=str.length-1;i++){
+         	if (i<j){
+         		str[i][2] = String.valueOf(0);
+         		str[i][1] = str[i][0];
+         	}
+         	else{
+         		str[i][2] = String.valueOf(Integer.valueOf(str[i][1]) - Integer.valueOf(str[i][0])*times);
+         		str[i][1] = str[i][0];
+         	    //count = count - Integer.valueOf(str[i][2]);
+         	}
+         }
+         gains = gains+tempgain-base;
+         System.out.println("gains="+gains+"..count="+count+"..values="+values);
+       /*
+        for (i=0;i<=str.length-1;i++){
+        	System.out.println("0----"+i+".."+str[i][2]+"..");
+        }
+        */
+       // System.out.println("0----"+count);
+        map.put(1, gains);
+        map.put(2, count);
+        map.put(3, values);
+        map.put(4, str); 
+        return map;
+         
+     }
+     
+     public static int doCompareCount(int gains,int count,int values){
+    	 int base = 0;
+    	 if ((values - gains - count)>count){
+    		 base = count;
+    	 }
+    	 else 
+    		 base = values - gains -count;
+    	 return base;
+     } 
+     
+     /**
+      * 庄判断比较,赢庄
+      */
+     public static Map<Integer, Object> doBankerHandleMore(int gains,int count,int values,int times,String[][] str){
+         
+    	 /*
+        // count  =120;
+    	 str[0][0]="200";
+         str[0][1]="200";
+         str[0][2]="0";
+         str[0][3]="1019";
+         str[0][4]="1001";
+         str[0][5]="0";
+         str[0][6]="5";
+         str[0][7]="0";
+         str[0][8]="牛牛";
+         str[0][9]="牛牛";
+         str[1][0]="300";
+         str[1][1]="300";
+         str[1][2]="0";
+         str[1][3]="1020";
+         str[1][4]="1001";
+         str[1][5]="0";
+         str[1][6]="5";
+         str[1][7]="0";
+         str[1][8]="牛牛";
+         str[2][0]="400";
+         str[2][1]="400";
+         str[2][2]="0";
+         str[2][3]="1011";
+         str[2][4]="1001";
+         str[2][5]="0";
+         str[2][6]="5";
+         str[2][7]="0";
+         /*
+         str[3][0]="1000";
+         str[3][1]="1000";
+         str[3][2]="0";
+         str[3][3]="1011";
+         str[3][4]="1001";
+         str[3][5]="0";
+         str[3][6]="1";
+         str[3][7]="0";
+         */
+  
+    	 
+         int i = 0;
+         int j=str.length-1;
+         Map<Integer, Object> map = new HashMap<Integer, Object>();
+         
+         int base = doCompareCount(gains,count,values);
+         System.out.println("7---"+base);
+         for (i=0;i<=j;i++){
+        	 if (base>(Integer.valueOf(str[i][0])*Integer.valueOf(str[i][6]))){
+        		 str[i][2] = String.valueOf(Integer.valueOf(str[i][0])*Integer.valueOf(str[i][6]));
+        		 base = base - Integer.valueOf(str[i][0])*Integer.valueOf(str[i][6]);
+        		// count = count - Integer.valueOf(str[i][0])*Integer.valueOf(str[i][6]);
+        	 }else{
+        		 str[i][2] = String.valueOf(base);
+        		// count = 0;
+        		 base = 0;
+                 break;
+        	 }
+         }
+         System.out.println("gq--"+count);
+         for (i=0;i<=str.length-1;i++){
+        	// System.out.println("800-"+str[i][2]);
+        	 count = count - Integer.valueOf(str[i][2]);
+         }
+         /*
+         System.out.println("gains="+gains+"..count="+count+"..values="+values);
+        
+        for (i=0;i<=str.length-1;i++){
+        	System.out.println("0----"+i+".."+str[i][2]+"..");
+        }
+       */
+        map.put(1, gains);
+        map.put(2, count);
+        map.put(3, values);
+        map.put(4, str);
+        
+        return map;
+         
+     }
+     
+     
+     /**
+      * 内部收益比较，分配
+      */
+     public static String[][] doBankerHandleEqual(int count,String[][] str){
+       /*
+    	 str[0][0]="1000";
+         str[0][1]="1000";
+         str[0][2]="0";
+         str[0][3]="1019";
+         str[0][4]="1001";
+         str[0][5]="0";
+         str[0][6]="1";
+         str[0][7]="0";
+         str[0][8]="牛牛";
+         str[1][0]="2000";
+         str[1][1]="2000";
+         str[1][2]="0";
+         str[1][3]="1020";
+         str[1][4]="1001";
+         str[1][5]="0";
+         str[1][6]="1";
+         str[1][7]="0";
+         str[1][8]="牛牛";
+         str[2][0]="20000";
+         str[2][1]="20000";
+         str[2][2]="0";
+         str[2][3]="1011";
+         str[2][4]="1001";
+         str[2][5]="1";
+         str[2][6]="1";
+         str[2][7]="0"; 
+         str[2][8]="牛牛"; 
+         str[3][0]="300";
+         str[3][1]="300";
+         str[3][2]="0";
+         str[3][3]="1011";
+         str[3][4]="1001";
+         str[3][5]="1";
+         str[3][6]="1";
+         str[3][7]="0"; 
+         str[3][8]="牛牛"; 
+         */
+         int i = 0;
+         int j=str.length-1;
+         System.out.println("7---"+j);
+         int base = Math.abs(count);
+         /*
+         if (base<0){
+        	 String[][] str1 = new String[str.length][10];
+        	 int t1 = j;
+        	 for (int m =0;m<=j;m++){
+        		 str1[m][0] = str[t1][0]; 
+        		 str1[m][1] = str[t1][1]; 
+        		 str1[m][2] = str[t1][2]; 
+        		 str1[m][3] = str[t1][3]; 
+        		 str1[m][4] = str[t1][4]; 
+        		 str1[m][5] = str[t1][5]; 
+        		 str1[m][6] = str[t1][6];
+        		 str1[m][7] = str[t1][7]; 
+        		 str1[m][8] = str[t1][8]; 
+        		 str1[m][9] = str[t1][9]; 
+        		 t1--;
+        	 }
+        	 str = str1;
+         }
+         */
+         for (i=0;i<=j;i++){
+        	 if (base>(Integer.valueOf(str[i][0])*Integer.valueOf(str[i][6]))){
+        		 str[i][2] = String.valueOf(Integer.valueOf(str[i][0])*Integer.valueOf(str[i][6]));
+        		 base = base - Integer.valueOf(str[i][0])*Integer.valueOf(str[i][6]);
+        		// count = count - Integer.valueOf(str[i][0])*Integer.valueOf(str[i][6]);
+        	 }else{
+        		 str[i][2] = String.valueOf(base);
+        		// count = 0;
+                 break;
+        	 }
+         }
+         if (count<0){
+        	 for (i=0;i<=j;i++){
+        	     str[i][2] = String.valueOf(0-Integer.valueOf(str[i][2]));
+        		// System.out.println("0--45-6-"+i+".."+str[i][2]+"..");  
+        	 }
+         }
+         /*
+         for (i=0;i<=str.length-1;i++){
+        	 System.out.println("0---6-"+i+".."+str[i][2]+"..");  
+         }
+  
+     
+        for (i=0;i<=str.length-1;i++){
+        	System.out.println("0----"+i+".."+str[i][2]+"..");
+        }
+        */
+        //System.out.println("0----"+count);
+       
+         return str;
+     }
+     
+     
+     /**
+      * 判断比较,无庄逻辑处理,备份
+      */
+     public static String[][] doNoBankerHandle1_BF(String[][] str){
     	/*
          str[0][0]="1200";
          str[0][1]="1200";
@@ -590,11 +1038,85 @@ public class CommonUtils {
          
      }
      
-     
      /**
-      * 庄判断比较,输庄
+      * 庄判断比较,赢庄备份
       */
-     public static Map<Integer, Object> doBankerHandleLess(int count,int times,String[][] str){
+     public static Map<Integer, Object> doBankerHandleMore_BF(int count,int times,String[][] str){
+         /*
+         count  =120;
+    	 str[0][0]="500";
+         str[0][1]="500";
+         str[0][2]="0";
+         str[0][3]="1019";
+         str[0][4]="1001";
+         str[0][5]="0";
+         str[0][6]="5";
+         str[0][7]="0";
+         str[0][8]="牛牛";
+         str[0][9]="牛牛";
+         str[1][0]="300";
+         str[1][1]="300";
+         str[1][2]="0";
+         str[1][3]="1020";
+         str[1][4]="1001";
+         str[1][5]="0";
+         str[1][6]="5";
+         str[1][7]="0";
+         str[1][8]="牛牛";
+         str[2][0]="400";
+         str[2][1]="400";
+         str[2][2]="0";
+         str[2][3]="1011";
+         str[2][4]="1001";
+         str[2][5]="0";
+         str[2][6]="1";
+         str[2][7]="0";
+         str[3][0]="1000";
+         str[3][1]="1000";
+         str[3][2]="0";
+         str[3][3]="1011";
+         str[3][4]="1001";
+         str[3][5]="0";
+         str[3][6]="1";
+         str[3][7]="0";
+         
+       */
+         int i = 0;
+         int j=str.length-1;
+         Map<Integer, Object> map = new HashMap<Integer, Object>();
+         System.out.println("7---"+j);
+         int base = count;
+         for (i=0;i<=j;i++){
+        	 if (base>(Integer.valueOf(str[i][0])*Integer.valueOf(str[i][6]))){
+        		 str[i][2] = String.valueOf(Integer.valueOf(str[i][0])*Integer.valueOf(str[i][6]));
+        		 base = base - Integer.valueOf(str[i][0])*Integer.valueOf(str[i][6]);
+        		 count = count - Integer.valueOf(str[i][0])*Integer.valueOf(str[i][6]);
+        	 }else{
+        		 str[i][2] = String.valueOf(base);
+        		 count = 0;
+                 break;
+        	 }
+         }
+        /*
+         for (i=0;i<=str.length-1;i++){
+        	 System.out.println("0----"+i+".."+str[i][2]+"..");
+         }
+   */
+        
+        for (i=0;i<=str.length-1;i++){
+        	System.out.println("0----"+i+".."+str[i][2]+"..");
+        }
+       
+        System.out.println("0----"+count);
+        map.put(1, count);
+        map.put(2, str);
+        return map;
+         
+     } 
+     /**
+      * 庄判断比较,输庄备份
+      */
+     public static Map<Integer, Object> doBankerHandleLess_BF(int count,int times,String[][] str){
          /*
     	 str[0][0]="100";
          str[0][1]="100";
@@ -660,172 +1182,34 @@ public class CommonUtils {
          
      }
      
-     /**
-      * 庄判断比较,赢庄
-      */
-     public static Map<Integer, Object> doBankerHandleMore(int count,int times,String[][] str){
-         /*
-         count  =120;
-    	 str[0][0]="500";
-         str[0][1]="500";
-         str[0][2]="0";
-         str[0][3]="1019";
-         str[0][4]="1001";
-         str[0][5]="0";
-         str[0][6]="5";
-         str[0][7]="0";
-         str[0][8]="牛牛";
-         str[1][0]="300";
-         str[1][1]="300";
-         str[1][2]="0";
-         str[1][3]="1020";
-         str[1][4]="1001";
-         str[1][5]="0";
-         str[1][6]="5";
-         str[1][7]="0";
-         str[1][8]="牛牛";
-         str[2][0]="400";
-         str[2][1]="400";
-         str[2][2]="0";
-         str[2][3]="1011";
-         str[2][4]="1001";
-         str[2][5]="0";
-         str[2][6]="1";
-         str[2][7]="0";
-         str[3][0]="1000";
-         str[3][1]="1000";
-         str[3][2]="0";
-         str[3][3]="1011";
-         str[3][4]="1001";
-         str[3][5]="0";
-         str[3][6]="1";
-         str[3][7]="0";
-         
-       */
-         int i = 0;
-         int j=str.length-1;
-         Map<Integer, Object> map = new HashMap<Integer, Object>();
-         System.out.println("7---"+j);
-         int base = count;
-         for (i=0;i<=j;i++){
-        	 if (base>(Integer.valueOf(str[i][0])*Integer.valueOf(str[i][6]))){
-        		 str[i][2] = String.valueOf(Integer.valueOf(str[i][0])*Integer.valueOf(str[i][6]));
-        		 base = base - Integer.valueOf(str[i][0])*Integer.valueOf(str[i][6]);
-        		 count = count - Integer.valueOf(str[i][0])*Integer.valueOf(str[i][6]);
-        	 }else{
-        		 str[i][2] = String.valueOf(base);
-        		 count = 0;
-                 break;
-        	 }
-         }
-        /*
-         for (i=0;i<=str.length-1;i++){
-        	 System.out.println("0----"+i+".."+str[i][2]+"..");
-         }
-   */
-        
-        for (i=0;i<=str.length-1;i++){
-        	System.out.println("0----"+i+".."+str[i][2]+"..");
-        }
-       
-        System.out.println("0----"+count);
-        map.put(1, count);
-        map.put(2, str);
-        return map;
-         
-     }
-     
-     
-     /**
-      * 内部收益比较，分配
-      */
-     public static String[][] doBankerHandleEqual(int count,String[][] str){
-         /*
-    	 str[0][0]="100";
-         str[0][1]="100";
-         str[0][2]="0";
-         str[0][3]="1019";
-         str[0][4]="1001";
-         str[0][5]="0";
-         str[0][6]="1";
-         str[0][7]="0";
-         str[0][8]="牛牛";
-         str[1][0]="200";
-         str[1][1]="200";
-         str[1][2]="0";
-         str[1][3]="1020";
-         str[1][4]="1001";
-         str[1][5]="0";
-         str[1][6]="1";
-         str[1][7]="0";
-         str[1][8]="牛牛";
-         str[2][0]="5000";
-         str[2][1]="5000";
-         str[2][2]="0";
-         str[2][3]="1011";
-         str[2][4]="1001";
-         str[2][5]="1";
-         str[2][6]="1";
-         str[2][7]="0"; */
-         int i = 0;
-         int j=str.length-1;
-         System.out.println("7---"+j);
-         int base = count;
-         if (base<0){
-        	 String[][] str1 = new String[str.length][10];
-        	 int t1 = j;
-        	 for (int m =0;m<=j;m++){
-        		 str1[m][0] = str[t1][0]; 
-        		 str1[m][1] = str[t1][1]; 
-        		 str1[m][2] = str[t1][2]; 
-        		 str1[m][3] = str[t1][3]; 
-        		 str1[m][4] = str[t1][4]; 
-        		 str1[m][5] = str[t1][5]; 
-        		 str1[m][6] = str[t1][6];
-        		 str1[m][7] = str[t1][7]; 
-        		 str1[m][8] = str[t1][8]; 
-        		 str1[m][9] = str[t1][9]; 
-        		 t1--;
-        	 }
-        	 str = str1;
-         }
-         for (i=0;i<=j;i++){
-        	 if (base>(Integer.valueOf(str[i][0])*Integer.valueOf(str[i][6]))){
-        		 str[i][2] = String.valueOf(Integer.valueOf(str[i][0])*Integer.valueOf(str[i][6]));
-        		 base = base - Integer.valueOf(str[i][0])*Integer.valueOf(str[i][6]);
-        		 count = count - Integer.valueOf(str[i][0])*Integer.valueOf(str[i][6]);
-        	 }else{
-        		 str[i][2] = String.valueOf(base);
-        		 count = 0;
-                 break;
-        	 }
-         }
-         /*
-         for (i=0;i<=str.length-1;i++){
-        	 System.out.println("0----"+i+".."+str[i][2]+"..");
-         }
-  */
-        /*
-        for (i=0;i<=str.length-1;i++){
-        	System.out.println("0----"+i+".."+str[i][2]+"..");
-        }
-        */
-        System.out.println("0----"+count);
-         return str;
-     }
-     
      
 	/**
 	 * @param args
 	 * @throws Exception
 	 */
 	public static void main(String args[]) throws Exception{
-		
+		//Date[] param1 = CommonUtils.getDateTime(param.getStartDate(), param.getEndDate());
+		Date[] param1 = getDateTime(new Date(),new Date());
+		System.out.println("90----"+param1[0]+".."+param1[1]);
 		//BigDecimal.valueOf(Integer.valueOf(str[j][2])).subtract(fee.doubleValue()>0?fee:BigDecimal(0)))
 		//testDate();
+		int gains=200;
+		int count=700;
+		int values=1800;
+		System.out.println(doCompareCount(gains, count, values));
+		
+		int []numbers = {50,100,200};
+        Random random = new Random();
+        int index = random.nextInt(numbers.length);
+        System.out.println("12----"+numbers[index]);
 		System.out.println(",---------"+BigDecimal.valueOf(30).subtract(BigDecimal.valueOf(0)));
 		String[][] d =new String[4][10];
-		System.out.println(doBankerHandleMore(12,4,d));
+		//System.out.println("fe--------"+doBankerHandleEqual(2000,d));
+		int times =3;
+		//System.out.println(doBankerHandleMore(gains,count,values,times,d));
+		//System.out.println(doBankerHandleLess(gains,count,values,times,d));
+		System.out.println(doNoBankerHandle(d));
+		System.out.println(doBankerHandleEqual(18000,d));
 		String[] a = "2,9,2,2,7".split(",");
 		String[] c =CommonUtils.getOrdeNum("2,10","02");
 		//System.out.println("7----"+c[0]+".."+c[1]+".."+c[2]+"..."+System.currentTimeMillis());

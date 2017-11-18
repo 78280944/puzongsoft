@@ -191,7 +191,7 @@
     WHERE
 	a.accountid=b.accountid and a.level = #{level,jdbcType=VARCHAR} and a.offtype = '1'
 	AND 
-	(Date(b.starttime) BETWEEN #{startTime,jdbcType=TIMESTAMP} and #{endTime,jdbcType=TIMESTAMP}) 
+	(b.starttime BETWEEN #{startTime,jdbcType=TIMESTAMP} and #{endTime,jdbcType=TIMESTAMP}) 
 	AND
     FIND_IN_SET(a.accountid, 
 	   (SELECT GROUP_CONCAT(LEVEL SEPARATOR ',') FROM (
@@ -199,7 +199,9 @@
 	      FROM account_info d
 	      JOIN (SELECT @Ids := #{accountid,jdbcType=INTEGER}) temp1
 	      WHERE FIND_IN_SET(d.supuserid, @Ids)
-	   ) temp2 )) group by a.accountid order by a.accountid desc
+	   ) temp2 )) 
+	OR (a.accountid = #{accountid,jdbcType=INTEGER} AND a.accountid = b.accountid)	     
+	   group by a.accountid order by a.accountid desc
      <if test="beginRow != null and pageSize !=null">
 	limit #{beginRow,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
 	</if>
@@ -233,7 +235,7 @@
     WHERE
 	a.accountid=b.accountid and a.level = '9' and offtype = '3'
 	AND 
-	(Date(b.starttime) BETWEEN #{startTime,jdbcType=TIMESTAMP} and #{endTime,jdbcType=TIMESTAMP}) 
+	(b.starttime BETWEEN #{startTime,jdbcType=TIMESTAMP} and #{endTime,jdbcType=TIMESTAMP}) 
 	AND
     FIND_IN_SET(a.accountid, 
 	   (SELECT GROUP_CONCAT(LEVEL SEPARATOR ',') FROM (

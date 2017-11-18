@@ -28,7 +28,17 @@ public class LotteryAmountDto {
 
 	private  BigDecimal lastamount;
 	
+	private Integer noid;
 	
+	
+	public Integer getNoid() {
+		return noid;
+	}
+
+	public void setNoid(Integer noid) {
+		this.noid = noid;
+	}
+
 	public BigDecimal getLastamount() {
 		return lastamount;
 	}

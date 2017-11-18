@@ -22,7 +22,7 @@
     select 
     <include refid="Base_Column_List" />
     from sys_limit
-    where gametype = #{gametype,jdbcType=VARCHAR} and offtype= #{offtype,jdbcType=VARCHAR} and state = '1'
+    where gametype = getGameType(#{gametype,jdbcType=VARCHAR}) and offtype= #{offtype,jdbcType=VARCHAR} and state = '1'
   </select>
   
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >

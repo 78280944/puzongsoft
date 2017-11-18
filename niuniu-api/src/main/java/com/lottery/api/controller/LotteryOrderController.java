@@ -117,8 +117,10 @@ public class LotteryOrderController {
 		RestResult result = new RestResult();
 		String checkInfo = "";
 		try {
+			
 			LotteryGameOrder order = mapper.map(param, LotteryGameOrder.class);
-			System.out.println("8------------------"+order.getLotteryterm());
+			System.out.println("投注开始时间------------------"+new Date());
+			LOG.info("投注开始时间------------------"+new Date());
 			AccountInfo accountInfo = accountInfoMapper.selectByPrimaryKey(order.getAccountid());
 			if (accountInfo == null){
 				result.fail(MessageTool.Code_3001);
@@ -152,10 +154,12 @@ public class LotteryOrderController {
 				lotteryOrderService.changeAccountAmount(accountInfo, order);
 				
 				//投注
-				System.out.println("123-------------"+order.getLotteryterm());
+				//System.out.println("123-------------"+order.getLotteryterm());
 				lotteryOrderService.insertLotteryGameOrder(order);
 				
 			}
+			System.out.println("投注结束时间------------------"+new Date());
+			LOG.info("投注结束时间------------------"+new Date());
 			result.success();
 			LOG.info(result.getMessage());
 		} catch (Exception e) {
@@ -320,6 +324,7 @@ public class LotteryOrderController {
 		OrderListResult result = new OrderListResult();
 		try {
 			Date[] param1 = CommonUtils.getDateTime(param.getStartDate(), param.getEndDate());
+			System.out.println("902----------------"+param1[0]+".."+param1[1]);
 			List<RoomHisOrderDto> orderList =null;
 			if (param.getSid()==9999){
 				System.out.println("111111-------------"+param.getSid());

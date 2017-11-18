@@ -9,7 +9,7 @@ public class GameLobbyVo {
 
 	@ApiModelProperty(value = "玩家类型1：正式；2：试玩 ", required = true)
 	private Integer type;
-
+	
 	public Integer getSid() {
 		return sid;
 	}
@@ -25,5 +25,6 @@ public class GameLobbyVo {
 	public void setType(Integer type) {
 		this.type = type;
 	}
+	
 	
 }

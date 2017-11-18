@@ -13,6 +13,7 @@ public class MessageTool {
 	public final static int FailCode = 3000;
 	public final static int ErrorCode = 4000;
 	public final static int InvlidClientCode = 5000;
+	public final static int Code_1001 = 1001;
 	public final static int Code_1004 = 1004;
 	public final static int Code_1005 = 1005;
 	public final static int Code_1006 = 1006;

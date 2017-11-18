@@ -263,7 +263,8 @@ public class LotteryRoundService {
 		List<LotteryGameRound> list = lotteryGameRoundMapper.selectLotteryOrderResult(sid);
 		LotteryGameCurDto lgc = new LotteryGameCurDto();
 		for (int i = 0;i<list.size();i++){
-			LotteryGameRound lgr = list.get(i);
+			LotteryGameRound lgr = new LotteryGameRound();
+			lgr = list.get(i);
 			if (i==0){
 				lgc.setSid(lgr.getSid());
 				lgc.setStarttime(lgr.getStarttime());

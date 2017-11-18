@@ -303,7 +303,7 @@ public class LotteryOrderService {
 
 	//投注金额检查
 	public String checkLotteryOrderInfo(AccountInfo accountInfo, LotteryGameOrder order,SysLimit sys) {
-		System.out.println("9-3333333----"+sys.getLimited()+"..."+order.getOrderamount()+".."+accountInfo.getUsermoney()+".."+(order.getOrderamount().compareTo(accountInfo.getUsermoney())<0));
+		//System.out.println("9-3333333----"+sys.getLimited()+"..."+order.getOrderamount()+".."+accountInfo.getUsermoney()+".."+(order.getOrderamount().compareTo(accountInfo.getUsermoney())<0));
 		
 		if((order.getOrderamount()).compareTo(accountInfo.getUsermoney())>0){
 			return "下注金额不能超过账户金额";
@@ -332,11 +332,12 @@ public class LotteryOrderService {
 			for (int i = 0;i<list.size();i++){
 				rd = new RoomOrderDto();
 				rd = list.get(i);
-				count = count + rd.getOrderamount().intValue();
+				//System.out.println("812---sd-"+rd.getOrderamount());
+				count = count + ((null==rd)?0:((null==rd.getOrderamount())?0:rd.getOrderamount().intValue()));
 			}
 			
 		}
-		System.out.println("90-----------------"+accountInfo.getUsermoney()+".."+rd.getOrderamount());
+		//System.out.println("90-----------------"+accountInfo.getUsermoney()+".."+rd.getOrderamount());
 		if (order.getPlayoridle().equals("2"))
 		    if (((accountInfo.getUsermoney().subtract(BigDecimal.valueOf(count))).divide(BigDecimal.valueOf(5),2, BigDecimal.ROUND_HALF_EVEN)).subtract(order.getOrderamount()).doubleValue()<0){
 			return "账户金额不够该游戏下注的赔率";
@@ -462,15 +463,16 @@ public class LotteryOrderService {
 	// 投注结果
 	public List<RoomHisOrderDto> getLotteryHisOrder(Date startTime, Date endTime, Integer accountid,Integer sid, Integer beginRow, Integer pageSize) throws ParseException {
 		List<RoomHisOrderDto> roundList = new ArrayList<RoomHisOrderDto>();
-		Date[] sTime = CommonUtils.getDateTime(startTime, endTime);
-		roundList = lotteryGameOrderMapper.selectGameHisOrder(sTime[0], sTime[1], accountid,sid,  beginRow, pageSize);	
+		//Date[] sTime = CommonUtils.getDateTime(startTime, endTime);
+		roundList = lotteryGameOrderMapper.selectGameHisOrder(startTime, endTime, accountid,sid,  beginRow, pageSize);	
 		return roundList;
 	}
 	
 	public List<RoomHisOrderDto> getLotteryHisAllOrder(Date startTime, Date endTime, Integer accountid,Integer sid, Integer beginRow, Integer pageSize) throws ParseException {
 		List<RoomHisOrderDto> roundList = new ArrayList<RoomHisOrderDto>();
-		Date[] sTime = CommonUtils.getDateTime(startTime, endTime);
-		roundList = lotteryGameOrderMapper.selectGameHisAllOrder(sTime[0], sTime[1], accountid,sid,  beginRow, pageSize);	
+		//Date[] sTime = CommonUtils.getDateTime(startTime, endTime);
+		System.out.println("801-------------"+startTime+"..."+endTime);
+		roundList = lotteryGameOrderMapper.selectGameHisAllOrder(startTime, endTime, accountid,sid,  beginRow, pageSize);	
 		return roundList;
 	}
 	/*
@@ -528,8 +530,7 @@ public class LotteryOrderService {
 	// 投注明细
 	public List<RoomOrderItemDto> selectGameOrderItem(String lotteryTerm,Integer sid, Integer rmid, Integer accountid) throws ParseException {
 		List<RoomOrderItemDto> roundList = new ArrayList<RoomOrderItemDto>();
-		List<RoomOrderItemDto> temp1 = new ArrayList<RoomOrderItemDto>();
-		List<List<RoomOrderItemDto>> list = new ArrayList<List<RoomOrderItemDto>>();
+		//List<List<RoomOrderItemDto>> list = new ArrayList<List<RoomOrderItemDto>>();
         roundList = lotteryGameOrderMapper.selectGameOrderItem(accountid, sid, rmid, lotteryTerm);
 		return roundList;
 	}
@@ -538,16 +539,18 @@ public class LotteryOrderService {
 	public List<QueryRoomDateDto> selectRoomResult(Date startTime,Date endTime, String time,Integer sid,Integer rmid, Integer accountid,Integer beginRow, Integer pageSize) throws ParseException {
 		//List<QueryRoomDateDto> list = lotteryRoomDetailMapper.selectLotteryRoomDetail(param.getStartDate(), param.getEndDate(), param.getRmid(), param.getBeginRow(), param.getPageSize());;
 		List<QueryRoomDateDto> roundList = new ArrayList<QueryRoomDateDto>();
-		System.out.println("9---"+(null != startTime)+"..."+(!("".equals(startTime))));
-		if ((null != startTime)&&(null != endTime)){
-			Date[] sTime = CommonUtils.getDateTime(startTime, endTime);
-		    roundList = lotteryRoomDetailMapper.selectRoomDetail(sTime[0], sTime[1], sid, rmid, beginRow, pageSize);
-		}else if (time.equals("01")||(time.equals("02")||(time.equals("03")))){
+		System.out.println("9-23--"+startTime+"..."+endTime);
+		//if ((null != startTime)&&(null != endTime)){
+			//Date[] sTime = CommonUtils.getDateTime(startTime, endTime);
+		    roundList = lotteryRoomDetailMapper.selectRoomDetail(startTime, endTime, sid, rmid, beginRow, pageSize);
+		//}
+		/*
+		else if (time.equals("01")||(time.equals("02")||(time.equals("03")))){
 			Date[] sTime = CommonUtils.getDateBetween(startTime, endTime, time);
 			roundList = lotteryRoomDetailMapper.selectRoomDetail(sTime[0], sTime[1], sid, rmid, beginRow, pageSize);
 		}else if (time.equals("04")||time.equals("05")){	
 			roundList = lotteryRoomDetailMapper.selectRoomDetailByTime(sid,rmid,time, beginRow, pageSize);
-		}
+		}*/
 		return roundList;
 	}
 	

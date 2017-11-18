@@ -135,7 +135,7 @@
         ACTCLOSETIME = #{actclosetime,jdbcType=TIMESTAMP},
       </if>
     </set>
-    where LGRID = #{lgrid,jdbcType=INTEGER}
+    where LGRID = #{lgrid,jdbcType=INTEGER} 
   </update>
   <update id="updateByPrimaryKey" parameterType="com.lottery.orm.bo.LotteryGameRound">
     update lottery_game_round
@@ -166,6 +166,7 @@
     where a.sid = #{sid,jdbcType=INTEGER}
     and
     a.lotteryterm  = getLotteryTerm(#{time,jdbcType=VARCHAR})
+    order by lotteryterm desc 
    <if test="beginRow != null and pageSize !=null">
 	limit #{beginRow,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
 	</if>
@@ -177,7 +178,8 @@
     from lottery_game_round a
     where a.sid = #{sid,jdbcType=INTEGER}
     and
-    (Date(a.opentime) BETWEEN #{startTime,jdbcType=TIMESTAMP} and #{endTime,jdbcType=TIMESTAMP})
+    (a.opentime BETWEEN #{startTime,jdbcType=TIMESTAMP} and #{endTime,jdbcType=TIMESTAMP}) 
+    order by lotteryterm desc 
     <if test="beginRow != null and pageSize !=null">
 	limit #{beginRow,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
 	</if>
@@ -194,7 +196,8 @@
     select 
     a.lgrid,a.sid,a.lotteryterm,a.lotteryresult,a.starttime,a.overtime,a.opentime,a.closetime,a.actopentime,a.actclosetime 
     from lottery_game_round a
-    where a.sid = #{sid,jdbcType=INTEGER} ORDER BY lotteryterm DESC LIMIT 0,2
+    where a.sid = #{sid,jdbcType=INTEGER} 
+    ORDER BY lotteryterm DESC LIMIT 0,2
   </select>
   
   

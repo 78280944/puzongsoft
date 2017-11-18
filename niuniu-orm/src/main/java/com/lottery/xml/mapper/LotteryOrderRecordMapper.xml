@@ -35,7 +35,7 @@
     select 
     <include refid="Base_Column_List" />
     from lottery_order_record
-    where firstvalue is null order by lotteryterm desc
+    where firstvalue ='0' order by lotteryterm desc
   </select>
   
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >

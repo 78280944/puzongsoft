@@ -16,11 +16,14 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.lottery.api.dto.AgencyWinReVo;
 import com.lottery.api.dto.AgencyWinVo;
+import com.lottery.api.dto.PlayTradeVo;
 import com.lottery.api.dto.ReportParamVo;
 import com.lottery.api.dto.RoomParamVo;
 import com.lottery.api.dto.TradeReportVo;
 import com.lottery.orm.bo.AccountDetail;
+import com.lottery.orm.bo.AccountInfo;
 import com.lottery.orm.dao.AccountDetailMapper;
+import com.lottery.orm.dao.AccountInfoMapper;
 import com.lottery.orm.dao.CustomLotteryMapper;
 import com.lottery.orm.dao.LotteryReportMapper;
 import com.lottery.orm.dao.LotteryRoomDetailMapper;
@@ -32,11 +35,13 @@ import com.lottery.orm.dto.PlayerWinReportDto;
 import com.lottery.orm.dto.ProAccAmountDto;
 import com.lottery.orm.dto.QueryDateDto;
 import com.lottery.orm.dto.QueryRoomDateDto;
+import com.lottery.orm.dto.RoomHisOrderDto;
 import com.lottery.orm.dto.TradeReportDto;
 import com.lottery.orm.result.AccWinReportResult;
 import com.lottery.orm.result.AgencyWinReportResult;
 import com.lottery.orm.result.InoutAccReportResult;
 import com.lottery.orm.result.InoutReportResult;
+import com.lottery.orm.result.OrderListResult;
 import com.lottery.orm.result.PlayerWinReportResult;
 import com.lottery.orm.result.QueryDateResult;
 import com.lottery.orm.result.RoomListResult;
@@ -45,6 +50,7 @@ import com.lottery.orm.service.LotteryOrderService;
 import com.lottery.orm.service.LotteryReportService;
 import com.lottery.orm.util.CommonUtils;
 import com.lottery.orm.util.EnumType;
+import com.lottery.orm.util.MessageTool;
 import com.lottery.orm.util.QueryTool;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
@@ -64,6 +70,9 @@ public class LotteryReportController {
 	
 	@Autowired
 	AccountDetailMapper accountDetailMapper;
+	
+	@Autowired
+	AccountInfoMapper accountInfoMapper;
 	
 	@Autowired
 	LotteryRoomDetailMapper lotteryRoomDetailMapper;
@@ -227,6 +236,30 @@ public class LotteryReportController {
 			List<AccAmountDto> list = lotteryReportService.getAccWinReport(param1[0], param1[1], param.getAccountId(), param.getLevel(), param.getBeginRow(), param.getPageSize());		
 			result.success(list);	
 			LOG.info(result.getMessage());
+		} catch (Exception e) {
+			result.error();
+			LOG.error(e.getMessage(), e);
+		}
+		return result;
+	}
+	
+	@ApiOperation(value = "获取交易报表", notes = "获取交易报表", httpMethod = "POST")
+	@RequestMapping(value = "/getAccTradeReport", method = RequestMethod.POST)
+	@ResponseBody
+	public OrderListResult getAccTradeReport(
+			@ApiParam(value = "Json参数", required = true) @Validated @RequestBody PlayTradeVo param) throws Exception {
+		OrderListResult result = new OrderListResult();
+		try {	
+			AccountInfo aInfo = accountInfoMapper.selectByUsername(param.getUsername());
+			Date[] param1 = CommonUtils.getDateTime(param.getStartTime(), param.getEndTime());
+			if (aInfo == null){
+			      result.fail(MessageTool.Code_1001);
+			      LOG.info(result.getMessage());
+			      return result;
+			} 
+			List<RoomHisOrderDto> orderList = lotteryOrderService.getLotteryHisAllOrder(param1[0], param1[1],aInfo.getAccountid(), 9999, param.getBeginRow(), param.getPageSize());
+			LOG.info(result.getMessage());
+			result.success(orderList);	
 		} catch (Exception e) {
 			result.error();
 			LOG.error(e.getMessage(), e);

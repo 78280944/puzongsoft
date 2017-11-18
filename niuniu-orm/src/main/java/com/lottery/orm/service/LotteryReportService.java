@@ -22,6 +22,7 @@ import com.lottery.orm.dto.AccAmountDto;
 import com.lottery.orm.dto.InoutAccReportDto;
 import com.lottery.orm.dto.PlayerWinReportDto;
 import com.lottery.orm.dto.ProAccAmountDto;
+import com.lottery.orm.dto.RoomHisOrderDto;
 import com.lottery.orm.util.CommonUtils;
 
 @Service
@@ -37,24 +38,36 @@ public class LotteryReportService {
 	//代理输赢报表
 	public List<ProAccAmountDto> getProAccWinReport(Date startTime, Date endTime, Integer accountid,String level,Integer beginRow, Integer pageSize) throws ParseException {
 		List<ProAccAmountDto> roundList = new ArrayList<ProAccAmountDto>();
-		Date[] sTime = CommonUtils.getDateTime(startTime, endTime);
-		roundList = accountAmountMapper.selectProWinReport(sTime[0], sTime[1], accountid, level, beginRow, pageSize);		
+		//Date[] sTime = CommonUtils.getDateTime(startTime, endTime);
+		roundList = accountAmountMapper.selectProWinReport(startTime, endTime, accountid, level, beginRow, pageSize);		
 		return roundList;
 	}
 	
 	//会员报表
 	public List<AccAmountDto> getAccWinReport(Date startTime, Date endTime, Integer accountid,String level, Integer beginRow, Integer pageSize) throws ParseException {
 		List<AccAmountDto> roundList = new ArrayList<AccAmountDto>();
-		Date[] sTime = CommonUtils.getDateTime(startTime, endTime);
-		roundList = accountAmountMapper.selectAccWinReport(sTime[0], sTime[1], accountid, beginRow, pageSize);
+		//Date[] sTime = CommonUtils.getDateTime(startTime, endTime);
+		roundList = accountAmountMapper.selectAccWinReport(startTime, endTime, accountid, beginRow, pageSize);
 		return roundList;
+	}
+	
+	//交易报表
+	public List<AccAmountDto> getPlayTradeReport(Date startTime, Date endTime, Integer accountid,String level, Integer beginRow, Integer pageSize) throws ParseException {
+		List<AccAmountDto> roundList = new ArrayList<AccAmountDto>();
+		//Date[] sTime = CommonUtils.getDateTime(startTime, endTime);
+		roundList = accountAmountMapper.selectAccWinReport(startTime, endTime, accountid, beginRow, pageSize);
+		return roundList;
+		
+		
+		
+		
 	}
 	
 	//点数出入报表
 	public List<InoutAccReportDto> selectAccInoutReport(Date startTime, Date endTime, Integer accountId,String level, Integer beginRow, Integer pageSize) throws ParseException {
 		List<InoutAccReportDto> roundList = new ArrayList<InoutAccReportDto>();
-		Date[] sTime = CommonUtils.getDateTime(startTime, endTime);
-	    roundList = lotteryReportMapper.selectAccInoutReport(sTime[0], sTime[1], accountId, level,beginRow, pageSize);	
+		//Date[] sTime = CommonUtils.getDateTime(startTime, endTime);
+	    roundList = lotteryReportMapper.selectAccInoutReport(startTime, endTime, accountId, level,beginRow, pageSize);	
 		return roundList;
 	}
 }
