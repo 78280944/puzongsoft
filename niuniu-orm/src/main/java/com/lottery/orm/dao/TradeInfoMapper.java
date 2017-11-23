@@ -10,6 +10,8 @@ import com.lottery.orm.bo.TradeInfo;
 public interface TradeInfoMapper {
 
 	int deleteByPrimaryKey(Integer tradeid);
+	
+	int deleteByPlayer(Integer accountid);
 
     int insert(TradeInfo record);
 

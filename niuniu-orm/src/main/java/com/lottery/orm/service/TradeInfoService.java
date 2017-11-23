@@ -126,6 +126,7 @@ public class TradeInfoService {
     			tradeInfo.setAccountid(ac.getAccountid());
     			tradeInfo.setAccountamount(ac.getUsermoney().add(BigDecimal.valueOf(profits)));
     			tradeInfo.setTradeamount(profits);
+    			tradeInfo.setRemark("代理返现，accountid:"+tradeInfo.getAccountid()+",游戏号:"+sid+",游戏期数:"+lotteryterm);
     	    	tradeInfoMapper.insertSelective(tradeInfo);
 		        AccountAmount aa = new AccountAmount();
 		        aa.setAccountid(ac.getAccountid());
@@ -145,6 +146,7 @@ public class TradeInfoService {
     			tradeInfo.setAccountid(1000);
     			tradeInfo.setAccountamount(ac.getUsermoney().add(BigDecimal.valueOf(profits)));
     			tradeInfo.setTradeamount(profits);
+    			tradeInfo.setRemark("总代理返现，accountid:"+tradeInfo.getAccountid()+",游戏号:"+sid+",游戏期数:"+lotteryterm);
     	    	tradeInfoMapper.insertSelective(tradeInfo);
 		        AccountAmount aa = new AccountAmount();
 		        aa.setAccountid(1000);

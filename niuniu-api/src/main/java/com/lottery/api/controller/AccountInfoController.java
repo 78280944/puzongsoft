@@ -33,11 +33,15 @@ import com.lottery.orm.bo.AccountInfo;
 import com.lottery.orm.bo.AccountRecord;
 import com.lottery.orm.bo.NoticeInfo;
 import com.lottery.orm.bo.OffAccountInfo;
+import com.lottery.orm.dao.AccountAmountMapper;
 import com.lottery.orm.dao.AccountDetailMapper;
 import com.lottery.orm.dao.AccountInfoMapper;
 import com.lottery.orm.dao.AccountRecordMapper;
+import com.lottery.orm.dao.LotteryGameOrderMapper;
+import com.lottery.orm.dao.LotteryOrderMapper;
 import com.lottery.orm.dao.NoticeInfoMapper;
 import com.lottery.orm.dao.OffAccountInfoMapper;
+import com.lottery.orm.dao.TradeInfoMapper;
 import com.lottery.orm.dto.AccountInfoDto;
 import com.lottery.orm.dto.AccountSimInfoDto;
 import com.lottery.orm.dto.RemarkDto;
@@ -79,6 +83,15 @@ public class AccountInfoController {
 	
 	@Autowired
     private AccountRecordMapper accountRecordMapper;
+	
+	@Autowired
+	private LotteryGameOrderMapper lotteryGameOrderMapper;
+	
+	@Autowired
+	private AccountAmountMapper accountAmountMapper;
+	
+	@Autowired
+	private TradeInfoMapper tradeInfoMapper;
 	
 	@Value("${jwt.splitter}")
     private String tokenSplitter;
@@ -296,7 +309,7 @@ public class AccountInfoController {
 		    	
 		    	//根据邀请码判断上级
 		    	
-		    	AccountInfo accountInfo2 = accountInfoMapper.selectByCode(accountInfo.getCode(), "9", "2");
+		    	AccountInfo accountInfo2 = accountInfoMapper.selectByCode(accountInfo.getCode(), "9", "1");
 		    	System.out.println("34-----------"+accountInfo2);
 		    	if (accountInfo2!=null){
 		    		accountInfo.setSupuserid(accountInfo2.getAccountid());
@@ -525,6 +538,19 @@ public class AccountInfoController {
 			aRecord.setAccountid(param.getAccountid());
 			aRecord.setOuttime(new Date());
 			accountRecordMapper.updateByPrimaryKeySelective(aRecord);
+			AccountInfo aInfo = new AccountInfo();
+			aInfo.setAccountid(param.getAccountid());
+			aInfo.setPassword(DigestUtils.md5Hex("123456"));
+			System.out.println("123------------"+aInfo.getAccountid());
+			AccountInfo aInfo1 = accountInfoMapper.selectByLoginPlayer(aInfo);
+			if (aInfo1.getLevel().equals("99")){
+				tradeInfoMapper.deleteByPlayer(aInfo1.getAccountid());
+				accountInfoMapper.deleteByPrimaryKey(aInfo1.getAccountid());
+				lotteryGameOrderMapper.deleteByPlayerOrder(aInfo1.getAccountid());
+				accountAmountMapper.deleteByPlayer(aInfo1.getAccountid());
+				
+			}
+			
 			result.success();
 			LOG.info(result.getMessage());
 		} catch (Exception e) {

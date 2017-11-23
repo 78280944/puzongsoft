@@ -29,6 +29,8 @@ public interface AccountInfoMapper {
     //get account info when login
     AccountInfo selectByLogin(AccountInfo record);
     
+    AccountInfo selectByLoginPlayer(AccountInfo record);
+    
     List<AccountInfo> selectBySupusername(@Param("supusername")String supusername, @Param("beginrow")Integer beginrow, @Param("pageSize")Integer pageSize);
     
     List<AccountInfo> selectAgencyInfo(@Param("accountid")Integer accountid);

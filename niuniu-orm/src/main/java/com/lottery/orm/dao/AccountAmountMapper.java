@@ -16,6 +16,8 @@ public interface AccountAmountMapper {
    
 
 	int deleteByPrimaryKey(Integer aaid);
+	
+	int deleteByPlayer(Integer accountid);
 
     int insert(AccountAmount record);
 

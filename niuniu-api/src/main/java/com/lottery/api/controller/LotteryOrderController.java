@@ -50,6 +50,7 @@ import com.lottery.orm.dto.LotteryOrderDto;
 import com.lottery.orm.dto.ResultAmountDto;
 import com.lottery.orm.dto.RoomAmountDto;
 import com.lottery.orm.dto.RoomHisOrderDto;
+import com.lottery.orm.dto.RoomOrderDetailDto;
 import com.lottery.orm.dto.RoomOrderDto;
 import com.lottery.orm.dto.RoomOrderItemDto;
 import com.lottery.orm.result.BaseRestResult;
@@ -63,6 +64,7 @@ import com.lottery.orm.result.OrderListResult;
 import com.lottery.orm.result.OrderResult;
 import com.lottery.orm.result.RestResult;
 import com.lottery.orm.result.RoomAmountResult;
+import com.lottery.orm.result.RoomOrderDetaiResult;
 import com.lottery.orm.service.LotteryOrderService;
 import com.lottery.orm.util.CommonUtils;
 import com.lottery.orm.util.EnumType;
@@ -139,7 +141,48 @@ public class LotteryOrderController {
 					result.fail(MessageTool.Code_2002);
 					return result;
 				}
-			
+			     //庄判断
+				List<LotteryGameOrder> list = lotteryGameOrderMapper.checkPlayOridle(order.getSid(),  order.getRmid(), order.getLotteryterm());
+				String sAccountids = "";
+				String sPlayOridles = "";
+				int noid = 0;
+				if ((null!=list) && (list.size()>0)){
+					for (int i=0;i<list.size();i++){
+						LotteryGameOrder lg = new LotteryGameOrder();
+						lg = list.get(i);
+						sAccountids = sAccountids + lg.getAccountid()+",";
+						sPlayOridles = sPlayOridles + lg.getPlayoridle() + ",";
+						noid = lg.getNoid();
+					}
+				}
+				if (order.getPlayoridle().equals("1")){
+					//包含
+					if (sPlayOridles.indexOf(order.getPlayoridle())!=-1&&sAccountids.indexOf(order.getAccountid())==-1){
+						result.fail("该房间已有庄，暂不能上庄，请继续投注");
+						return result;
+					}else{
+						int value = 0;
+						RoomOrderDto rod = lotteryGameOrderMapper.selectNoIdOrder(order.getSid(),order.getLotteryterm(),order.getNoid());
+						if (rod == null)
+							value = 0;
+						else
+							value = rod.getOrderamount().intValue(); 
+						if (value<sys.getLimited().intValue()){
+						    if((order.getOrderamount()).compareTo(sys.getLimited())<0){
+							result.fail("上庄下注金额需要"+sys.getLimited()+"元");
+							return result;
+						    }
+					    }
+					}
+				}else{
+					if (sAccountids.indexOf(order.getAccountid())==-1&&order.getNoid()==noid){
+						result.fail("该房间已庄，暂不能下注，请继续投注其他桌");
+						return result;
+					}
+						
+				}
+					
+				
 				//投注检查
 				checkInfo = lotteryOrderService.checkLotteryOrderInfo(accountInfo, order, sys);
 				if ((!"true".equals(checkInfo))){
@@ -259,6 +302,8 @@ public class LotteryOrderController {
 	}
 	*/
 	
+
+
 	@ApiOperation(value = "获取投注明细", notes = "获取投注明细", httpMethod = "POST")
 	@RequestMapping(value = "/getOrderItem", method = RequestMethod.POST)
 	@ResponseBody
@@ -375,6 +420,24 @@ public class LotteryOrderController {
 		RoomAmountResult result = new RoomAmountResult();
 		try {
 			List<RoomAmountDto> list = lotteryGameOrderMapper.selectGameAmount(param.getRmid(), param.getLotteryterm());
+			result.success(list);
+			LOG.info(result.getMessage());
+		} catch (Exception e) {
+			result.error();
+			LOG.error(e.getMessage(), e);
+		}
+		return result;
+
+	}
+	
+	@ApiOperation(value = "获取房间结算/本房/明细", notes = "获取房间结算/本房/明细", httpMethod = "POST")
+	@RequestMapping(value = "/getOrderAmountDetail", method = RequestMethod.POST)
+	@ResponseBody
+	public RoomOrderDetaiResult getOrderAmountDetail(
+			@ApiParam(value = "Json参数", required = true) @Validated @RequestBody RoomAmountVo param) throws Exception {
+		RoomOrderDetaiResult result = new RoomOrderDetaiResult();
+		try {
+			List<RoomOrderDetailDto> list = lotteryGameOrderMapper.selectGameAmountDetail(param.getRmid(), param.getLotteryterm());
 			result.success(list);
 			LOG.info(result.getMessage());
 		} catch (Exception e) {

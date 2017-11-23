@@ -308,7 +308,7 @@ public class LotteryOrderService {
 		if((order.getOrderamount()).compareTo(accountInfo.getUsermoney())>0){
 			return "下注金额不能超过账户金额";
 		}
-		
+		/*
 		int value = 0;
 		RoomOrderDto rod = lotteryGameOrderMapper.selectNoIdOrder(order.getSid(),order.getLotteryterm(),order.getNoid());
 		if (rod == null)
@@ -321,22 +321,16 @@ public class LotteryOrderService {
 			return "上庄下注金额需要"+sys.getLimited()+"元";
 		    }
 	    }
-		
+		*/
 		//下注金额最大值
-		List<RoomOrderDto>  list = lotteryGameOrderMapper.selectAccountIdOrder(accountInfo.getAccountid());
-		RoomOrderDto rd = null;
+		RoomOrderDto  rd = lotteryGameOrderMapper.selectAccountIdOrder(accountInfo.getAccountid());
 		int count = 0;
-		if (list == null){
+		if (rd == null){
 			count = 0;
 		}else{
-			for (int i = 0;i<list.size();i++){
-				rd = new RoomOrderDto();
-				rd = list.get(i);
-				//System.out.println("812---sd-"+rd.getOrderamount());
-				count = count + ((null==rd)?0:((null==rd.getOrderamount())?0:rd.getOrderamount().intValue()));
+		    count = ((null==rd)?0:((null==rd.getOrderamount())?0:rd.getOrderamount().intValue()));
 			}
 			
-		}
 		//System.out.println("90-----------------"+accountInfo.getUsermoney()+".."+rd.getOrderamount());
 		if (order.getPlayoridle().equals("2"))
 		    if (((accountInfo.getUsermoney().subtract(BigDecimal.valueOf(count))).divide(BigDecimal.valueOf(5),2, BigDecimal.ROUND_HALF_EVEN)).subtract(order.getOrderamount()).doubleValue()<0){
@@ -555,6 +549,6 @@ public class LotteryOrderService {
 	}
 	
 	public void insertLotteryGameOrder(LotteryGameOrder record) throws Exception{
-		lotteryGameOrderMapper.insertSelective(record);
+		lotteryGameOrderMapper.insert(record);
 	}
 }

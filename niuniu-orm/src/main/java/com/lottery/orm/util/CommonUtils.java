@@ -533,9 +533,9 @@ public class CommonUtils {
          str[0][5]="0";  //对于赔付用户，是否需要显示负值
          str[0][6]="5";
          str[0][7]="0";  //对于赔付用户，倍率是否更新
-         str[0][8]="牛牛";
+         str[0][8]="2";
          str[0][9]="2";
-         str[1][0]="100";
+         str[1][0]="600";
          str[1][1]="0";
          str[1][2]="0";
          str[1][3]="1020";
@@ -543,7 +543,7 @@ public class CommonUtils {
          str[1][5]="0";
          str[1][6]="2";
          str[1][7]="0";
-         str[1][8]="牛牛";
+         str[1][8]="2";
          str[1][9]="3";
          str[2][0]="300";
          str[2][1]="0";
@@ -553,7 +553,7 @@ public class CommonUtils {
          str[2][5]="0";
          str[2][6]="2";
          str[2][7]="0";
-         str[2][8]="牛牛";
+         str[2][8]="3";
          str[2][9]="3";
          str[3][0]="300";
          str[3][1]="0";
@@ -563,14 +563,14 @@ public class CommonUtils {
          str[3][5]="0";
          str[3][6]="1";
          str[3][7]="0";
-         str[3][8]="牛牛";
-         str[3][9]="1";
-          */
+         str[3][8]="3";
+         str[3][9]="3";
+      */    
          int i = 0;
          int j=str.length-1;
-         System.out.println("j--------------"+j);
+        // System.out.println("j--------------"+j);
         // System.out.println("7---"+j);
-         if (str[0][9] == str[j][9])
+         if (str[0][9].equals(str[j][9])||str[0][10].equals(str[j][10]))
         	 return str;
          
          str[0][1] = String.valueOf(Integer.valueOf(str[0][0])*Integer.valueOf(str[0][6]));
@@ -579,7 +579,7 @@ public class CommonUtils {
          str[j][7] = String.valueOf(1);
          int tmp = Integer.valueOf(str[0][1]);
          //System.out.println("7ddd---"+i+".."+j);
-         while ((i<j) && (!str[i][9].equals(str[j][9]))){
+         while ((i<j) && (!(str[i][9].equals(str[j][9])||(str[i][10].equals(str[j][10]))))){
         	 if (tmp>=Integer.valueOf(str[j][1])){
         		 tmp = tmp - Integer.valueOf(str[j][1]);
         		 str[j][1] = "0";
@@ -595,7 +595,7 @@ public class CommonUtils {
         			 str[i][1] = String.valueOf(Integer.valueOf(str[i][0])*Integer.valueOf(str[i][6]) - tmp);
         			 str[i][2] = str[i][1];
         		 }else{
-        			 if (!str[i][9].equals(str[j][9])){
+        			 if (!(str[i][9].equals(str[j][9])||str[i][10].equals(str[j][10]))){
         			     str[j][1] = String.valueOf(Integer.valueOf(str[j][0])*Integer.valueOf(str[i][6]));
         			     //System.out.println("j2--------------"+j);
         			 }
@@ -621,7 +621,7 @@ public class CommonUtils {
         			// System.out.println("indexj--------------"+j);
         			// System.out.println("tablei--------------"+str[i][9]);
         			// System.out.println("tablej--------------"+str[j][9]);
-        			 if (!str[i][9].equals(str[j][9])){
+        			 if (!(str[i][9].equals(str[j][9])||str[i][10].equals(str[j][10]))){
 		        		 str[i][1] = String.valueOf(Integer.valueOf(str[i][0])*Integer.valueOf(str[i][6])); 		
 		        		 tmp = Integer.valueOf(str[i][1]);
 		        		// System.out.println("i21--------------"+i);
@@ -649,8 +649,8 @@ public class CommonUtils {
        }
    /*
        for (int w = 0;w<str.length;w++)
-       System.out.println("90------------"+str[w][0]+"..."+str[w][1]);
-        */
+       System.out.println("90------------"+str[w][0]+"..."+str[w][1]+".."+str[w][2]);
+     */   
          return str;
         
      }
@@ -1190,12 +1190,16 @@ public class CommonUtils {
 	public static void main(String args[]) throws Exception{
 		//Date[] param1 = CommonUtils.getDateTime(param.getStartDate(), param.getEndDate());
 		Date[] param1 = getDateTime(new Date(),new Date());
-		System.out.println("90----"+param1[0]+".."+param1[1]);
+		String str = "20171119096";
+		Map<Integer, Object> map = new HashMap<Integer, Object>();
+		map.put(1, "23");
+		System.out.println("90----"+map.size()+".."+str.substring(0,str.length()-2)+String.valueOf(Integer.valueOf(str.substring(str.length()-2,str.length()))-3));
 		//BigDecimal.valueOf(Integer.valueOf(str[j][2])).subtract(fee.doubleValue()>0?fee:BigDecimal(0)))
 		//testDate();
 		int gains=200;
 		int count=700;
 		int values=1800;
+		
 		System.out.println(doCompareCount(gains, count, values));
 		
 		int []numbers = {50,100,200};
@@ -1206,10 +1210,10 @@ public class CommonUtils {
 		String[][] d =new String[4][10];
 		//System.out.println("fe--------"+doBankerHandleEqual(2000,d));
 		int times =3;
-		//System.out.println(doBankerHandleMore(gains,count,values,times,d));
+		////System.out.println(doBankerHandleMore(gains,count,values,times,d));
 		//System.out.println(doBankerHandleLess(gains,count,values,times,d));
 		System.out.println(doNoBankerHandle(d));
-		System.out.println(doBankerHandleEqual(18000,d));
+		//System.out.println(doBankerHandleEqual(18000,d));
 		String[] a = "2,9,2,2,7".split(",");
 		String[] c =CommonUtils.getOrdeNum("2,10","02");
 		//System.out.println("7----"+c[0]+".."+c[1]+".."+c[2]+"..."+System.currentTimeMillis());

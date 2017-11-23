@@ -4,8 +4,8 @@ import java.math.BigDecimal;
 
 import com.wordnik.swagger.annotations.ApiModelProperty;
 
-public class RoomOrderItemDto {
-
+public class RoomOrderDetailDto {
+	
 	@ApiModelProperty(value = "订单ID", required = true)
 	private Integer lgmid;
 	
@@ -27,14 +27,8 @@ public class RoomOrderItemDto {
 	@ApiModelProperty(value = "庄/闲", required = true)
 	private String playoridle;
 	
-
-	public String getPlayoridle() {
-		return playoridle;
-	}
-
-	public void setPlayoridle(String playoridle) {
-		this.playoridle = playoridle;
-	}
+	@ApiModelProperty(value = "输赢结算", required = true)
+	private BigDecimal lastamount;
 
 	public Integer getLgmid() {
 		return lgmid;
@@ -84,8 +78,22 @@ public class RoomOrderItemDto {
 		this.ratio = ratio;
 	}
 
+	public String getPlayoridle() {
+		return playoridle;
+	}
 
+	public void setPlayoridle(String playoridle) {
+		this.playoridle = playoridle;
+	}
 
+	public BigDecimal getLastamount() {
+		return lastamount;
+	}
+
+	public void setLastamount(BigDecimal lastamount) {
+		this.lastamount = lastamount;
+	}
+	
 	
 	
 }

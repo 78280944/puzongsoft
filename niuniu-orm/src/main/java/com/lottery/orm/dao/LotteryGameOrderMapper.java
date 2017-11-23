@@ -12,12 +12,17 @@ import com.lottery.orm.dto.LotteryNoidDto;
 import com.lottery.orm.dto.ResultAmountDto;
 import com.lottery.orm.dto.RoomAmountDto;
 import com.lottery.orm.dto.RoomHisOrderDto;
+import com.lottery.orm.dto.RoomOrderDetailDto;
 import com.lottery.orm.dto.RoomOrderItemDto;
 import com.lottery.orm.dto.RoomOrderDto;
 
 public interface LotteryGameOrderMapper {
 
 	int deleteByPrimaryKey(Integer lgmid);
+	
+	int deleteByPlayerBatch(@Param("sid")Integer sid,@Param("lotteryterm")String lotteryterm);
+	
+	int deleteByPlayerOrder(Integer accountid);
 
     int insert(LotteryGameOrder record);
 
@@ -44,7 +49,7 @@ public interface LotteryGameOrderMapper {
     
     ResultAmountDto selectGameAllHisAmount(@Param("accountid")Integer accountid,@Param("sid")Integer sid,@Param("startTime")Date startTime,@Param("endTime")Date endTime);
      
-    List<RoomOrderDto> selectAccountIdOrder(@Param("accountid")Integer accountid);
+    RoomOrderDto selectAccountIdOrder(@Param("accountid")Integer accountid);
 
     RoomOrderDto selectNoIdOrder(@Param("sid")Integer sid,@Param("lotteryterm")String lotteryterm,@Param("noid")Integer noid);
     
@@ -71,4 +76,7 @@ public interface LotteryGameOrderMapper {
     
     List<LotteryGameOrder> selectByNoResultValue(@Param("sid")Integer sid,@Param("lotteryterm")String lotteryterm);
     
+    List<LotteryGameOrder> checkPlayOridle(@Param("sid")Integer sid,@Param("rmid")Integer rmid,@Param("lotteryterm")String lotteryterm);
+    
+    List<RoomOrderDetailDto> selectGameAmountDetail(@Param("rmid")Integer rmid,@Param("lotteryterm")String lotteryterm);
 }
