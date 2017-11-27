@@ -27,6 +27,12 @@
     delete from trade_info
     where TRADEID = #{tradeid,jdbcType=INTEGER}
   </delete>
+  
+   <delete id="deleteByPlayer" parameterType="java.lang.Integer">
+    delete from trade_info
+    where ACCOUNTID = #{accountid,jdbcType=INTEGER}
+  </delete> 
+  
   <insert id="insert" parameterType="com.lottery.orm.bo.TradeInfo">
     <selectKey keyProperty="tradeid" order="AFTER" resultType="java.lang.Integer">
       SELECT LAST_INSERT_ID()

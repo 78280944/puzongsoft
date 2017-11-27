@@ -27,8 +27,21 @@ public class RoomOrderDetailDto {
 	@ApiModelProperty(value = "庄/闲", required = true)
 	private String playoridle;
 	
+	@ApiModelProperty(value = "输赢结果", required = true)
+	private String result;
+	
 	@ApiModelProperty(value = "输赢结算", required = true)
 	private BigDecimal lastamount;
+
+	
+	
+	public String getResult() {
+		return result;
+	}
+
+	public void setResult(String result) {
+		this.result = result;
+	}
 
 	public Integer getLgmid() {
 		return lgmid;

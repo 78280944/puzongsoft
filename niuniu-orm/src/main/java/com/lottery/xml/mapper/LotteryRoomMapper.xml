@@ -30,13 +30,13 @@
    (SELECT b.sid, b.rmid,COUNT(distinct accountid) AS COUNT FROM lottery_game_order b WHERE 
    b.lotteryterm = (SELECT lotteryterm FROM LOTTERY_game_round where sid =#{sid,jdbcType=INTEGER}  ORDER BY LOTTERYTERM DESC LIMIT 1) 
    AND b.sid = #{sid,jdbcType=INTEGER}  
-   AND b.rmid NOT LIKE '9%' group by rmid) d
+   group by rmid) d
    ON (a.sid = d.sid AND a.rmid = d.rmid)
    WHERE a.sid =#{sid,jdbcType=INTEGER} and length(a.rmid) = #{len,jdbcType=INTEGER}  ORDER BY rmid
   </select>  
   
   <select id="selectDistinctSid"  resultMap="BaseResultMap" >
-    SELECT rmid,sid,roomid,roomnumber FROM lottery_room WHERE LENGTH(rmid)=8 GROUP BY sid
+    SELECT rmid,sid,roomid,roomnumber FROM lottery_room WHERE LENGTH(rmid)=8 and sid = #{sid,jdbcType=INTEGER}
   </select>
   
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >

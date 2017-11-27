@@ -232,7 +232,8 @@
   </select>
   
   <select id="selectGameOrder" parameterType="com.lottery.orm.bo.LotteryGameResults" resultMap="BaseResultMap">
-    select 
+    select /.,mn bvcxz
+    ;lkjhgfdxz
     <include refid="Base_Column_List" />
     from lottery_game_results a
     where

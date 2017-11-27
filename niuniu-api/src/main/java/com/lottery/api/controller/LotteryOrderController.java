@@ -143,42 +143,24 @@ public class LotteryOrderController {
 				}
 			     //庄判断
 				List<LotteryGameOrder> list = lotteryGameOrderMapper.checkPlayOridle(order.getSid(),  order.getRmid(), order.getLotteryterm());
-				String sAccountids = "";
-				String sPlayOridles = "";
 				int noid = 0;
+				boolean isplay = false;
 				if ((null!=list) && (list.size()>0)){
-					for (int i=0;i<list.size();i++){
 						LotteryGameOrder lg = new LotteryGameOrder();
-						lg = list.get(i);
-						sAccountids = sAccountids + lg.getAccountid()+",";
-						sPlayOridles = sPlayOridles + lg.getPlayoridle() + ",";
+						lg = list.get(0);
 						noid = lg.getNoid();
-					}
+						isplay = true;
 				}
 				if (order.getPlayoridle().equals("1")){
 					//包含
-					if (sPlayOridles.indexOf(order.getPlayoridle())!=-1&&sAccountids.indexOf(order.getAccountid())==-1){
-						result.fail("该房间已有庄，暂不能上庄，请继续投注");
-						return result;
-					}else{
-						int value = 0;
-						RoomOrderDto rod = lotteryGameOrderMapper.selectNoIdOrder(order.getSid(),order.getLotteryterm(),order.getNoid());
-						if (rod == null)
-							value = 0;
-						else
-							value = rod.getOrderamount().intValue(); 
-						if (value<sys.getLimited().intValue()){
-						    if((order.getOrderamount()).compareTo(sys.getLimited())<0){
-							result.fail("上庄下注金额需要"+sys.getLimited()+"元");
-							return result;
-						    }
-					    }
-					}
-				}else{
-					if (sAccountids.indexOf(order.getAccountid())==-1&&order.getNoid()==noid){
-						result.fail("该房间已庄，暂不能下注，请继续投注其他桌");
+					if (order.getNoid()!=noid&&noid!=0){
+						result.fail("该房间已有庄，请继续投注");
 						return result;
 					}
+					if((order.getOrderamount()).compareTo(sys.getLimited())<0&&!isplay){
+					    result.fail("上庄下注金额需要"+sys.getLimited()+"元");
+						return result;
+				    }
 						
 				}
 					

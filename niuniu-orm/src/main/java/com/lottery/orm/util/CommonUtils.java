@@ -656,7 +656,17 @@ public class CommonUtils {
      }
      
      
-     
+     /**
+      * 庄相等
+      */
+     public static Map<Integer, Object> doBankerHandleSameEqual(int gains,int count,int values,int times,String[][] str){
+    	  Map<Integer, Object> map = new HashMap<Integer, Object>();
+              map.put(1, gains);
+              map.put(2, count);
+              map.put(3, values);
+              map.put(4, str); 
+         return map;
+     }
      
      
      /**
@@ -699,6 +709,8 @@ public class CommonUtils {
          Map<Integer, Object> map = new HashMap<Integer, Object>();
          System.out.println("7---"+j);
          int base = values-gains-count;
+         if (base > count)
+        	 base = count;
          int tempgain = base;
          
          if (base == 0){

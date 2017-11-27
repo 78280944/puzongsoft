@@ -200,6 +200,10 @@
     ORDER BY lotteryterm DESC LIMIT 0,2
   </select>
   
-  
+  <select id="selectLotteryOrderPlayer" resultMap="BaseResultMap">
+    SELECT DISTINCT sid,lotteryterm FROM 
+    (SELECT * FROM lottery_game_round GROUP BY sid,lotteryterm DESC) b 
+    GROUP BY sid ASC   
+  </select>
   
 </mapper>

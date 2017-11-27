@@ -372,6 +372,13 @@
     where username = #{username,jdbcType=VARCHAR} and password = #{password,jdbcType=VARCHAR}
   </select>
   
+   <select id="selectByLoginPlayer" parameterType="com.lottery.orm.bo.AccountInfo" resultMap="BaseResultMap">  
+    select 
+    <include refid="Base_Column_List" />
+    from account_info
+    where accountid = #{accountid,jdbcType=INTEGER} and password = #{password,jdbcType=VARCHAR}
+  </select>
+  
   <select id="selectAgencyInfo" parameterType="java.lang.Integer" resultMap="BaseResultMap">  
 	SELECT T2.accountid, T2.username,T2.level,T2.offtype,T2.PERCENTAGE,T2.usermoney
 	FROM ( 

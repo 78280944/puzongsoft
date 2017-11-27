@@ -74,6 +74,13 @@
 	</bean>
 	
 	
+	<bean id="deletePlayerTaskJob"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="lotteryTaskService" />
+		<property name="targetMethod" value="LotteryPlayerDelete" />
+		<property name="concurrent" value="false" />
+	</bean>
+	
 	<bean id="closeCQTaskJob"
 		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
 		<property name="targetObject" ref="lotteryTaskService" />
@@ -99,24 +106,24 @@
 	
 	<bean id="openCQCronTrigger" class="com.lottery.api.timer.DataBaseCronTriggerBean">
 		<property name="jobDetail" ref="lotteryCQTaskJob" />
-		<property name="cronExpression" value="0/12 * * * * ?" />
+		<property name="cronExpression" value="0/5 * * * * ?" />
 	</bean>
 	
 	<bean id="openTJCronTrigger" class="com.lottery.api.timer.DataBaseCronTriggerBean">
 		<property name="jobDetail" ref="lotteryTJTaskJob" />
-		<property name="cronExpression" value="0/12 * * * * ?" />
+		<property name="cronExpression" value="0/6 * * * * ?" />
 	</bean>
 	
 	
 	<bean id="openHLJCronTrigger" class="com.lottery.api.timer.DataBaseCronTriggerBean">
 		<property name="jobDetail" ref="lotteryHLJTaskJob" />
-		<property name="cronExpression" value="0/8 * * * * ?" />
+		<property name="cronExpression" value="0/7 * * * * ?" />
 	</bean>
 	
 	
 	<bean id="openXJCronTrigger" class="com.lottery.api.timer.DataBaseCronTriggerBean">
 		<property name="jobDetail" ref="lotteryXJTaskJob" />
-		<property name="cronExpression" value="0/10 * * * * ?" />
+		<property name="cronExpression" value="0/8 * * * * ?" />
 	</bean>
 	
 	<bean id="openYNCronTrigger" class="com.lottery.api.timer.DataBaseCronTriggerBean">
@@ -139,6 +146,10 @@
 		<property name="cronExpression" value="0/10 * * * * ?" />
 	</bean>
 	
+     <bean id="deletePlayerCronTrigger" class="com.lottery.api.timer.DataBaseCronTriggerBean">
+		<property name="jobDetail" ref="deletePlayerTaskJob" />
+		<property name="cronExpression" value="0 0/10 * * * ?" />
+	</bean>
 	
 	<bean id="closeCQCronTrigger" class="com.lottery.api.timer.DataBaseCronTriggerBean">
 		<property name="jobDetail" ref="closeCQTaskJob" />
@@ -162,14 +173,15 @@
 		<property name="dataSource"><null/></property>
 		<property name="triggers">
 			<list>
-				<ref bean="openCQCronTrigger" />
+<!-- 				<ref bean="openCQCronTrigger" />
 				<ref bean="openHLJCronTrigger" />
 				<ref bean="openTJCronTrigger" />
-				<ref bean="openYNCronTrigger" />
+				<ref bean="openYNCronTrigger" /> -->
 				<ref bean="openXJCronTrigger" />
-				<ref bean="openBJSCCronTrigger" />
-				<ref bean="openXYFTCronTrigger" />
-			<!-- 	<ref bean="openValueCronTrigger" /> -->
+	<!-- 			<ref bean="openBJSCCronTrigger" />
+				<ref bean="openXYFTCronTrigger" /> -->
+		<!-- 		<ref bean="openValueCronTrigger" /> -->
+		        <ref bean="deletePlayerCronTrigger" />
 				<!-- <ref bean="openTJCronTrigger" />
 				<ref bean="openGDCronTrigger" />
 				<ref bean="closeTJCronTrigger" />
