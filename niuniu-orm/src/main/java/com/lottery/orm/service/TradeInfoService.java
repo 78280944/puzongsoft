@@ -108,7 +108,7 @@ public class TradeInfoService {
     
     
     //代理金款项并更新账户
-    public String addAgencyTradeInfo(TradeInfo tradeInfo,Double fee,int sid,String lotteryterm,Double comission) {
+    public String addAgencyTradeInfo(TradeInfo tradeInfo,Double fee,int sid,String lotteryterm,Double comission,AccountAmount accAmount) {
     	List<AccountInfo> aInfo = accountInfoMapper.selectAgencyInfo(tradeInfo.getAccountid());
     	Double cfee = 0.0;
     	Double profits = 0.0;
@@ -132,9 +132,9 @@ public class TradeInfoService {
 		        aa.setAccountid(ac.getAccountid());
 		        aa.setSid(sid);
 		        aa.setLotteryterm(lotteryterm);
-		        aa.setLoss(BigDecimal.valueOf(0));
-		        aa.setEarns(BigDecimal.valueOf(0));
-		        aa.setGains(BigDecimal.valueOf(0));
+		        aa.setLoss(accAmount.getLoss());
+		        aa.setEarns(accAmount.getEarns());
+		        aa.setGains(accAmount.getGains());
 		        aa.setCfee(BigDecimal.valueOf(cfee));
 		        aa.setProfits(BigDecimal.valueOf(profits));
 		        aa.setStarttime(new Date());
@@ -152,10 +152,10 @@ public class TradeInfoService {
 		        aa.setAccountid(1000);
 		        aa.setSid(sid);
 		        aa.setLotteryterm(lotteryterm);
-		        aa.setLoss(BigDecimal.valueOf(0));
-		        aa.setEarns(BigDecimal.valueOf(0));
-		        aa.setGains(BigDecimal.valueOf(0));
-		        aa.setCfee(BigDecimal.valueOf(0));
+		        aa.setLoss(accAmount.getLoss());
+		        aa.setEarns(accAmount.getEarns());
+		        aa.setGains(accAmount.getGains());
+		        aa.setCfee(BigDecimal.valueOf(cfee));
 		        aa.setProfits(BigDecimal.valueOf(profits));
 		        aa.setStarttime(new Date());
 		        aa.setOvertime(new Date());

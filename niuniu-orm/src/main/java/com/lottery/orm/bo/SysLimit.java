@@ -5,61 +5,72 @@ import java.math.BigDecimal;
 public class SysLimit {
     private Integer slid;
 
-    private String gametype;
+	private String gametype;
 
-    private String gamename;
+	private String gamename;
 
-    private BigDecimal limited;
+	private BigDecimal limited;
 
-    private String offtype;
+	private String offtype;
 
-    private String state;
+	private String state;
 
-    public Integer getSlid() {
-        return slid;
-    }
+	private Integer ratio;
 
-    public void setSlid(Integer slid) {
-        this.slid = slid;
-    }
+	public Integer getSlid() {
+		return slid;
+	}
 
-    public String getGametype() {
-        return gametype;
-    }
+	public void setSlid(Integer slid) {
+		this.slid = slid;
+	}
 
-    public void setGametype(String gametype) {
-        this.gametype = gametype == null ? null : gametype.trim();
-    }
+	public String getGametype() {
+		return gametype;
+	}
 
-    public String getGamename() {
-        return gamename;
-    }
+	public void setGametype(String gametype) {
+		this.gametype = gametype == null ? null : gametype.trim();
+	}
 
-    public void setGamename(String gamename) {
-        this.gamename = gamename == null ? null : gamename.trim();
-    }
+	public String getGamename() {
+		return gamename;
+	}
 
-    public BigDecimal getLimited() {
-        return limited;
-    }
+	public void setGamename(String gamename) {
+		this.gamename = gamename == null ? null : gamename.trim();
+	}
 
-    public void setLimited(BigDecimal limited) {
-        this.limited = limited;
-    }
+	public BigDecimal getLimited() {
+		return limited;
+	}
 
-    public String getOfftype() {
-        return offtype;
-    }
+	public void setLimited(BigDecimal limited) {
+		this.limited = limited;
+	}
 
-    public void setOfftype(String offtype) {
-        this.offtype = offtype == null ? null : offtype.trim();
-    }
+	public String getOfftype() {
+		return offtype;
+	}
 
-    public String getState() {
-        return state;
-    }
+	public void setOfftype(String offtype) {
+		this.offtype = offtype == null ? null : offtype.trim();
+	}
 
-    public void setState(String state) {
-        this.state = state == null ? null : state.trim();
-    }
+	public String getState() {
+		return state;
+	}
+
+	public void setState(String state) {
+		this.state = state == null ? null : state.trim();
+	}
+
+	public Integer getRatio() {
+		return ratio;
+	}
+
+	public void setRatio(Integer ratio) {
+		this.ratio = ratio;
+	}
+
 }

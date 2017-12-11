@@ -372,6 +372,13 @@
     where username = #{username,jdbcType=VARCHAR} and password = #{password,jdbcType=VARCHAR}
   </select>
   
+  <select id="selectByCodeNo" resultMap="BaseResultMap">  
+    select 
+    <include refid="Base_Column_List" />
+    from account_info
+    where code = #{code,jdbcType=VARCHAR}
+  </select>
+  
    <select id="selectByLoginPlayer" parameterType="com.lottery.orm.bo.AccountInfo" resultMap="BaseResultMap">  
     select 
     <include refid="Base_Column_List" />

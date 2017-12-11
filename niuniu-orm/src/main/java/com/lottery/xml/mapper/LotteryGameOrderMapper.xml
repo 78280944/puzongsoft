@@ -54,7 +54,7 @@
     select 
     rmid,noid,playoridle 
     from lottery_game_order
-    where sid = #{sid,jdbcType=INTEGER}  and lotteryterm = #{lotteryterm,jdbcType=VARCHAR}
+    where sid = #{sid,jdbcType=INTEGER}  and lotteryterm = #{lotteryterm,jdbcType=VARCHAR} and result is null
     AND rmid NOT LIKE '9%' GROUP BY noid,rmid
   </select> 
   
@@ -73,7 +73,7 @@
     delete from lottery_game_order
     where SID = #{sid,jdbcType=INTEGER} 
     and accountid in (987,988,989,990,991,992,993,994,995,996,997,998,999) 
-    and  <![CDATA[lotteryterm <= #{lotteryterm,jdbcType=VARCHAR}]]>
+    and  <![CDATA[opentime <= #{opentime,jdbcType=TIMESTAMP}]]>
   </delete>
   
   <delete id="deleteByPlayerOrder" parameterType="java.lang.Integer">
@@ -359,7 +359,7 @@
     FROM
     ((lottery_game_order a LEFT JOIN lottery_game b ON a.sid = b.sid) LEFT JOIN lottery_room c ON a.rmid = c.rmid )
     WHERE 
-    a.lotteryterm  = (SELECT lotteryterm FROM LOTTERY_game_round where sid =#{sid,jdbcType=INTEGER}  ORDER BY LOTTERYTERM DESC LIMIT 1) 
+    a.lotteryterm  = (SELECT lotteryterm FROM LOTTERY_game_round where sid =#{sid,jdbcType=INTEGER}  ORDER BY OPENTIME DESC LIMIT 1) 
     AND a.accountid =#{accountid,jdbcType=INTEGER} AND a.sid=#{sid,jdbcType=INTEGER} 
     order by lotteryterm desc,ordertime desc
   </select>
@@ -390,7 +390,7 @@
     WHERE 
     a.accountid =#{accountid,jdbcType=INTEGER} AND a.sid=#{sid,jdbcType=INTEGER} 
     AND (a.ordertime BETWEEN #{startTime,jdbcType=TIMESTAMP} and #{endTime,jdbcType=TIMESTAMP}) 
-    order by lotteryterm desc,ordertime DESC 
+    order by opentime desc,ordertime DESC 
     <if test="beginRow != null and pageSize !=null">
 	limit #{beginRow,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
 	</if>
@@ -465,9 +465,10 @@
   <select id="selectAccountIdOrder" resultMap="GameOrderMap">
     SELECT 
     SUM(ORDERAMOUNT*b.itemname) AS ORDERAMOUNT
-    FROM lottery_game_order a,code_library b 
+    FROM lottery_game_order a LEFT JOIN code_library b
+    ON (b.codeno='Times' AND a.sid = b.itemno) 
     WHERE 
-    a.accountid =#{accountid,jdbcType=INTEGER} AND result IS NULL AND (b.codeno='Times' AND a.sid = b.itemno) and a.playoridle = '2' GROUP BY accountid
+    (a.accountid =#{accountid,jdbcType=INTEGER} AND a.result IS NULL) and a.playoridle = '2'
 <!--     union
     SELECT 
     SUM(ORDERAMOUNT) AS ORDERAMOUNT
@@ -554,6 +555,13 @@
    ORDER BY c.ascc,a.orderamount,a.ordertime asc,a.noid ASC for update
   </select>
   
+  <select id="selectGamePlayoridle" resultMap="BaseResultMap">
+SELECT DISTINCT rmid FROM lottery_game_order WHERE rmid NOT IN
+(SELECT DISTINCT rmid FROM  lottery_game_order b WHERE b.playoridle = '1' AND 
+result IS NULL AND lotteryterm = #{lotteryterm,jdbcType=VARCHAR} AND sid = #{sid,jdbcType=INTEGER}
+AND rmid NOT LIKE '9%') AND result IS NULL AND lotteryterm = #{lotteryterm,jdbcType=VARCHAR} 
+AND rmid NOT LIKE '9%' AND playoridle = '2' and sid = #{sid,jdbcType=INTEGER}
+  </select> 
   
   
 </mapper>

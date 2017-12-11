@@ -159,7 +159,7 @@
       o.NO10
     from LOTTERY_ROOM_DETAIL o 
     where (o.GAMESTARTTIME between #{startTime,jdbcType=TIMESTAMP} and #{endTime,jdbcType=TIMESTAMP})
-	and o.sid = #{sid,jdbcType=INTEGER} order by o.LOTTERYTERM desc
+	and o.sid = #{sid,jdbcType=INTEGER} order by o.gamestarttime desc
 	<if test="beginRow != null and pageSize !=null">
 	limit #{beginRow,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
 	</if>
@@ -172,7 +172,7 @@
       o.NO10
     from LOTTERY_ROOM_DETAIL o 
     where o.sid = #{sid,jdbcType=INTEGER}
-	and o.lotteryterm  = getLotteryTerm(#{time,jdbcType=VARCHAR}) order by o.LOTTERYTERM desc
+	and o.lotteryterm  = getLotteryTerm(#{time,jdbcType=VARCHAR}) order by o.opentim desc
 	<if test="beginRow != null and pageSize !=null">
 	limit #{beginRow,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
 	</if>

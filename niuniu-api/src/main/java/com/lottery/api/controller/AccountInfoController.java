@@ -25,33 +25,46 @@ import com.lottery.api.dto.LoginParamVo;
 import com.lottery.api.dto.NoticeTypeVo;
 import com.lottery.api.dto.PlayAccountInfoVo;
 import com.lottery.api.dto.UpdateAccountVo;
+import com.lottery.api.dto.UserCashVo;
+import com.lottery.api.dto.UserOrderNoticeVo;
+import com.lottery.api.dto.UserOrderVo;
+import com.lottery.api.dto.UserRechargeVo;
 import com.lottery.api.filter.LockedClientException;
 import com.lottery.api.util.Des3Util;
 import com.lottery.api.util.ToolsUtil;
 import com.lottery.orm.bo.AccountDetail;
 import com.lottery.orm.bo.AccountInfo;
+import com.lottery.orm.bo.AccountRecharge;
 import com.lottery.orm.bo.AccountRecord;
 import com.lottery.orm.bo.NoticeInfo;
 import com.lottery.orm.bo.OffAccountInfo;
+import com.lottery.orm.bo.SysBene;
+import com.lottery.orm.bo.SysFee;
 import com.lottery.orm.dao.AccountAmountMapper;
 import com.lottery.orm.dao.AccountDetailMapper;
 import com.lottery.orm.dao.AccountInfoMapper;
+import com.lottery.orm.dao.AccountRechargeMapper;
 import com.lottery.orm.dao.AccountRecordMapper;
 import com.lottery.orm.dao.LotteryGameOrderMapper;
 import com.lottery.orm.dao.LotteryOrderMapper;
 import com.lottery.orm.dao.NoticeInfoMapper;
 import com.lottery.orm.dao.OffAccountInfoMapper;
+import com.lottery.orm.dao.SysBeneMapper;
+import com.lottery.orm.dao.SysFeeMapper;
 import com.lottery.orm.dao.TradeInfoMapper;
 import com.lottery.orm.dto.AccountInfoDto;
 import com.lottery.orm.dto.AccountSimInfoDto;
 import com.lottery.orm.dto.RemarkDto;
+import com.lottery.orm.dto.UserRechargeDto;
 import com.lottery.orm.result.AccountListResult;
 import com.lottery.orm.result.AccountResult;
 import com.lottery.orm.result.AccountSimResult;
 import com.lottery.orm.result.RemarkResult;
 import com.lottery.orm.result.RestResult;
+import com.lottery.orm.result.UserRechargeResult;
 import com.lottery.orm.service.AccountInfoService;
 import com.lottery.orm.util.CommonUtils;
+import com.lottery.orm.util.EnumType;
 import com.lottery.orm.util.MessageTool;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
@@ -85,6 +98,9 @@ public class AccountInfoController {
     private AccountRecordMapper accountRecordMapper;
 	
 	@Autowired
+    private AccountRechargeMapper accountRechargeMapper;
+	
+	@Autowired
 	private LotteryGameOrderMapper lotteryGameOrderMapper;
 	
 	@Autowired
@@ -92,6 +108,12 @@ public class AccountInfoController {
 	
 	@Autowired
 	private TradeInfoMapper tradeInfoMapper;
+	
+	@Autowired
+	private SysFeeMapper sysFeeMapper;
+	
+	@Autowired
+	private SysBeneMapper sysBeneMapper;
 	
 	@Value("${jwt.splitter}")
     private String tokenSplitter;
@@ -117,6 +139,12 @@ public class AccountInfoController {
 	@Value("${lottery.iosAppVersion}")
     private String iosAppVersion;
 
+	@Value("${lottery.playoridle}")
+    private String playoridle;
+	
+	@Value("${lottery.noplayoridle}")
+    private String noplayoridle;
+	
 	
 	@ApiOperation(value = "获取玩家或者代理商、子代理商信息", notes = "获取玩家或者代理商、子代理商信息", httpMethod = "POST")
 	@RequestMapping(value = "/getAccountInfo", method = RequestMethod.POST)
@@ -490,6 +518,8 @@ public class AccountInfoController {
 		remark.setShareCode(shareCodeImg);
 		remark.setAndroidAppVersion(androidAppVersion);
 		remark.setIosAppVersion(iosAppVersion);
+		remark.setPlayoridle(playoridle);
+		remark.setNoplayoridle(noplayoridle);
 		result.success(remark);
 
 		return result;
@@ -560,5 +590,114 @@ public class AccountInfoController {
 		return result;
 	}
 	
+	
+	@ApiOperation(value = "用户充值", notes = "用户充值", httpMethod = "POST")
+	@RequestMapping(value = "/userRecharge", method = RequestMethod.POST)
+	@ResponseBody
+	public RestResult userRecharge(@ApiParam(value = "Json参数", required = true) @Validated @RequestBody UserRechargeVo param) throws Exception {
+		RestResult result = new RestResult();
+		try {
+			AccountRecharge aRecharge = new AccountRecharge();
+			aRecharge = mapper.map(param, AccountRecharge.class);	
+			aRecharge.setRelativetype(EnumType.RalativeType.In.ID);
+			SysBene sb = sysBeneMapper.selectByAmount(BigDecimal.valueOf(param.getTransAmt()/100));
+			Double bene = 0.0;
+			Double amount = 0.0;
+			if (null == sb||sb.getBenefit() == null||sb.getBenefit() == BigDecimal.valueOf(0.0)){
+				bene = 0.0;
+			}else{
+				bene = sb.getBenefit().doubleValue();
+			}
+			SysFee sf = sysFeeMapper.selectByPrimaryKey(1001);
+			aRecharge.setDonatamt(bene);
+			aRecharge.setFee(aRecharge.getTransamt()/100*sf.getRefee().doubleValue());
+			aRecharge.setPayamt(aRecharge.getTransamt()/100-aRecharge.getFee());
+			aRecharge.setInputtime(new Date());
+			amount = aRecharge.getPayamt()+aRecharge.getDonatamt();
+	    	AccountInfo aInfo = accountInfoMapper.selectByPrimaryKey(aRecharge.getAccountid());
+	    	aInfo.setUsermoney(aInfo.getUsermoney().add(BigDecimal.valueOf(amount)));
+	    	accountInfoMapper.updateByPrimaryKey(aInfo);
+	    	if (aRecharge.getFee()>0){
+	    		aInfo = accountInfoMapper.selectByPrimaryKey(1000);
+	    		aInfo.setUsermoney(aInfo.getUsermoney().add(BigDecimal.valueOf(aRecharge.getFee())));
+		    	accountInfoMapper.updateByPrimaryKey(aInfo);
+	    	}
+			accountRechargeMapper.insert(aRecharge);
+			result.success();
+			LOG.info(result.getMessage());
+		} catch (Exception e) {
+			result.error();
+			LOG.error(e.getMessage(),e);
+		}
+		return result;
+	}
+	
+	@ApiOperation(value = "用户取现申请", notes = "用户取现申请", httpMethod = "POST")
+	@RequestMapping(value = "/userCashApply", method = RequestMethod.POST)
+	@ResponseBody
+	public RestResult userCashApply(@ApiParam(value = "Json参数", required = true) @Validated @RequestBody UserCashVo param) throws Exception {
+		RestResult result = new RestResult();
+		AccountRecharge aRecharge = new AccountRecharge();
+		aRecharge = mapper.map(param, AccountRecharge.class);	
+		aRecharge.setRelativetype(EnumType.RalativeType.Out.ID);
+		SysFee sf = sysFeeMapper.selectByPrimaryKey(1001);
+		aRecharge.setFee(aRecharge.getTransamt()/100*sf.getCafee().doubleValue());
+		aRecharge.setPayamt(aRecharge.getTransamt()/100-aRecharge.getFee());
+		aRecharge.setOrderstate("03");//未处理
+		aRecharge.setUpstate("03");//未处理
+		aRecharge.setInputtime(new Date());
+		AccountInfo aInfo = accountInfoMapper.selectByPrimaryKey(aRecharge.getAccountid());
+		if(aInfo.getUsermoney().subtract(BigDecimal.valueOf((double)(aRecharge.getTransamt()/100))).doubleValue()<0){
+			result.fail("取现金额不能大于账户金额");
+			return result;
+		}
+		aInfo.setUsermoney(aInfo.getUsermoney().subtract(BigDecimal.valueOf((double)(aRecharge.getTransamt()/100))));	
+		accountInfoMapper.updateByPrimaryKey(aInfo);
+		if((aRecharge.getTransamt()/100) % (sf.getRatio().doubleValue()) != 0){
+			result.fail("取现必须为"+sf.getRatio().doubleValue()+"的倍数");
+			return result;
+	    }
+		List<AccountRecharge> list =  accountRechargeMapper.selectByTime(aRecharge.getOrderdate(),EnumType.RalativeType.Out.ID,param.getAccountId());
+		if (null != list&&list.size()>sf.getTime()){
+			result.fail("当天取现次数不允许超过"+sf.getTime()+"次");
+			return result;
+		}
+		
+		accountRechargeMapper.insert(aRecharge);
+		result.success();
+		LOG.info(result.getMessage());
+		return result;
+      }
+	
+	@ApiOperation(value = "用户取现审批结果", notes = "用户取现审批结果", httpMethod = "POST")
+	@RequestMapping(value = "/userCashResult", method = RequestMethod.POST)
+	@ResponseBody
+	public UserRechargeResult userCashResult(@ApiParam(value = "Json参数", required = true) @Validated @RequestBody UserOrderVo param) throws Exception {
+		UserRechargeResult result = new UserRechargeResult();
+		
+		AccountRecharge aRecharge = new AccountRecharge();
+		aRecharge = accountRechargeMapper.selectByOrderNo(param.getOrderNo(), EnumType.RalativeType.Out.ID,param.getAccountId());
+		UserRechargeDto urDto = mapper.map(aRecharge, UserRechargeDto.class);
+		urDto.setTransAmt(urDto.getTransAmt()*100);
+		result.success(urDto);
+		LOG.info(result.getMessage());
+		return result;
+      }
+
+	@ApiOperation(value = "用户取现结果通知", notes = "用户取现结果通知", httpMethod = "POST")
+	@RequestMapping(value = "/userCashResultNotice", method = RequestMethod.POST)
+	@ResponseBody
+	public RestResult userCashResultNotice(@ApiParam(value = "Json参数", required = true) @Validated @RequestBody UserOrderNoticeVo param) throws Exception {
+		RestResult result = new RestResult();
+		AccountRecharge aRecharge = new AccountRecharge();
+		System.out.println("ces-12---"+param.getOrderNo());
+		aRecharge = accountRechargeMapper.selectByOrderNo(param.getOrderNo(), EnumType.RalativeType.Out.ID,param.getAccountId());
+		aRecharge.setOrderstate(param.getOrderState());
+		System.out.println("ces------------"+aRecharge.getAccountid()+".."+aRecharge.getArid()+".."+aRecharge.getOrderdate()+".."+aRecharge.getRelativetype());
+		accountRechargeMapper.updateByPrimaryKey(aRecharge);
+		result.success();
+		LOG.info(result.getMessage());
+		return result;
+      }
 	
 }

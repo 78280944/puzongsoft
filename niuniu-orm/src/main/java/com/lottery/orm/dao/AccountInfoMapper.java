@@ -39,6 +39,8 @@ public interface AccountInfoMapper {
     
     AccountInfo selectByUserAndId(AccountInfo record);
     
+    List<AccountInfo> selectByCodeNo(@Param("code")String code);
+    
     AccountInfo selectByCode(@Param("code")String code, @Param("level")String level, @Param("offtype")String offtype);
     
     AccountInfo selectByUserAndSfcode(@Param("username")String username, @Param("sfcode")String sfcode);

@@ -166,7 +166,7 @@
     where a.sid = #{sid,jdbcType=INTEGER}
     and
     a.lotteryterm  = getLotteryTerm(#{time,jdbcType=VARCHAR})
-    order by lotteryterm desc 
+    order by opentime desc 
    <if test="beginRow != null and pageSize !=null">
 	limit #{beginRow,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
 	</if>
@@ -197,12 +197,18 @@
     a.lgrid,a.sid,a.lotteryterm,a.lotteryresult,a.starttime,a.overtime,a.opentime,a.closetime,a.actopentime,a.actclosetime 
     from lottery_game_round a
     where a.sid = #{sid,jdbcType=INTEGER} 
-    ORDER BY lotteryterm DESC LIMIT 0,2
+    ORDER BY opentime DESC LIMIT 0,2
   </select>
   
   <select id="selectLotteryOrderPlayer" resultMap="BaseResultMap">
-    SELECT DISTINCT sid,lotteryterm FROM 
-    (SELECT * FROM lottery_game_round GROUP BY sid,lotteryterm DESC) b 
+    SELECT DISTINCT sid,opentime FROM 
+    (SELECT sid,opentime FROM lottery_game_round where lotteryresult is not null GROUP BY sid,opentime DESC) b 
+    GROUP BY sid ASC   
+  </select>
+  
+ <select id="selectLotteryPlayoridle" resultMap="BaseResultMap">
+    SELECT DISTINCT sid,lotteryterm,opentime FROM 
+    (SELECT sid,lotteryterm,opentime FROM lottery_game_round where lotteryresult is null GROUP BY sid,opentime DESC) b 
     GROUP BY sid ASC   
   </select>
   

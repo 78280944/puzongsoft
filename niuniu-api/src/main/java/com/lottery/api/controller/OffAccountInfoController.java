@@ -117,6 +117,8 @@ public class OffAccountInfoController {
 			AccountInfo OffAccountInfo = accountInfoMapper.selectByUsername(paraInfo.getUsername());
 		    if(OffAccountInfo!=null){ 	
 		    	result.fail(username,MessageTool.Code_2005);
+			    LOG.info(result.getMessage());
+			    return result;
 		    }else{
 
 		    	//获取管理员level
@@ -140,6 +142,15 @@ public class OffAccountInfoController {
 				      LOG.info(result.getMessage());
 				      return result;	
 				}
+				
+				//邀请码是否存在
+				List<AccountInfo> list = accountInfoMapper.selectByCodeNo(param.getCode());
+				if (list.size()>0){
+			        result.fail("邀请码已存在，请重新输入邀请码");
+			        LOG.info(result.getMessage());
+			        return result;	
+				}
+					
 			    paraInfo.setState("1");//默认状态正常
 			    paraInfo.setLevel(ToolsUtil.decideLevel(level));
 			    paraInfo.setOfftype("1");

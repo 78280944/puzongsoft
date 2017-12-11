@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.ibatis.annotations.Param;
 import org.apache.log4j.Logger;
 import org.dozer.Mapper;
 import org.hibernate.validator.constraints.NotBlank;
@@ -21,6 +20,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.lottery.api.dto.CurResultParamVo;
 import com.lottery.api.dto.EndOrderVo;
 import com.lottery.api.dto.HisOrderVo;
+import com.lottery.api.dto.LotteryGameDetailVO;
 import com.lottery.api.dto.OrderDetailVo;
 import com.lottery.api.dto.OrderParamVo;
 import com.lottery.api.dto.ReportParamVo;
@@ -39,12 +39,14 @@ import com.lottery.orm.bo.SysLimit;
 import com.lottery.orm.dao.AccountDetailMapper;
 import com.lottery.orm.dao.AccountInfoMapper;
 import com.lottery.orm.dao.CustomLotteryMapper;
+import com.lottery.orm.dao.LotteryGameDetailMapper;
 import com.lottery.orm.dao.LotteryGameOrderMapper;
 import com.lottery.orm.dao.LotteryOrderMapper;
 import com.lottery.orm.dao.LotteryReportMapper;
 import com.lottery.orm.dao.LotteryRoundMapper;
 import com.lottery.orm.dao.SysLimitMapper;
 import com.lottery.orm.dto.HistoryOrderDto;
+import com.lottery.orm.dto.LotteryGameDetailDto;
 import com.lottery.orm.dto.LotteryNoidDto;
 import com.lottery.orm.dto.LotteryOrderDto;
 import com.lottery.orm.dto.ResultAmountDto;
@@ -58,6 +60,7 @@ import com.lottery.orm.result.GameOrderGrListResult;
 import com.lottery.orm.result.GameOrderList;
 import com.lottery.orm.result.GameOrderListResult;
 import com.lottery.orm.result.HistoryOrderResult;
+import com.lottery.orm.result.LotteryGameDetailResult;
 import com.lottery.orm.result.LotteryNoidResult;
 import com.lottery.orm.result.OrderAmountResult;
 import com.lottery.orm.result.OrderListResult;
@@ -110,18 +113,21 @@ public class LotteryOrderController {
 	@Autowired
 	private SysLimitMapper sysLimitMapper;
 	
+	@Autowired
+	private LotteryGameDetailMapper lotteryGameDetailMapper;
+	
 	@ApiOperation(value = "新增投注记录", notes = "新增投注记录", httpMethod = "POST")
 	@RequestMapping(value = "/addLotteryOrder", method = RequestMethod.POST)
 	@ResponseBody
 	public RestResult addLotteryOrder(
 			@ApiParam(value = "Json参数", required = true) @Validated @RequestBody OrderParamVo param) throws Exception {
-		System.out.println("1---------------------------------------"+param.getRmid());
+		//System.out.println("1---------------------------------------"+param.getRmid());
 		RestResult result = new RestResult();
 		String checkInfo = "";
 		try {
 			
 			LotteryGameOrder order = mapper.map(param, LotteryGameOrder.class);
-			System.out.println("投注开始时间------------------"+new Date());
+			//System.out.println("投注开始时间------------------"+new Date());
 			LOG.info("投注开始时间------------------"+new Date());
 			AccountInfo accountInfo = accountInfoMapper.selectByPrimaryKey(order.getAccountid());
 			if (accountInfo == null){
@@ -151,6 +157,9 @@ public class LotteryOrderController {
 						noid = lg.getNoid();
 						isplay = true;
 				}
+				if (order.getNoid()==noid&&isplay)
+                    order.setPlayoridle("1");
+					
 				if (order.getPlayoridle().equals("1")){
 					//包含
 					if (order.getNoid()!=noid&&noid!=0){
@@ -183,7 +192,7 @@ public class LotteryOrderController {
 				lotteryOrderService.insertLotteryGameOrder(order);
 				
 			}
-			System.out.println("投注结束时间------------------"+new Date());
+			//System.out.println("投注结束时间------------------"+new Date());
 			LOG.info("投注结束时间------------------"+new Date());
 			result.success();
 			LOG.info(result.getMessage());
@@ -430,6 +439,24 @@ public class LotteryOrderController {
 
 	}
 	
+	
+	@ApiOperation(value = "获取输赢明细记录", notes = "获取输赢明细记录", httpMethod = "POST")
+	@RequestMapping(value = "/getLotteryGameDetail", method = RequestMethod.POST)
+	@ResponseBody
+	public LotteryGameDetailResult getLotteryGameDetail(
+			@ApiParam(value = "Json参数", required = true) @Validated @RequestBody LotteryGameDetailVO param) throws Exception {
+		LotteryGameDetailResult result = new LotteryGameDetailResult();
+		try {
+			List<LotteryGameDetailDto> list = lotteryGameDetailMapper.selectByGameDetail(param.getLgmid());
+			result.success(list);
+			LOG.info(result.getMessage());
+		} catch (Exception e) {
+			result.error();
+			LOG.error(e.getMessage(), e);
+		}
+		return result;
+
+	}
 	
 	/*
 	@ApiOperation(value = "获取历史下注单", notes = "获取交易报表", httpMethod = "POST")

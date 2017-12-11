@@ -323,18 +323,23 @@ public class LotteryOrderService {
 	    }
 		*/
 		//下注金额最大值
-		RoomOrderDto  rd = lotteryGameOrderMapper.selectAccountIdOrder(accountInfo.getAccountid());
+		RoomOrderDto  rd  = new RoomOrderDto();
+		rd = lotteryGameOrderMapper.selectAccountIdOrder(accountInfo.getAccountid());
 		int count = 0;
 		if (rd == null){
 			count = 0;
 		}else{
-		    count = ((null==rd)?0:((null==rd.getOrderamount())?0:rd.getOrderamount().intValue()));
+		    count = ((null==rd.getOrderamount())?0:rd.getOrderamount().intValue());
 			}
 			
-		//System.out.println("90-----------------"+accountInfo.getUsermoney()+".."+rd.getOrderamount());
-		if (order.getPlayoridle().equals("2"))
-		    if (((accountInfo.getUsermoney().subtract(BigDecimal.valueOf(count))).divide(BigDecimal.valueOf(5),2, BigDecimal.ROUND_HALF_EVEN)).subtract(order.getOrderamount()).doubleValue()<0){
+		//System.out.println("90-----------------"+accountInfo.getUsermoney()+".."+rd.getOrderamount()+"..."+count);
+		if (order.getPlayoridle().equals("2")){
+		    if (((accountInfo.getUsermoney().subtract(BigDecimal.valueOf(count))).divide(BigDecimal.valueOf(sys.getRatio()),2, BigDecimal.ROUND_HALF_EVEN)).subtract(order.getOrderamount()).doubleValue()<0){
 			return "账户金额不够该游戏下注的赔率";
+		}}else{
+			if ((accountInfo.getUsermoney().subtract(BigDecimal.valueOf(count))).subtract(order.getOrderamount()).doubleValue()<0){
+				return "账户金额不够该游戏下注的赔率";
+			}
 		}
 		return "true";
 	}

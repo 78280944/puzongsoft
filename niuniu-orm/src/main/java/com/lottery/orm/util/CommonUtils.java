@@ -12,8 +12,22 @@ import java.util.Map;
 import java.util.Random;
 import java.util.TimeZone;
 
+import org.apache.commons.lang3.time.DateUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.lottery.orm.bo.LotteryGameDetail;
+import com.lottery.orm.dao.LotteryGameDetailMapper;
+import com.lottery.orm.service.AccountInfoService;
+import com.lottery.orm.service.LotteryRoundService;
+import com.lottery.orm.service.LotteryTaskService;
+
+@Service
+@Transactional
 public class CommonUtils {
+
+	
 
 	//01,本日;02,上周;03,本周;04,上期;05,本期;
 	public static Date[] getDateBetween(Date startTime,Date endTime,String time) throws ParseException {
@@ -528,44 +542,48 @@ public class CommonUtils {
          str[0][0]="200";
          str[0][1]="0";
          str[0][2]="0";
-         str[0][3]="1019";
+         str[0][3]="1027";
          str[0][4]="1001";
          str[0][5]="0";  //对于赔付用户，是否需要显示负值
          str[0][6]="5";
          str[0][7]="0";  //对于赔付用户，倍率是否更新
          str[0][8]="2";
-         str[0][9]="2";
+         str[0][9]="5";
+         str[0][10]="5";
          str[1][0]="600";
          str[1][1]="0";
          str[1][2]="0";
          str[1][3]="1020";
          str[1][4]="1001";
          str[1][5]="0";
-         str[1][6]="2";
+         str[1][6]="3";
          str[1][7]="0";
          str[1][8]="2";
-         str[1][9]="3";
+         str[1][9]="4";
+         str[1][10]="4";
          str[2][0]="300";
          str[2][1]="0";
          str[2][2]="0";
-         str[2][3]="1011";
+         str[2][3]="1013";
          str[2][4]="1001";
          str[2][5]="0";
          str[2][6]="2";
          str[2][7]="0";
          str[2][8]="3";
          str[2][9]="3";
-         str[3][0]="300";
+         str[2][10]="3";
+         str[3][0]="5000";
          str[3][1]="0";
          str[3][2]="0";
-         str[3][3]="1011";
+         str[3][3]="1019";
          str[3][4]="1001";
          str[3][5]="0";
-         str[3][6]="1";
+         str[3][6]="3";
          str[3][7]="0";
          str[3][8]="3";
-         str[3][9]="3";
-      */    
+         str[3][9]="2";
+         str[3][10]="2";
+       */
          int i = 0;
          int j=str.length-1;
         // System.out.println("j--------------"+j);
@@ -582,9 +600,30 @@ public class CommonUtils {
          while ((i<j) && (!(str[i][9].equals(str[j][9])||(str[i][10].equals(str[j][10]))))){
         	 if (tmp>=Integer.valueOf(str[j][1])){
         		 tmp = tmp - Integer.valueOf(str[j][1]);
+        		 System.out.println("j1--------------"+i+"..扣除。"+str[j][3]+"..-"+str[j][1]+"..."+j+".."+str[i][3]+".."+str[j][1]+".."+tmp);
+        		 LotteryGameDetail record = new LotteryGameDetail();
+        		 record.setLgmid(Integer.valueOf(str[j][4]));
+        		 record.setAccountid(Integer.valueOf(str[j][3]));
+        		 record.setTrademoney(BigDecimal.valueOf(-Integer.valueOf(str[j][1])));
+        		 record.setNoid(Integer.valueOf(str[j][9]));
+        		 record.setRaccountid(Integer.valueOf(str[i][3]));
+        		 record.setRnoid(Integer.valueOf(str[i][9]));
+        		 record.setRresult(str[i][8]);
+        		 //LotteryTaskService n = new LotteryTaskService();
+        		// n.insetLotteryGameDetail(record);
+        		 
+        		 record.setLgmid(Integer.valueOf(str[j][4]));
+        		 record.setAccountid(Integer.valueOf(str[j][3]));
+        		 record.setTrademoney(BigDecimal.valueOf(Integer.valueOf(str[j][1])));
+        		 record.setNoid(Integer.valueOf(str[j][9]));
+        		 record.setRaccountid(Integer.valueOf(str[i][3]));
+        		 record.setRnoid(Integer.valueOf(str[i][9]));
+        		 record.setRresult(str[i][8]);
+        		 //lotteryTaskService.insetLotteryGameDetail(record);
+        		 
         		 str[j][1] = "0";
         		 str[j][5] = "1";
-        		// System.out.println("j1--------------"+j);
+        		
         		// System.out.println("tmp1--------------"+tmp);
         		 if (Integer.valueOf(str[j][7]) == 0){
         			 str[j][6] = str[i][6];
@@ -597,18 +636,38 @@ public class CommonUtils {
         		 }else{
         			 if (!(str[i][9].equals(str[j][9])||str[i][10].equals(str[j][10]))){
         			     str[j][1] = String.valueOf(Integer.valueOf(str[j][0])*Integer.valueOf(str[i][6]));
-        			     //System.out.println("j2--------------"+j);
+        			    // i++;
+        			     System.out.println("j2--34------------"+i+".."+j+".."+str[j][1]);
         			 }
         			 else{
             			 str[i][1] = String.valueOf(Integer.valueOf(str[i][0])*Integer.valueOf(str[i][6]) - tmp);
             			 str[i][2] = str[i][1];
-            			 //System.out.println("i1--------------"+i);
+            			 System.out.println("i1--------------"+i+".."+j+".."+str[i][2]+"..."+str[j][2]);
             			 //System.out.println("stri2--------------"+str[i][2]+".."+tmp);
             		 }
         		 }
         	 }else{
         		 str[j][1] = String.valueOf((Integer.valueOf(str[j][1]) - tmp));
-        		// System.out.println("i2--------------"+i);
+        		 System.out.println("i12--------------"+i+".."+str[j][1]+".."+str[j][3]+"..-"+tmp+".."+str[i][3]+"..+"+tmp);
+        		 LotteryGameDetail record = new LotteryGameDetail();
+        		 record.setLgmid(Integer.valueOf(str[j][4]));
+        		 record.setAccountid(Integer.valueOf(str[j][3]));
+        		 record.setTrademoney(BigDecimal.valueOf(-tmp));
+        		 record.setNoid(Integer.valueOf(str[j][9]));
+        		 record.setRaccountid(Integer.valueOf(str[i][3]));
+        		 record.setRnoid(Integer.valueOf(str[i][9]));
+        		 record.setRresult(str[i][8]);
+        		 //lotteryTaskService.insetLotteryGameDetail(record);
+        		 //lotteryGameDetailMapper.insert(record);
+        		 
+        		 record.setLgmid(Integer.valueOf(str[i][4]));
+        		 record.setAccountid(Integer.valueOf(str[i][3]));
+        		 record.setTrademoney(BigDecimal.valueOf(tmp));
+        		 record.setNoid(Integer.valueOf(str[i][9]));
+        		 record.setRaccountid(Integer.valueOf(str[j][3]));
+        		 record.setRnoid(Integer.valueOf(str[j][9]));
+        		 record.setRresult(str[j][8]);
+        		// lotteryTaskService.insetLotteryGameDetail(record);
         		// System.out.println("strj1--------------"+str[j][1]);
         		 str[j][5] = "1";
         		 if (Integer.valueOf(str[j][7]) == 0){
@@ -624,7 +683,7 @@ public class CommonUtils {
         			 if (!(str[i][9].equals(str[j][9])||str[i][10].equals(str[j][10]))){
 		        		 str[i][1] = String.valueOf(Integer.valueOf(str[i][0])*Integer.valueOf(str[i][6])); 		
 		        		 tmp = Integer.valueOf(str[i][1]);
-		        		// System.out.println("i21--------------"+i);
+		        		System.out.println("i21--233------------"+i+".."+j+".."+tmp);
 		        		// System.out.println("stri1--------------"+str[i][1]);
             			// System.out.println("tmp2--------------"+tmp);
         			 }
@@ -636,21 +695,27 @@ public class CommonUtils {
          for (i=str.length-1;i>=j;i--){
         	 if(str[i][5].equals("1")){
         		 str[i][2] = String.valueOf(Integer.valueOf(str[i][1])  - Integer.valueOf(str[i][0])*Integer.valueOf(str[i][6]));
-        		  //System.out.println("0----0-"+i+".."+str1[i][1]);
+        		 
+        		  System.out.println("0----0-"+i+".."+str[i][2]);
         	 }
          }
        //  System.out.println("12----------"+j);
+         
         for (i=0;i<j;i++){
-        	 str[i][2] =  str[i][1]; 	 
+        	 str[i][2] =  str[i][1];
+        	 System.out.println("12----------"+str[i][2]);
         }
+        
         for (i=0;i<str.length;i++){
-       	    str[i][1] =  str[i][0]; 	
+        	    str[i][1] =  str[i][0]; 
+       	    System.out.println("98-----"+str[i][1]);
+       	    
        	    
        }
-   /*
+ 
        for (int w = 0;w<str.length;w++)
        System.out.println("90------------"+str[w][0]+"..."+str[w][1]+".."+str[w][2]);
-     */   
+       
          return str;
         
      }
@@ -659,7 +724,7 @@ public class CommonUtils {
      /**
       * 庄相等
       */
-     public static Map<Integer, Object> doBankerHandleSameEqual(int gains,int count,int values,int times,String[][] str){
+     public synchronized static Map<Integer, Object> doBankerHandleSameEqual(int gains,int count,int values,int times,String[][] str){
     	  Map<Integer, Object> map = new HashMap<Integer, Object>();
               map.put(1, gains);
               map.put(2, count);
@@ -707,10 +772,11 @@ public class CommonUtils {
          int i = 0;
          int j=str.length-1;
          Map<Integer, Object> map = new HashMap<Integer, Object>();
-         System.out.println("7---"+j);
+        
          int base = values-gains-count;
          if (base > count)
         	 base = count;
+         System.out.println("7---"+j+".."+base);
          int tempgain = base;
          
          if (base == 0){
@@ -724,10 +790,13 @@ public class CommonUtils {
         	 if (Integer.valueOf(str[j][1])*times<base){
         		 base = base - Integer.valueOf(str[j][0])*times;
         		 str[j][1] = "0";
+        		 System.out.println("09----"+str[j][3]+"..-"+(Integer.valueOf(str[j][0])*times)+"...庄"+"...+"+(Integer.valueOf(str[j][0])*times)+".."+base);
         	 }else{
         		 str[j][1] = String.valueOf((Integer.valueOf(str[j][0])*times - base));
+        		 System.out.println("09-34---庄"+"..+"+base+"..."+str[j][3]+"...-"+base);
+                 
         		 base = 0;
-                 break;
+        		 break;
         	 }
          }
          for (i=0;i<=str.length-1;i++){
@@ -743,11 +812,11 @@ public class CommonUtils {
          }
          gains = gains+tempgain-base;
          System.out.println("gains="+gains+"..count="+count+"..values="+values);
-       /*
+       
         for (i=0;i<=str.length-1;i++){
         	System.out.println("0----"+i+".."+str[i][2]+"..");
         }
-        */
+        
        // System.out.println("0----"+count);
         map.put(1, gains);
         map.put(2, count);
@@ -772,10 +841,10 @@ public class CommonUtils {
       */
      public static Map<Integer, Object> doBankerHandleMore(int gains,int count,int values,int times,String[][] str){
          
-    	 /*
+    	/*
         // count  =120;
-    	 str[0][0]="200";
-         str[0][1]="200";
+    	 str[0][0]="2000";
+         str[0][1]="2000";
          str[0][2]="0";
          str[0][3]="1019";
          str[0][4]="1001";
@@ -784,8 +853,8 @@ public class CommonUtils {
          str[0][7]="0";
          str[0][8]="牛牛";
          str[0][9]="牛牛";
-         str[1][0]="300";
-         str[1][1]="300";
+         str[1][0]="3000";
+         str[1][1]="3000";
          str[1][2]="0";
          str[1][3]="1020";
          str[1][4]="1001";
@@ -793,8 +862,8 @@ public class CommonUtils {
          str[1][6]="5";
          str[1][7]="0";
          str[1][8]="牛牛";
-         str[2][0]="400";
-         str[2][1]="400";
+         str[2][0]="500";
+         str[2][1]="500";
          str[2][2]="0";
          str[2][3]="1011";
          str[2][4]="1001";
@@ -824,9 +893,13 @@ public class CommonUtils {
         		 str[i][2] = String.valueOf(Integer.valueOf(str[i][0])*Integer.valueOf(str[i][6]));
         		 base = base - Integer.valueOf(str[i][0])*Integer.valueOf(str[i][6]);
         		// count = count - Integer.valueOf(str[i][0])*Integer.valueOf(str[i][6]);
+        		 System.out.println("ying-1---"+str[i][3]+"..+"+Integer.valueOf(str[i][0])*Integer.valueOf(str[i][6])+"..庄"+"..-"+Integer.valueOf(str[i][0])*Integer.valueOf(str[i][6]));
+        		 
         	 }else{
         		 str[i][2] = String.valueOf(base);
         		// count = 0;
+        		 System.out.println("ying-2---"+str[i][3]+"..+"+base+"..庄"+"..-"+base);
+        		 
         		 base = 0;
                  break;
         	 }
@@ -1193,7 +1266,42 @@ public class CommonUtils {
         return map;
          
      }
+     public static long getCompareMin(Date end,Date begin){
+    	   //SimpleDateFormat dfs = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    	   //Date begin=dfs.parse("2004-01-02 11:30:24");
+    	  // Date end = dfs.parse("2004-03-26 13:31:40");
+    	   long between=(end.getTime()-begin.getTime())/1000;//除以1000是为了转换成秒
+    	   long min=between/60;
+		   return min;
+    	 
+     }
      
+     /**
+     * 字符串转换成日期
+     * @param str
+     * @return date
+     */
+     public static Date StrToDate(String str) {
+       
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date date = null;
+        try {
+         date = format.parse(str);
+        } catch (ParseException e) {
+         e.printStackTrace();
+        }
+        return date;
+     }
+     
+     public static String dateAddMin(int min) throws Exception{
+    	 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    	 Calendar nowTime = Calendar.getInstance();
+    	 nowTime.add(Calendar.MINUTE, min); 
+    	 nowTime.add(Calendar.SECOND, 10); 
+    	 String sTime = sdf.format(nowTime.getTime());
+    	 System.out.println(new Date());
+    	 return sTime;
+     }
      
 	/**
 	 * @param args
@@ -1201,30 +1309,37 @@ public class CommonUtils {
 	 */
 	public static void main(String args[]) throws Exception{
 		//Date[] param1 = CommonUtils.getDateTime(param.getStartDate(), param.getEndDate());
+		//Date currentTime = AppUtils.getCurrentDate();
+		  //获取昨天时间
+		  Date backupTime=DateUtils.addDays(new Date(), -1);
+		System.out.println("12----"+dateAddMin(1));
 		Date[] param1 = getDateTime(new Date(),new Date());
 		String str = "20171119096";
+		String str1 = "92001001";
+		System.out.println("0---"+str1.substring(1, 2));
 		Map<Integer, Object> map = new HashMap<Integer, Object>();
 		map.put(1, "23");
 		System.out.println("90----"+map.size()+".."+str.substring(0,str.length()-2)+String.valueOf(Integer.valueOf(str.substring(str.length()-2,str.length()))-3));
 		//BigDecimal.valueOf(Integer.valueOf(str[j][2])).subtract(fee.doubleValue()>0?fee:BigDecimal(0)))
 		//testDate();
 		int gains=200;
-		int count=700;
-		int values=1800;
-		
-		System.out.println(doCompareCount(gains, count, values));
+		int count=20000;
+		int values=40000;
+		String[][] d =new String[3][10];
+		//System.out.println(doBankerHandleLess(gains, count, values,4,d));
+		//System.out.println(doCompareCount(gains, count, values));
 		
 		int []numbers = {50,100,200};
         Random random = new Random();
         int index = random.nextInt(numbers.length);
         System.out.println("12----"+numbers[index]);
 		System.out.println(",---------"+BigDecimal.valueOf(30).subtract(BigDecimal.valueOf(0)));
-		String[][] d =new String[4][10];
+		
 		//System.out.println("fe--------"+doBankerHandleEqual(2000,d));
-		int times =3;
-		////System.out.println(doBankerHandleMore(gains,count,values,times,d));
+		int times =5;
+		System.out.println(doBankerHandleMore(gains,count,values,times,d));
 		//System.out.println(doBankerHandleLess(gains,count,values,times,d));
-		System.out.println(doNoBankerHandle(d));
+		//System.out.println(doNoBankerHandle(d));
 		//System.out.println(doBankerHandleEqual(18000,d));
 		String[] a = "2,9,2,2,7".split(",");
 		String[] c =CommonUtils.getOrdeNum("2,10","02");

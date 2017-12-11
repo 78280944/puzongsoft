@@ -30,4 +30,6 @@ public interface LotteryGameRoundMapper {
     List<LotteryGameRound> selectLotteryOrderResult(@Param("sid")Integer sid);
     
     List<LotteryGameRound> selectLotteryOrderPlayer();
+    
+    List<LotteryGameRound> selectLotteryPlayoridle();
 }

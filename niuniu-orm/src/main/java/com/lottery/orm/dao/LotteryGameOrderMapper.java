@@ -20,7 +20,7 @@ public interface LotteryGameOrderMapper {
 
 	int deleteByPrimaryKey(Integer lgmid);
 	
-	int deleteByPlayerBatch(@Param("sid")Integer sid,@Param("lotteryterm")String lotteryterm);
+	int deleteByPlayerBatch(@Param("sid")Integer sid,@Param("opentime")Date opentime);
 	
 	int deleteByPlayerOrder(Integer accountid);
 
@@ -66,7 +66,8 @@ public interface LotteryGameOrderMapper {
     List<LotteryAmountDto> selectGameAmountNoidResult(@Param("lotteryterm")String lotteryterm,@Param("sid")Integer sid,@Param("rmid")Integer rmid,@Param("noid")Integer noid);
     
     List<LotteryAmountDto> selectGameIsOrNotBank(@Param("lotteryterm")String lotteryterm,@Param("sid")Integer sid,@Param("rmid")Integer rmid);
-    
+   
+    List<LotteryGameOrder> selectGamePlayoridle(@Param("lotteryterm")String lotteryterm,@Param("sid")Integer sid);
     
     int updateOrderResult(@Param("lgmid")Integer lgmid,@Param("opentime")Date opentime,@Param("result")String result,@Param("lastamount")BigDecimal lastamount);
     

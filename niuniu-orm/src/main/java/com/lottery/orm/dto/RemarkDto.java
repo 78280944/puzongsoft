@@ -21,6 +21,30 @@ public class RemarkDto {
 	    
 	    @ApiModelProperty(value = "苹果App版本")
 	    private String iosAppVersion;
+	    
+	    @ApiModelProperty(value = "有庄结算图")
+	    private String playoridle;
+
+	    @ApiModelProperty(value = "无庄结算图")
+	    private String noplayoridle;
+	    
+	    
+	    
+		public String getPlayoridle() {
+			return playoridle;
+		}
+
+		public void setPlayoridle(String playoridle) {
+			this.playoridle = playoridle;
+		}
+
+		public String getNoplayoridle() {
+			return noplayoridle;
+		}
+
+		public void setNoplayoridle(String noplayoridle) {
+			this.noplayoridle = noplayoridle;
+		}
 
 		public String getOnline() {
 			return online;

@@ -205,7 +205,7 @@
 	      JOIN (SELECT @Ids := #{accountid,jdbcType=INTEGER}) temp1
 	      WHERE FIND_IN_SET(d.supuserid, @Ids)
 	   ) temp2 )) 
-	OR (a.accountid = #{accountid,jdbcType=INTEGER} AND a.accountid = b.accountid)	     
+	OR (a.accountid = #{accountid,jdbcType=INTEGER} AND a.accountid = b.accountid AND a.level= #{level,jdbcType=VARCHAR})	     
 	   group by a.accountid order by a.accountid desc
      <if test="beginRow != null and pageSize !=null">
 	limit #{beginRow,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}

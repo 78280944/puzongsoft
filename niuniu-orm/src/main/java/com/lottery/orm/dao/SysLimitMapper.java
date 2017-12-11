@@ -5,7 +5,8 @@ import org.apache.ibatis.annotations.Param;
 import com.lottery.orm.bo.SysLimit;
 
 public interface SysLimitMapper {
-    int deleteByPrimaryKey(Integer slid);
+  
+	int deleteByPrimaryKey(Integer slid);
 
     int insert(SysLimit record);
 

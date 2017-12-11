@@ -28,7 +28,7 @@
   <select id="selectLotteryGameRoom" resultMap="PlayerResultMap" >
    SELECT DISTINCT(a.rmid),a.sid,a.roomid,a.roomnumber,IF(ISNULL(d.count),0,d.count) AS COUNT FROM lottery_room a LEFT JOIN 
    (SELECT b.sid, b.rmid,COUNT(distinct accountid) AS COUNT FROM lottery_game_order b WHERE 
-   b.lotteryterm = (SELECT lotteryterm FROM LOTTERY_game_round where sid =#{sid,jdbcType=INTEGER}  ORDER BY LOTTERYTERM DESC LIMIT 1) 
+   b.lotteryterm = (SELECT lotteryterm FROM LOTTERY_game_round where sid =#{sid,jdbcType=INTEGER}  ORDER BY opentime DESC LIMIT 1) 
    AND b.sid = #{sid,jdbcType=INTEGER}  
    group by rmid) d
    ON (a.sid = d.sid AND a.rmid = d.rmid)
@@ -36,7 +36,7 @@
   </select>  
   
   <select id="selectDistinctSid"  resultMap="BaseResultMap" >
-    SELECT rmid,sid,roomid,roomnumber FROM lottery_room WHERE LENGTH(rmid)=8 and sid = #{sid,jdbcType=INTEGER}
+    SELECT rmid,sid,roomid,roomnumber FROM lottery_room WHERE LENGTH(rmid)=8 and sid = #{sid,jdbcType=INTEGER} LIMIT 0,3
   </select>
   
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >

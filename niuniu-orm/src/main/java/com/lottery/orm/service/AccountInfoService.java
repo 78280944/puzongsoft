@@ -10,8 +10,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.lottery.orm.bo.AccountDetail;
 import com.lottery.orm.bo.AccountInfo;
+import com.lottery.orm.bo.LotteryGameDetail;
 import com.lottery.orm.dao.AccountDetailMapper;
 import com.lottery.orm.dao.AccountInfoMapper;
+import com.lottery.orm.dao.LotteryGameDetailMapper;
 import com.lottery.orm.result.AccountResult;
 import com.lottery.orm.util.MessageTool;
 
@@ -24,7 +26,7 @@ public class AccountInfoService {
 
 	@Autowired
 	private AccountDetailMapper accountDetailMapper;
-
+	
 	// 添加账户
 	@Transactional(propagation = Propagation.REQUIRED, rollbackFor=Exception.class)
 	public void addAccountInfo(AccountInfo paraInfo) {
@@ -57,7 +59,5 @@ public class AccountInfoService {
 	public void updateResultAccountMount(BigDecimal amount,Integer accountid) {
 	    accountInfoMapper.updateResultAccountMount(amount, accountid);
 	}
-	
-	
 	
 }

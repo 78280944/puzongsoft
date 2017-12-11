@@ -52,13 +52,13 @@
 	    </table>  -->
 		
 		
-		<table tableName="Account_Amount" domainObjectName="AccountAmount"
+		<table tableName="sys_fee" domainObjectName="SysFee"
 	    	enableCountByExample="false"
 			enableUpdateByExample="false" 
 			enableDeleteByExample="false"
 			enableSelectByExample="false" 
 			selectByExampleQueryId="false">
-			<generatedKey column="aaid" sqlStatement="MySql" identity="true"/>
+			<generatedKey column="sfid" sqlStatement="MySql" identity="true"/>
 	    </table>
 
 <!-- 	    <table tableName="offaccount_info" domainObjectName="OffAccountInfo"
