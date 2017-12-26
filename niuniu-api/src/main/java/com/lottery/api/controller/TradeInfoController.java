@@ -2,6 +2,7 @@ package com.lottery.api.controller;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -19,11 +20,13 @@ import com.lottery.api.dto.TradeInfoVo;
 import com.lottery.api.dto.TradeParamVo;
 import com.lottery.orm.bo.AccountInfo;
 import com.lottery.orm.bo.TradeInfo;
+import com.lottery.orm.dao.AccountRechargeMapper;
 import com.lottery.orm.dto.AccountInfoDto;
 import com.lottery.orm.dto.TradeInfoDto;
 import com.lottery.orm.result.RestResult;
 import com.lottery.orm.result.TradeListResult;
 import com.lottery.orm.service.TradeInfoService;
+import com.lottery.orm.util.CommonUtils;
 import com.lottery.orm.util.EnumType;
 import com.lottery.orm.util.MessageTool;
 import com.wordnik.swagger.annotations.Api;
@@ -41,7 +44,9 @@ public class TradeInfoController {
 
 	@Autowired
 	TradeInfoService tradeInfoService;
-
+	
+	@Autowired
+	AccountRechargeMapper accountRechargeMapper;
 	/*
 	@ApiOperation(value = "新增入金交易记录", notes = "新增资金交易记录", httpMethod = "POST")
 	@RequestMapping(value = "/addInTradeInfo", method = RequestMethod.POST)
@@ -98,21 +103,14 @@ public class TradeInfoController {
 	public TradeListResult getTradeInfo(@ApiParam(value = "Json参数", required = true) @Validated @RequestBody TradeInfoVo param) throws Exception {
 		TradeListResult result = new TradeListResult();
 		try {
-			TradeInfo tradeInfo = mapper.map(param, TradeInfo.class);
-			List<TradeInfo> tradeInfos = tradeInfoService.selectByTrade(tradeInfo.getRelativetype(),param.getStarttime(),param.getOvertime(),param.getBeginRow(),param.getPageSize());
-			List<TradeInfoDto> list = new ArrayList<TradeInfoDto>();
-			if (tradeInfos.size() == 0){
+			Date[] param1 = CommonUtils.getDateTime(param.getStarttime(), param.getOvertime());
+			List<TradeInfoDto> list  = accountRechargeMapper.selectByTrade(param.getAccountid(),param.getRelativetype(),param.getStarttime(),param.getOvertime(),Integer.valueOf(param.getBeginRow()),Integer.valueOf(param.getPageSize()));
+			if (list.size() == 0){
 				result.fail("该查询条件下", MessageTool.Code_1010);
 				LOG.info(result.getMessage());
 				return result;
 			}
-			for (int i = 0;i<tradeInfos.size();i++){
-				TradeInfoDto rAcDto = new TradeInfoDto();
-				rAcDto.setTradeamount(BigDecimal.valueOf(tradeInfos.get(i).getTradeamount()));
-				rAcDto.setTradetime(tradeInfos.get(i).getInputtime());
-				list.add(rAcDto);
-				result.success(list);
-			}
+			result.success(list);
 			LOG.info(result.getMessage());
 		} catch (Exception e) {
 			result.fail(MessageTool.ErrorCode);

@@ -14,9 +14,10 @@
     SID, LOGINSERVICE, REGISTERSERCICE, ADDEDSERVICE, PLAYSERVICE, AREMARKSERCIE, DREMARKSERCIE
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
-    select 
-    <include refid="Base_Column_List" />
-    from lottery_service
+    SELECT sid,IF(LOGINSERVICE='true','1','0') AS LOGINSERVICE, IF(REGISTERSERCICE='true','1','0') AS REGISTERSERCICE, 
+    IF(ADDEDSERVICE='true','1','0') AS ADDEDSERVICE,IF(PLAYSERVICE='true','1','0') AS PLAYSERVICE,
+    IF(AREMARKSERCIE='true','1','0') AS AREMARKSERCIE,IF(DREMARKSERCIE='true','1','0') AS DREMARKSERCIE
+    FROM lottery_service 
     where SID = #{sid,jdbcType=INTEGER}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >

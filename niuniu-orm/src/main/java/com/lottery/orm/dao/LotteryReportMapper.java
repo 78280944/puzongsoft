@@ -28,4 +28,6 @@ public interface LotteryReportMapper {
     
     List<InoutAccReportDto> selectAccInoutReportBytime(@Param("accountId")Integer accountId,@Param("level")String level, @Param("time")String time,@Param("beginRow")Integer beginRow,@Param("pageSize")Integer pageSize);
     
+    List<InoutAccReportDto> selectProInoutReport(@Param("startTime")Date startTime,@Param("endTime")Date endTime,@Param("accountId")Integer accountId, @Param("beginRow")Integer beginRow,@Param("pageSize")Integer pageSize);
+    
 }

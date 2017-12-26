@@ -2,7 +2,9 @@ package com.lottery.orm.service;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.Date;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -10,22 +12,44 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.lottery.orm.bo.AccountDetail;
 import com.lottery.orm.bo.AccountInfo;
+import com.lottery.orm.bo.AccountRecharge;
 import com.lottery.orm.bo.LotteryGameDetail;
+import com.lottery.orm.bo.LotteryGameOrder;
+import com.lottery.orm.bo.SysBene;
+import com.lottery.orm.bo.SysFee;
+import com.lottery.orm.bo.SysLimit;
 import com.lottery.orm.dao.AccountDetailMapper;
 import com.lottery.orm.dao.AccountInfoMapper;
+import com.lottery.orm.dao.AccountRechargeMapper;
 import com.lottery.orm.dao.LotteryGameDetailMapper;
+import com.lottery.orm.dao.LotteryGameOrderMapper;
+import com.lottery.orm.dao.SysBeneMapper;
+import com.lottery.orm.dao.SysFeeMapper;
+import com.lottery.orm.dto.RoomOrderDto;
 import com.lottery.orm.result.AccountResult;
 import com.lottery.orm.util.MessageTool;
 
 @Service
 @Transactional
 public class AccountInfoService {
-
+	public static final Logger LOG = Logger.getLogger(AccountInfoService.class);
 	@Autowired
 	private AccountInfoMapper accountInfoMapper;
 
 	@Autowired
 	private AccountDetailMapper accountDetailMapper;
+	
+	@Autowired
+	private LotteryGameOrderMapper lotteryGameOrderMapper;
+	
+	@Autowired
+    private AccountRechargeMapper accountRechargeMapper;
+	
+	@Autowired
+	private SysBeneMapper sysBeneMapper;
+	
+	@Autowired
+	private SysFeeMapper sysFeeMapper;
 	
 	// 添加账户
 	@Transactional(propagation = Propagation.REQUIRED, rollbackFor=Exception.class)
@@ -37,17 +61,6 @@ public class AccountInfoService {
 	@Transactional(propagation = Propagation.REQUIRED, rollbackFor=Exception.class)
 	public void updateAccountInfo(AccountInfo paraInfo) {
 		accountInfoMapper.updateByPrimaryKeySelective(paraInfo);
-		//获取accountid
-		/*
-		//AccountDetail accountDetail = accountDetailMapper.selectByUserId(paraInfo.getUserid(), "3");
-		//accountDetail.setUserid(paraInfo.getUserid());
-	    accountDetail.setUsername(paraInfo.getUsername());
-	    accountDetail.setLimited(paraInfo.getLimited());
-	    accountDetail.setRatio(paraInfo.getRatio());
-	    accountDetail.setState(paraInfo.getState());
-	    accountDetail.setSupuserid(paraInfo.getSupuserid());
-	    accountDetail.setLevel(paraInfo.getLevel());
-	    accountDetailMapper.updateByPrimaryKeySelective(accountDetail);*/
 	}
 	
 	//更新剩余点数
@@ -58,6 +71,85 @@ public class AccountInfoService {
 	//客户Id，更新账户余额
 	public void updateResultAccountMount(BigDecimal amount,Integer accountid) {
 	    accountInfoMapper.updateResultAccountMount(amount, accountid);
+	}
+	
+	//取现金额检查
+	public String checkCashMoneyInfo(AccountInfo accountInfo,Double transAmt) {
+		
+		//下注金额最大值
+		RoomOrderDto  rd  = new RoomOrderDto();
+		rd = lotteryGameOrderMapper.selectAccountIdOrder(accountInfo.getAccountid());
+		int count = 0;
+		if (rd == null){
+			count = 0;
+		}else{
+		    count = ((null==rd.getOrderamount())?0:rd.getOrderamount().intValue());
+			}
+			
+		//System.out.println("90-----------------"+accountInfo.getUsermoney()+".."+rd.getOrderamount()+"..."+count);
+		if (((accountInfo.getUsermoney().subtract(BigDecimal.valueOf(count)).subtract(BigDecimal.valueOf(transAmt)))).doubleValue()<0)
+			return "账户金额不足，请重新输入取现金额";
+		return "true";
+	}
+	
+	
+	public String checkResult(String orderNo,String payNo,String transAmt,String orderDate,String accNo,String token,String respCode,String respDesc){
+		LOG.info("返回时间："+new Date()+"，订单编号："+orderNo+",支付订单号："+payNo+",交易金额："+transAmt+",返回消息代码："+respCode+",消息描述："+respDesc+",持卡人信息："+token+",卡号："+accNo);
+		AccountRecharge aRecharge = new AccountRecharge();
+    	aRecharge.setOrderno(orderNo);
+		aRecharge.setPayno(payNo);
+		aRecharge.setTransamt(Integer.valueOf(transAmt));
+		aRecharge.setOrderdate(orderDate);
+		aRecharge.setRespcode(respCode);
+		aRecharge.setRespdesc(respDesc);
+		aRecharge.setRelativetype("In");
+		AccountRecharge ar = accountRechargeMapper.selectByOrderNoReturn(aRecharge.getOrderno(), "In");
+    	if (null == ar){
+		      LOG.info("该订单信息有误！");
+		      return "false";
+    	}else{
+    		if (!(aRecharge.getTransamt().equals(ar.getTransamt()))){
+			      LOG.info("平台支付订单信息或者金额不匹配有误！");
+			      return "false";
+    		}
+    	}
+    	if (null!=payNo){
+    		SysBene sb = sysBeneMapper.selectByAmount(BigDecimal.valueOf(aRecharge.getTransamt()/100));
+			Double bene = 0.0;
+			Double amount = 0.0;
+			if (null == sb||sb.getBenefit() == null||sb.getBenefit() == BigDecimal.valueOf(0.0)){
+				bene = 0.0;
+			}else{
+				bene = sb.getBenefit().doubleValue();
+			}
+			SysFee sf = sysFeeMapper.selectByPrimaryKey(1001);
+			ar.setDonatamt(bene);//赠送金额
+			ar.setFee(ar.getTransamt()/100*sf.getRefee().doubleValue());//充值费用
+			ar.setPayamt(ar.getTransamt()/100-ar.getFee());//实际金额
+			AccountInfo aInfo = accountInfoMapper.selectByPrimaryKey(ar.getAccountid());
+			if (null == aInfo){
+			      LOG.info("该用户不存在！,订单号为："+orderNo);
+			      return "false";
+			}
+			amount = ar.getPayamt()+ar.getDonatamt();
+			ar.setAccountamount(aInfo.getUsermoney().add(BigDecimal.valueOf(amount)));
+	    	aInfo.setUsermoney(aInfo.getUsermoney().add(BigDecimal.valueOf(amount)));
+	    	accountInfoMapper.updateByPrimaryKey(aInfo);
+	    	if (ar.getFee()>0){
+	    		aInfo = accountInfoMapper.selectByPrimaryKey(1000);
+	    		aInfo.setUsermoney(aInfo.getUsermoney().add(BigDecimal.valueOf(ar.getFee())));
+		    	accountInfoMapper.updateByPrimaryKey(aInfo);
+	    	}
+			ar.setPayno(aRecharge.getPayno());
+	    	ar.setOrderstate(aRecharge.getOrderstate());
+	    	ar.setUpusertime(new Date());
+	    	ar.setRespcode(aRecharge.getRespcode());
+	    	ar.setRespdesc(aRecharge.getRespdesc());
+	    	ar.setOrderstate("01");//成功
+	    	accountRechargeMapper.updateByRechargeMessage(ar);
+		    return "success";
+	   }
+    	return "";
 	}
 	
 }

@@ -23,11 +23,13 @@ import com.lottery.api.dto.AccountRecordVo;
 import com.lottery.api.dto.DemoInfoVo;
 import com.lottery.api.dto.LoginParamVo;
 import com.lottery.api.dto.NoticeTypeVo;
+
 import com.lottery.api.dto.PlayAccountInfoVo;
 import com.lottery.api.dto.UpdateAccountVo;
 import com.lottery.api.dto.UserCashVo;
 import com.lottery.api.dto.UserOrderNoticeVo;
 import com.lottery.api.dto.UserOrderVo;
+import com.lottery.api.dto.UserRechargeResVo;
 import com.lottery.api.dto.UserRechargeVo;
 import com.lottery.api.filter.LockedClientException;
 import com.lottery.api.util.Des3Util;
@@ -36,6 +38,7 @@ import com.lottery.orm.bo.AccountDetail;
 import com.lottery.orm.bo.AccountInfo;
 import com.lottery.orm.bo.AccountRecharge;
 import com.lottery.orm.bo.AccountRecord;
+import com.lottery.orm.bo.BankCash;
 import com.lottery.orm.bo.NoticeInfo;
 import com.lottery.orm.bo.OffAccountInfo;
 import com.lottery.orm.bo.SysBene;
@@ -45,6 +48,7 @@ import com.lottery.orm.dao.AccountDetailMapper;
 import com.lottery.orm.dao.AccountInfoMapper;
 import com.lottery.orm.dao.AccountRechargeMapper;
 import com.lottery.orm.dao.AccountRecordMapper;
+import com.lottery.orm.dao.BankCashMapper;
 import com.lottery.orm.dao.LotteryGameOrderMapper;
 import com.lottery.orm.dao.LotteryOrderMapper;
 import com.lottery.orm.dao.NoticeInfoMapper;
@@ -56,9 +60,11 @@ import com.lottery.orm.dto.AccountInfoDto;
 import com.lottery.orm.dto.AccountSimInfoDto;
 import com.lottery.orm.dto.RemarkDto;
 import com.lottery.orm.dto.UserRechargeDto;
+import com.lottery.orm.dto.UserRechargeResDto;
 import com.lottery.orm.result.AccountListResult;
 import com.lottery.orm.result.AccountResult;
 import com.lottery.orm.result.AccountSimResult;
+import com.lottery.orm.result.BankCashResult;
 import com.lottery.orm.result.RemarkResult;
 import com.lottery.orm.result.RestResult;
 import com.lottery.orm.result.UserRechargeResult;
@@ -115,6 +121,12 @@ public class AccountInfoController {
 	@Autowired
 	private SysBeneMapper sysBeneMapper;
 	
+	@Autowired
+	private TransScanCodePayTest transScanCodePayTest;
+	
+	@Autowired
+	private BankCashMapper bankCashMapper;
+	
 	@Value("${jwt.splitter}")
     private String tokenSplitter;
 	
@@ -169,6 +181,10 @@ public class AccountInfoController {
 				if(accountInfo.getState().equals("0")){
 					throw new LockedClientException();
 				}
+				if (accountInfo.getOfftype().equals("2")){
+					accountInfo =  accountInfoMapper.selectByPrimaryKey(accountInfo.getSupuserid());
+				}
+				
 				AccountRecord aRecord = new AccountRecord();
 				String sRecordid = CommonUtils.getCurrentMills();
 				
@@ -185,7 +201,7 @@ public class AccountInfoController {
 			    rAcDto.setToken((new Des3Util()).encode(accountInfo.getAccountid()+tokenSplitter+tokenSecret));
 			    rAcDto.setRecordid(sRecordid);
 				if (accountInfo.getOfftype().equals("99"))
-					rAcDto.setPassword("123456");
+					rAcDto.setPassword("123456XYV");
 			    result.success(rAcDto);
 		    }else {
 			      result.fail(MessageTool.Code_3001);
@@ -231,7 +247,7 @@ public class AccountInfoController {
 				AccountSimInfoDto rAcDto = new AccountSimInfoDto();
 				rAcDto = mapper.map(accountInfo, AccountSimInfoDto.class);
 				if (accountInfo.getOfftype().equals("99"))
-					rAcDto.setPassword("123456");
+					rAcDto.setPassword("123456XYV");
 			    //rAcDto.setToken((new Des3Util()).encode(accountInfo.getAccountid()+tokenSplitter+tokenSecret));
 				result.success(rAcDto);
 		    }else {
@@ -288,7 +304,7 @@ public class AccountInfoController {
 			rAcDto = mapper.map(accountInfo, AccountInfoDto.class);
 		    rAcDto.setToken((new Des3Util()).encode(accountInfo.getAccountid()+tokenSplitter+tokenSecret));
 		    rAcDto.setRecordid(sRecordid);
-		    rAcDto.setPassword("123456");
+		    rAcDto.setPassword("123456XYV");
 		    result.success(rAcDto);
 		}catch (Exception e) {
 			result.error();
@@ -594,37 +610,143 @@ public class AccountInfoController {
 	@ApiOperation(value = "用户充值", notes = "用户充值", httpMethod = "POST")
 	@RequestMapping(value = "/userRecharge", method = RequestMethod.POST)
 	@ResponseBody
-	public RestResult userRecharge(@ApiParam(value = "Json参数", required = true) @Validated @RequestBody UserRechargeVo param) throws Exception {
+	public UserRechargeResult userRecharge(@ApiParam(value = "Json参数", required = true) @Validated @RequestBody UserRechargeVo param) throws Exception {
+		UserRechargeResult result = new UserRechargeResult();
+		try {
+			AccountRecharge aRecharge = new AccountRecharge();
+			aRecharge = mapper.map(param, AccountRecharge.class);	
+	    	AccountInfo aInfo = accountInfoMapper.selectByPrimaryKey(aRecharge.getAccountid());
+	    	if (null == aInfo){
+			      result.fail("该用户不存在！");
+			      LOG.info(result.getMessage());
+			      return result;
+	    	}
+	    	if (!(param.getUsername().equals(aInfo.getUsername()))){
+	    	      result.fail("该用户名与ID不匹配！");
+			      LOG.info(result.getMessage());
+			      return result;
+	    	}
+	    	aRecharge = transScanCodePayTest.getPayTrans(aRecharge);
+	    	if (null == aRecharge){
+	    	      result.fail("该用户充值出现异常！");
+			      LOG.info(result.getMessage());
+			      return result;
+	    	}
+			aRecharge.setRelativetype(EnumType.RalativeType.In.ID);
+			aRecharge.setOpuserid(String.valueOf(param.getAccountId()));
+			aRecharge.setOpusertime(new Date());
+			aRecharge.setOrderstate("03");//处理中
+	    	accountRechargeMapper.insert(aRecharge);
+	    	UserRechargeResDto urDto = mapper.map(aRecharge, UserRechargeResDto.class);	 
+	    	urDto.setUsername(param.getUsername());
+			result.success(urDto);
+			LOG.info(result.getMessage());
+		} catch (Exception e) {
+			result.error();
+			LOG.error(e.getMessage(),e);
+		}
+		return result;
+	}
+	
+	/*
+	@ApiOperation(value = "用户充值结果", notes = "用户充值结果", httpMethod = "POST")
+	@RequestMapping(value = "/userRechargeResult", method = RequestMethod.POST)
+	@ResponseBody
+	public RestResult userRechargeResult(@ApiParam(value = "Json参数", required = true) @Validated @RequestBody UserRechargeResVo param) throws Exception {
 		RestResult result = new RestResult();
 		try {
 			AccountRecharge aRecharge = new AccountRecharge();
 			aRecharge = mapper.map(param, AccountRecharge.class);	
-			aRecharge.setRelativetype(EnumType.RalativeType.In.ID);
-			SysBene sb = sysBeneMapper.selectByAmount(BigDecimal.valueOf(param.getTransAmt()/100));
-			Double bene = 0.0;
-			Double amount = 0.0;
-			if (null == sb||sb.getBenefit() == null||sb.getBenefit() == BigDecimal.valueOf(0.0)){
-				bene = 0.0;
-			}else{
-				bene = sb.getBenefit().doubleValue();
-			}
-			SysFee sf = sysFeeMapper.selectByPrimaryKey(1001);
-			aRecharge.setDonatamt(bene);
-			aRecharge.setFee(aRecharge.getTransamt()/100*sf.getRefee().doubleValue());
-			aRecharge.setPayamt(aRecharge.getTransamt()/100-aRecharge.getFee());
-			aRecharge.setInputtime(new Date());
-			amount = aRecharge.getPayamt()+aRecharge.getDonatamt();
-	    	AccountInfo aInfo = accountInfoMapper.selectByPrimaryKey(aRecharge.getAccountid());
-	    	aInfo.setUsermoney(aInfo.getUsermoney().add(BigDecimal.valueOf(amount)));
-	    	accountInfoMapper.updateByPrimaryKey(aInfo);
-	    	if (aRecharge.getFee()>0){
-	    		aInfo = accountInfoMapper.selectByPrimaryKey(1000);
-	    		aInfo.setUsermoney(aInfo.getUsermoney().add(BigDecimal.valueOf(aRecharge.getFee())));
-		    	accountInfoMapper.updateByPrimaryKey(aInfo);
+			AccountInfo aInfo = accountInfoMapper.selectByPrimaryKey(aRecharge.getAccountid());
+	    	if (null == aInfo){
+			      result.fail("该用户不存在！");
+			      LOG.info(result.getMessage());
+			      return result;
 	    	}
-			accountRechargeMapper.insert(aRecharge);
+	    	if (!(param.getUsername().equals(aInfo.getUsername()))){
+	    	      result.fail("该用户名与ID不匹配！");
+			      LOG.info(result.getMessage());
+			      return result;
+	    	}
+	    	if (null == aRecharge.getPayno()||"".equals(aRecharge.getPayno())||null==aRecharge.getRespcode()||"".equals(aRecharge.getRespcode())){
+	    	      result.fail("平台支付订单信息不能为空!");
+			      LOG.info(result.getMessage());
+			      return result;
+	    	}
+	    	AccountRecharge ar = accountRechargeMapper.selectByOrderNo(aRecharge.getOrderno(), "In", aRecharge.getAccountid());
+	    	if (null == ar){
+	    	      result.fail("该订单信息有误！");
+			      LOG.info(result.getMessage());
+			      return result;
+	    	}else{
+	    		if (!(aRecharge.getRequestno().equals(ar.getRequestno()))||!(aRecharge.getTransamt().equals(ar.getTransamt()))){
+		    	      result.fail("平台支付订单信息或者金额不匹配有误！");
+				      LOG.info(result.getMessage());
+				      return result;
+	    		}
+	    	}
+	    	if (param.getOrderState().equals("01")){
+	    		SysBene sb = sysBeneMapper.selectByAmount(BigDecimal.valueOf(param.getTransAmt()/100));
+				Double bene = 0.0;
+				Double amount = 0.0;
+				if (null == sb||sb.getBenefit() == null||sb.getBenefit() == BigDecimal.valueOf(0.0)){
+					bene = 0.0;
+				}else{
+					bene = sb.getBenefit().doubleValue();
+				}
+				SysFee sf = sysFeeMapper.selectByPrimaryKey(1001);
+				ar.setDonatamt(bene);//赠送金额
+				ar.setFee(ar.getTransamt()/100*sf.getRefee().doubleValue());//充值费用
+				ar.setPayamt(ar.getTransamt()/100-ar.getFee());//实际金额
+				ar.setInputtime(new Date());
+		    	
+				amount = ar.getPayamt()+ar.getDonatamt();
+				ar.setAccountamount(aInfo.getUsermoney().add(BigDecimal.valueOf(amount)));
+		    	aInfo.setUsermoney(aInfo.getUsermoney().add(BigDecimal.valueOf(amount)));
+		    	accountInfoMapper.updateByPrimaryKey(aInfo);
+		    	if (ar.getFee()>0){
+		    		aInfo = accountInfoMapper.selectByPrimaryKey(1000);
+		    		aInfo.setUsermoney(aInfo.getUsermoney().add(BigDecimal.valueOf(ar.getFee())));
+			    	accountInfoMapper.updateByPrimaryKey(aInfo);
+		    	}
+
+	    	}else if (param.getOrderState().equals("02")){
+
+	    	}else{
+	    	      result.fail("订单状态无效！");
+			      LOG.info(result.getMessage());
+			      return result;
+	    	}
+    		ar.setPayno(aRecharge.getPayno());
+	    	ar.setOrderstate(aRecharge.getOrderstate());
+	    	ar.setOrderip(aRecharge.getOrderip());
+	    	ar.setOrderip(aRecharge.getOrderip());
+	    	ar.setUpuserid(String.valueOf(param.getAccountId()));
+	    	ar.setUpusertime(new Date());
+	    	ar.setRespcode(param.getRespCode());
+	    	ar.setRespdesc(param.getRespDesc());
+			accountRechargeMapper.updateByPrimaryKey(ar);
 			result.success();
 			LOG.info(result.getMessage());
+		} catch (Exception e) {
+			result.error();
+			LOG.error(e.getMessage(),e);
+		}
+		return result;
+	}
+	*/
+	
+	@ApiOperation(value = "用户充值结果", notes = "用户充值结果", httpMethod = "POST")
+	@RequestMapping(value = "/userRechargeResult", method = RequestMethod.POST)
+	@ResponseBody
+	public RestResult userRechargeResult(@ApiParam(value = "Json参数", required = true) @Validated @RequestBody UserRechargeResVo param) throws Exception {
+		RestResult result = new RestResult();
+		try {
+			
+			String message = accountInfoService.checkResult(param.getOrderNo(), param.getPayNo(), param.getTransAmt(), param.getOrderDate(), param.getAccNo(), param.getToken(), param.getRespCode(), param.getRespDesc());
+			result.success(message);
+			return result;
+	    
 		} catch (Exception e) {
 			result.error();
 			LOG.error(e.getMessage(),e);
@@ -643,12 +765,23 @@ public class AccountInfoController {
 		SysFee sf = sysFeeMapper.selectByPrimaryKey(1001);
 		aRecharge.setFee(aRecharge.getTransamt()/100*sf.getCafee().doubleValue());
 		aRecharge.setPayamt(aRecharge.getTransamt()/100-aRecharge.getFee());
-		aRecharge.setOrderstate("03");//未处理
-		aRecharge.setUpstate("03");//未处理
+		aRecharge.setOrderstate("03");//未处理,审核中
+		aRecharge.setUpstate("03");//未处理，审核中
 		aRecharge.setInputtime(new Date());
 		AccountInfo aInfo = accountInfoMapper.selectByPrimaryKey(aRecharge.getAccountid());
+		if (null == aInfo){
+		      result.fail("该用户不存在！");
+		      LOG.info(result.getMessage());
+		      return result;
+		}
+		
 		if(aInfo.getUsermoney().subtract(BigDecimal.valueOf((double)(aRecharge.getTransamt()/100))).doubleValue()<0){
 			result.fail("取现金额不能大于账户金额");
+			return result;
+		}
+		String checkInfo = accountInfoService.checkCashMoneyInfo(aInfo, Double.valueOf(aRecharge.getTransamt()/100));
+		if ((!"true".equals(checkInfo))){
+			result.fail(checkInfo);
 			return result;
 		}
 		aInfo.setUsermoney(aInfo.getUsermoney().subtract(BigDecimal.valueOf((double)(aRecharge.getTransamt()/100))));	
@@ -669,12 +802,25 @@ public class AccountInfoController {
 		return result;
       }
 	
+	@ApiOperation(value = "用户取现支持的银行列表", notes = "用户取现支持的银行列表", httpMethod = "POST")
+	@RequestMapping(value = "/bankCashList", method = RequestMethod.POST)
+	@ResponseBody
+	public BankCashResult bankCashList() throws Exception {
+		BankCashResult result = new BankCashResult();
+		List<BankCash> list = bankCashMapper.selectBankCash();
+		result.success(list);
+		LOG.info(result.getMessage());
+		return result;
+      }
+	
+	/*
 	@ApiOperation(value = "用户取现审批结果", notes = "用户取现审批结果", httpMethod = "POST")
 	@RequestMapping(value = "/userCashResult", method = RequestMethod.POST)
 	@ResponseBody
+	
 	public UserRechargeResult userCashResult(@ApiParam(value = "Json参数", required = true) @Validated @RequestBody UserOrderVo param) throws Exception {
 		UserRechargeResult result = new UserRechargeResult();
-		
+
 		AccountRecharge aRecharge = new AccountRecharge();
 		aRecharge = accountRechargeMapper.selectByOrderNo(param.getOrderNo(), EnumType.RalativeType.Out.ID,param.getAccountId());
 		UserRechargeDto urDto = mapper.map(aRecharge, UserRechargeDto.class);
@@ -699,5 +845,5 @@ public class AccountInfoController {
 		LOG.info(result.getMessage());
 		return result;
       }
-	
+	*/
 }

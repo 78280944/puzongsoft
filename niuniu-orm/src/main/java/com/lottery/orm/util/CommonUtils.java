@@ -176,7 +176,7 @@ public class CommonUtils {
 	
 	public static String getCurrentMills(){
 		Date date = new Date();
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
 	    String sTime = sdf.format(date);
 	    return sTime;
 	}
@@ -738,10 +738,10 @@ public class CommonUtils {
       * 庄判断比较,输庄
       */
      public static Map<Integer, Object> doBankerHandleLess(int gains,int count,int values,int times,String[][] str){
-        /*
-    	 str[0][0]="2000";
-         str[0][1]="2000";
-         str[0][2]="2000";
+       /*
+    	 str[0][0]="1000";
+         str[0][1]="1000";
+         str[0][2]="1000";
          str[0][3]="1019";
          str[0][4]="1001";
          str[0][5]="0";
@@ -749,9 +749,10 @@ public class CommonUtils {
          str[0][7]="0";
          str[0][8]="牛牛";
          str[0][9]="1";
-         str[1][0]="200";
-         str[1][1]="200";
-         str[1][2]="200";
+         str[0][10]="3";
+         str[1][0]="2000";
+         str[1][1]="2000";
+         str[1][2]="2000";
          str[1][3]="1020";
          str[1][4]="1001";
          str[1][5]="0";
@@ -759,18 +760,21 @@ public class CommonUtils {
          str[1][7]="0";
          str[1][8]="牛牛";
          str[1][9]="1";
-         str[2][0]="2000";
-         str[2][1]="2000";
-         str[2][2]="2000";
-         str[2][3]="1011";
+         str[1][10]="3";
+         str[2][0]="3000";
+         str[2][1]="3000";
+         str[2][2]="3000";
+         str[2][3]="1001";
          str[2][4]="1001";
          str[2][5]="0";
          str[2][6]="1";
          str[2][7]="0";
          str[2][9]="1";
+         str[2][10]="3";
         */
          int i = 0;
          int j=str.length-1;
+         String[][] strtemp = new String[str.length][11];
          Map<Integer, Object> map = new HashMap<Integer, Object>();
         
          int base = values-gains-count;
@@ -785,6 +789,21 @@ public class CommonUtils {
              map.put(3, values);
              map.put(4, str); 
          }
+         
+         for (int m = 0;m<str.length;m++){
+         	strtemp[j-m][0]=str[m][0];
+         	strtemp[j-m][1]=str[m][1];
+         	strtemp[j-m][2]=str[m][2];
+         	strtemp[j-m][3]=str[m][3];
+         	strtemp[j-m][4]=str[m][4];
+         	strtemp[j-m][5]=str[m][5];
+         	strtemp[j-m][6]=str[m][6];
+         	strtemp[j-m][7]=str[m][7];
+         	strtemp[j-m][8]=str[m][8];
+         	strtemp[j-m][9]=str[m][9];
+         	strtemp[j-m][10]=str[m][10];
+         }
+         str = strtemp;
          for (;j>=0;j--){
         	 System.out.println("90---"+str[j][1]+".."+times+".."+base);
         	 if (Integer.valueOf(str[j][1])*times<base){
@@ -814,7 +833,7 @@ public class CommonUtils {
          System.out.println("gains="+gains+"..count="+count+"..values="+values);
        
         for (i=0;i<=str.length-1;i++){
-        	System.out.println("0----"+i+".."+str[i][2]+"..");
+        	System.out.println("0----"+i+".."+str[i][2]+".."+str[i][3]);
         }
         
        // System.out.println("0----"+count);
@@ -1325,8 +1344,9 @@ public class CommonUtils {
 		int gains=200;
 		int count=20000;
 		int values=40000;
-		String[][] d =new String[3][10];
-		//System.out.println(doBankerHandleLess(gains, count, values,4,d));
+		String[][] d =new String[3][11];
+		System.out.println(doBankerHandleLess(gains, count, values,4,d));
+		/*
 		//System.out.println(doCompareCount(gains, count, values));
 		
 		int []numbers = {50,100,200};
@@ -1352,6 +1372,6 @@ public class CommonUtils {
 		System.out.println(".."+CommonUtils.getStringToMillon("2017-10-21 22:40:45",470));
 		Date[] data = CommonUtils.getDateBetween(new Date(),new Date(),"03");
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		System.out.println(data[0]+".."+data[1]+"..."+sdf.format(data[0])+".."+sdf.format(data[1]));
+		System.out.println(data[0]+".."+data[1]+"..."+sdf.format(data[0])+".."+sdf.format(data[1]));*/
 	}
 }

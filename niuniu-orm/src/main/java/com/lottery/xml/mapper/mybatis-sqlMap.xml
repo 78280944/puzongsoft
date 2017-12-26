@@ -56,5 +56,6 @@
         <mapper resource="com/lottery/xml/mapper/SysBeneMapper.xml" />
         <mapper resource="com/lottery/xml/mapper/SysFeeMapper.xml" />
         <mapper resource="com/lottery/xml/mapper/AccountRechargeMapper.xml" />
+        <mapper resource="com/lottery/xml/mapper/BankCashMapper.xml" />
 	</mappers>
 </configuration>

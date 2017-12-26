@@ -159,7 +159,7 @@ public class ToolsUtil {
 	
 	
 	public static void main(String args[]){
-		checkUpdatePeriod();
+		System.out.println(checkUpdatePeriod());
 		/* System.out.println(DigestUtils.md5Hex("123"));
 		  
 		AccountInfo ai = new AccountInfo();

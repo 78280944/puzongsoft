@@ -29,11 +29,11 @@ public interface AccountAmountMapper {
 
     int updateByPrimaryKey(AccountAmount record);
     
-    List<ProAccAmountDto> selectProWinReport(@Param("startTime")Date startTime,@Param("endTime")Date endTime,@Param("accountid")Integer accountid,@Param("level")String level,@Param("beginRow")Integer beginRow,@Param("pageSize")Integer pageSize);
+    List<ProAccAmountDto> selectProWinReport(@Param("startTime")Date startTime,@Param("endTime")Date endTime,@Param("accountid")Integer accountid,@Param("level")String level,@Param("offtype")String offtype,@Param("beginRow")Integer beginRow,@Param("pageSize")Integer pageSize);
     
     List<ProAccAmountDto> selectProWinReportBytime(@Param("accountid")Integer accountid,@Param("level")String level,@Param("time")String time,@Param("beginRow")Integer beginRow,@Param("pageSize")Integer pageSize);
    
-    List<AccAmountDto> selectAccWinReport(@Param("startTime")Date startTime,@Param("endTime")Date endTime,@Param("accountid")Integer accountid,@Param("beginRow")Integer beginRow,@Param("pageSize")Integer pageSize);
+    List<AccAmountDto> selectAccWinReport(@Param("startTime")Date startTime,@Param("endTime")Date endTime,@Param("accountid")Integer accountid,@Param("level")String level,@Param("offtype")String offtype,@Param("beginRow")Integer beginRow,@Param("pageSize")Integer pageSize);
    
     List<AccAmountDto> selectAccWinReportBytime(@Param("accountid")Integer accountid,@Param("time")String time,@Param("beginRow")Integer beginRow,@Param("pageSize")Integer pageSize);
 	

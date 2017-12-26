@@ -253,7 +253,6 @@ public class LotteryTaskService {
 	@Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor=Exception.class)
 	public synchronized void getFirstValueLotteryResult() throws Exception{
 		
-		System.out.println("ceshi---------------value------------------");
 		int []numbers = {50,100,200};
         Random random = new Random();
         int index = random.nextInt(numbers.length);
@@ -303,7 +302,7 @@ public class LotteryTaskService {
 	private synchronized void getLotteryOriginResultTotal(String lotteryType, String apiUrl) throws Exception {
 		
 		boolean result = getLotteryOriginResult2(lotteryType,apiUrl);
-	/*
+	    /*
 		if (!result){
 			String url = getUrl(lotteryType);
 			getLotteryOriginResult1(lotteryType,url);
@@ -334,10 +333,9 @@ public class LotteryTaskService {
 	 * @throws Exception 
 	 */
 	private synchronized boolean getLotteryOriginResult1(String lotteryType, String apiUrl) throws Exception {
-		System.out.println("8--d----1----1-----"+lotteryType+".."+apiUrl+"...");
 		String result = HttpclientTool.get(apiUrl);
 		//String result = "";
-		System.out.println("8-------------:"+lotteryType+".."+result);
+		//System.out.println("8-------------:"+lotteryType+".."+result);
 		/*
 	
 		result = "{\"success\":true,\"data\":[{\"preDrawCode\":\"88131\","
@@ -348,9 +346,9 @@ public class LotteryTaskService {
 		
 		//10,07,04,03,02,07,02,03,03,01
 	*//*
-		result = "{\"success\":true,\"data\":[{\"preDrawCode\":\"4,4,6,1,0\","
-				+ "\"drawIssue\":\"2017120270\",\"drawTime\":\"2017/11/26 17:00:45\","
-				+ "\"preDrawTime\":\"2017-11-26 16:50:50\",\"preDrawIssue\":\"2017120269\","
+		result = "{\"success\":true,\"data\":[{\"preDrawCode\":\"1,8,1,7,4\","
+				+ "\"drawIssue\":\"20171222029\",\"drawTime\":\"2017/11/26 17:00:45\","
+				+ "\"preDrawTime\":\"2017-11-26 16:50:50\",\"preDrawIssue\":\"20171222028\","
 				+ "\"drawCount\":\"39\",\"totalCount\":\"120\"}]}";
          // result = "{\"sucess\":true,";
 		*/
@@ -905,10 +903,12 @@ public class LotteryTaskService {
 			
 			//System.out.println("8--5----------"+lotteryterm+".."+sid+".."+rmid);
 			List<LotteryAmountDto> list =  lotteryGameOrderMapper.selectGameAmountResult(lotteryterm, sid, rmid);
+			List<LotteryAmountDto> list1 =  lotteryGameOrderMapper.selectGameAmountResult1(lotteryterm, sid, rmid);
 		
 			int m = list.size();			
 			LotteryAmountDto last = null;
 			String[][] str = new String[list.size()][11];
+			String[][] str1 = new String[list.size()][11];
 			String type = "";
 		    for (int i = 0;i<list.size();i++){
 		    	last = new LotteryAmountDto();
@@ -931,9 +931,27 @@ public class LotteryTaskService {
 		        }
 		    }	
 		    
+		    for (int i = 0;i<list1.size();i++){
+		    	last = new LotteryAmountDto();
+		    	last = list1.get(i);
+		    	//System.out.println("hello-------------"+last.getNoid()+".."+last.getOrderamount());
+		    	str1[i][0]=String.valueOf(last.getOrderamount()).replaceAll("\\.00", "");
+		    	str1[i][1]="0";
+		    	str1[i][2]="0";
+		    	str1[i][3]=String.valueOf(last.getAccountid());
+		    	str1[i][4]=String.valueOf(last.getLgmid());
+		    	str1[i][5]="0";
+		    	str1[i][6]=String.valueOf(last.getRatio()).replaceAll("\\.0", "");
+		    	str1[i][7]="0";
+		    	str1[i][8]=last.getResultvalue();	
+		    	str1[i][9]=String.valueOf(last.getNoid());	
+		        str1[i][10] =String.valueOf(last.getAscc());
+		    }
+		    
+		    
 			SysCom sc = sysComMapper.selectByGameType(type);
 			//System.out.println("123---------------"+str[1][10]);
-			lotteryService.doNoBankerHandle(str);
+			lotteryService.doNoBankerHandle(str,str1);
 			//str = CommonUtils.doNoBankerHandle(str);
 			doTradeHandle(lotteryterm,sid,rmid,str,sc.getCommission());
 			
@@ -1216,21 +1234,23 @@ public class LotteryTaskService {
 			        tradeInfoService.addInoutTradeInfo(tr);
 		        }
 		        
-		        AccountAmount aa = new AccountAmount();
-		        aa.setAccountid(Integer.valueOf(str1[k][3]));
-		        aa.setSid(sid);
-		        aa.setLotteryterm(lotteryterm);
-		        aa.setLoss(fee.doubleValue()<0?BigDecimal.valueOf(Math.abs(Integer.valueOf(str1[k][2]))):BigDecimal.valueOf(0));
-		        aa.setEarns(fee.doubleValue()>0?BigDecimal.valueOf(Double.parseDouble(str1[k][2])):BigDecimal.valueOf(0));
-		        aa.setGains(fee.doubleValue()>0?BigDecimal.valueOf(fee.doubleValue()):BigDecimal.valueOf(0));
-		        aa.setCfee(BigDecimal.valueOf(0));
-		        aa.setProfits(BigDecimal.valueOf(0));
-		        aa.setStarttime(new Date());
-		        aa.setOvertime(new Date());
-		        accountAmountMapper.insert(aa);
-		        //代理返钱
-		        //System.out.println("ceshi-----"+tr.getTradeamount());
-		        tradeInfoService.addAgencyTradeInfo(tr,fee.doubleValue()>0?fee.doubleValue():0,sid,lotteryterm,ratio,aa);
+			    if (str1[k][3].length()>=4){
+			        AccountAmount aa = new AccountAmount();
+			        aa.setAccountid(Integer.valueOf(str1[k][3]));
+			        aa.setSid(sid);
+			        aa.setLotteryterm(lotteryterm);
+			        aa.setLoss(fee.doubleValue()<0?BigDecimal.valueOf(Math.abs(Integer.valueOf(str1[k][2]))):BigDecimal.valueOf(0));
+			        aa.setEarns(fee.doubleValue()>0?BigDecimal.valueOf(Double.parseDouble(str1[k][2])):BigDecimal.valueOf(0));
+			        aa.setGains(fee.doubleValue()>0?BigDecimal.valueOf(fee.doubleValue()):BigDecimal.valueOf(0));
+			        aa.setCfee(BigDecimal.valueOf(0));
+			        aa.setProfits(BigDecimal.valueOf(0));
+			        aa.setStarttime(new Date());
+			        aa.setOvertime(new Date());
+			        accountAmountMapper.insert(aa);
+			        //代理返钱
+			        //System.out.println("ceshi-----"+tr.getTradeamount());
+			        tradeInfoService.addAgencyTradeInfo(tr,fee.doubleValue()>0?fee.doubleValue():0,sid,lotteryterm,ratio,aa);
+			    }
 			}
 		}
 	

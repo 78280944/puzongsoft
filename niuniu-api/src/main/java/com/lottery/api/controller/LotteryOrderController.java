@@ -119,7 +119,7 @@ public class LotteryOrderController {
 	@ApiOperation(value = "新增投注记录", notes = "新增投注记录", httpMethod = "POST")
 	@RequestMapping(value = "/addLotteryOrder", method = RequestMethod.POST)
 	@ResponseBody
-	public RestResult addLotteryOrder(
+	public synchronized RestResult addLotteryOrder(
 			@ApiParam(value = "Json参数", required = true) @Validated @RequestBody OrderParamVo param) throws Exception {
 		//System.out.println("1---------------------------------------"+param.getRmid());
 		RestResult result = new RestResult();

@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.lottery.api.dto.AccountInfoVo;
 import com.lottery.api.dto.SubAccountInfoVo;
+import com.lottery.api.dto.UpdateAccountStateVo;
 import com.lottery.api.dto.UpdatePlayPassVo;
 import com.lottery.api.dto.UpdateSubAccAuserVo;
 import com.lottery.api.dto.UpdateSubAccRightVo;
@@ -153,6 +154,43 @@ public class SubAccountInfoController {
 				offAccountInfo.setIp(param.getIp());
 				accountInfoMapper.updateByPrimaryKey(offAccountInfo);
 			    LOG.info("修改密码记录详情为："+" 管理员："+param.getSupuserid()+" IP："+param.getIp()+" 修改子账户ID"+param.getAccountid()+" 密码修改为"+offAccountInfo.getPassword());
+			    result.success();
+			}
+			LOG.info(result.getMessage());
+		} catch (Exception e) {
+			result.error();
+			LOG.error(e.getMessage(),e);
+		}
+		return result;
+	}
+	
+	@ApiOperation(value = "代理用户修改子账户状态", notes = "代理用户修改子账户状态", httpMethod = "POST")
+	@RequestMapping(value = "/updateSubAccountState", method = RequestMethod.POST)
+	@ResponseBody
+	public RestResult updateSubAccountState(@ApiParam(value = "Json参数", required = true) @Validated @RequestBody UpdateAccountStateVo param) throws Exception {
+		RestResult result = new RestResult();
+		try {
+			int supaccountId = param.getSupaccountid();
+			int accountId = param.getAccountid();
+			String state = param.getState();
+			String ip = param.getIp();
+			
+			if (!(state.equals("0")||state.equals("1"))){
+			      result.fail("状态",MessageTool.Code_1005);
+			      LOG.info(result.getMessage());
+			      return result;
+			}
+			
+			AccountInfo offAccountInfo = accountInfoMapper.selectByPrimaryKey(accountId);
+			if(offAccountInfo==null){
+			      result.fail(MessageTool.Code_3001);
+			      return result;
+			}else{
+				offAccountInfo.setState(state);
+				offAccountInfo.setIp(ip);
+				accountInfoMapper.updateByPrimaryKey(offAccountInfo);
+				
+			    LOG.info("修改状态记录详情为："+" 管理员："+supaccountId+" IP："+ip+" 修改下家ID"+accountId+" 状态修改为"+state);
 			    result.success();
 			}
 			LOG.info(result.getMessage());

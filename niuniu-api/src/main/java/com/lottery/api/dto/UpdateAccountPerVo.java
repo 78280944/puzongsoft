@@ -4,32 +4,25 @@ import com.wordnik.swagger.annotations.ApiModelProperty;
 
 public class UpdateAccountPerVo {
 	
-	@ApiModelProperty(value = "用户id", required = true)
-	private int userid;
+	@ApiModelProperty(value = "下级用户的id", required = true)
+	private Integer accountid;
 	
 	@ApiModelProperty(value = "代理占成", required = true)
 	private Double petcentage;
 	
-	@ApiModelProperty(value = "状态", required = true)
-	private String state;
-	
-	@ApiModelProperty(value = "代理账户名称", required = true)
-	private String supusername;
-	
-	@ApiModelProperty(value = "代理账户类型", required = true)
-	private int offtype;
+	@ApiModelProperty(value = "当前用户ID", required = true)
+	private Integer supaccountid;
 	
 	@ApiModelProperty(value = "ip", required = true)
 	private String ip;
 
-	public int getUserid() {
-		return userid;
+	public Integer getAccountid() {
+		return accountid;
 	}
 
-	public void setUserid(int userid) {
-		this.userid = userid;
+	public void setAccountid(Integer accountid) {
+		this.accountid = accountid;
 	}
-
 
 	public Double getPetcentage() {
 		return petcentage;
@@ -39,28 +32,12 @@ public class UpdateAccountPerVo {
 		this.petcentage = petcentage;
 	}
 
-	public String getState() {
-		return state;
+	public Integer getSupaccountid() {
+		return supaccountid;
 	}
 
-	public void setState(String state) {
-		this.state = state;
-	}
-
-	public String getSupusername() {
-		return supusername;
-	}
-
-	public void setSupusername(String supusername) {
-		this.supusername = supusername;
-	}
-
-	public int getOfftype() {
-		return offtype;
-	}
-
-	public void setOfftype(int offtype) {
-		this.offtype = offtype;
+	public void setSupaccountid(Integer supaccountid) {
+		this.supaccountid = supaccountid;
 	}
 
 	public String getIp() {
@@ -70,6 +47,6 @@ public class UpdateAccountPerVo {
 	public void setIp(String ip) {
 		this.ip = ip;
 	}
-	
+
 	
 }

@@ -36,18 +36,18 @@ public class LotteryReportService {
 	private LotteryReportMapper lotteryReportMapper;
 
 	//代理输赢报表
-	public List<ProAccAmountDto> getProAccWinReport(Date startTime, Date endTime, Integer accountid,String level,Integer beginRow, Integer pageSize) throws ParseException {
+	public List<ProAccAmountDto> getProAccWinReport(Date startTime, Date endTime, Integer accountid,String level,String offtype,Integer beginRow, Integer pageSize) throws ParseException {
 		List<ProAccAmountDto> roundList = new ArrayList<ProAccAmountDto>();
 		//Date[] sTime = CommonUtils.getDateTime(startTime, endTime);
-		roundList = accountAmountMapper.selectProWinReport(startTime, endTime, accountid, level, beginRow, pageSize);		
+		roundList = accountAmountMapper.selectProWinReport(startTime, endTime, accountid, level, offtype,beginRow, pageSize);		
 		return roundList;
 	}
 	
 	//会员报表
-	public List<AccAmountDto> getAccWinReport(Date startTime, Date endTime, Integer accountid,String level, Integer beginRow, Integer pageSize) throws ParseException {
+	public List<AccAmountDto> getAccWinReport(Date startTime, Date endTime, Integer accountid,String level, String offtype,Integer beginRow, Integer pageSize) throws ParseException {
 		List<AccAmountDto> roundList = new ArrayList<AccAmountDto>();
 		//Date[] sTime = CommonUtils.getDateTime(startTime, endTime);
-		roundList = accountAmountMapper.selectAccWinReport(startTime, endTime, accountid, beginRow, pageSize);
+		roundList = accountAmountMapper.selectAccWinReport(startTime, endTime, accountid,level,offtype,beginRow, pageSize);
 		return roundList;
 	}
 	
@@ -55,7 +55,7 @@ public class LotteryReportService {
 	public List<AccAmountDto> getPlayTradeReport(Date startTime, Date endTime, Integer accountid,String level, Integer beginRow, Integer pageSize) throws ParseException {
 		List<AccAmountDto> roundList = new ArrayList<AccAmountDto>();
 		//Date[] sTime = CommonUtils.getDateTime(startTime, endTime);
-		roundList = accountAmountMapper.selectAccWinReport(startTime, endTime, accountid, beginRow, pageSize);
+		//roundList = accountAmountMapper.selectAccWinReport(startTime, endTime, accountid, beginRow, pageSize);
 		return roundList;
 		
 		
@@ -63,11 +63,23 @@ public class LotteryReportService {
 		
 	}
 	
-	//点数出入报表
+	//玩家点数出入报表
 	public List<InoutAccReportDto> selectAccInoutReport(Date startTime, Date endTime, Integer accountId,String level, Integer beginRow, Integer pageSize) throws ParseException {
 		List<InoutAccReportDto> roundList = new ArrayList<InoutAccReportDto>();
 		//Date[] sTime = CommonUtils.getDateTime(startTime, endTime);
 	    roundList = lotteryReportMapper.selectAccInoutReport(startTime, endTime, accountId, level,beginRow, pageSize);	
 		return roundList;
 	}
+	
+	
+	//代理点数出入报表
+	public List<InoutAccReportDto> selectProInoutReport(Date startTime, Date endTime, Integer accountId,Integer beginRow, Integer pageSize) throws ParseException {
+		List<InoutAccReportDto> roundList = new ArrayList<InoutAccReportDto>();
+		//Date[] sTime = CommonUtils.getDateTime(startTime, endTime);
+	    roundList = lotteryReportMapper.selectProInoutReport(startTime, endTime, accountId,beginRow, pageSize);	
+		return roundList;
+	}
+	
+	
+	
 }

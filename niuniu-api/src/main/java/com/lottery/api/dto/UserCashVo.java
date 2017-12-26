@@ -11,35 +11,48 @@ public class UserCashVo {
     @NotNull(message = "用户ID不能为空")
     @Min(value=0, message = "用户ID格式不正确")
     private Integer accountId;
+
+	@ApiModelProperty(value = "提现金额", required = true)
+    @NotNull(message = "提现金额不能为空")
+    private Double transAmt;
 	
-	@ApiModelProperty(value = "订单号", required = true)
-    @NotNull(message = "订单号不能为空")
-    private String orderNo;
-	
-	@ApiModelProperty(value = "订单日期，格式yyyyMMdd", required = true)
-    @NotNull(message = "订单日期不能为空")
-    private String orderDate;
+	@ApiModelProperty(value = "用户名", required = true)
+    @NotNull(message = "用户名不能为空")
+    private String username;
 	
 	@ApiModelProperty(value = "开户用户名", required = true)
     @NotNull(message = "开户用户名不能为空")
     private String bankId;
 
+	
 	@ApiModelProperty(value = "银行名称", required = true)
     @NotNull(message = "银行名称不能为空")
     private String bankName;
 
-	@ApiModelProperty(value = "开户行/地址", required = true)
-    @NotNull(message = "开户行/地址不能为空")
-    private String bankAccount;
-
 	@ApiModelProperty(value = "银行账户", required = true)
     @NotNull(message = "银行账户不能为空")
+    private String bankAccount;
+
+	@ApiModelProperty(value = "开户行/地址", required = true)
+    @NotNull(message = "开户行/地址不能为空")
     private String bankAddress;
+	
+	@ApiModelProperty(value = "银行联行号,人行规定的12位联行号", required = true)
+    @NotNull(message = "银行联行号能为空")
+	private String bankNo;
 
-	@ApiModelProperty(value = "提现金额", required = true)
-    @NotNull(message = "提现金额不能为空")
-    private Double transAmt;
+	@ApiModelProperty(value = "银行卡开户省份,福建省，上海市", required = true)
+    @NotNull(message = "银行卡开户省份不能为空")
+	private String bankloproname;
+	
+	@ApiModelProperty(value = "银行卡开户城市,厦门市，上海市", required = true)
+    @NotNull(message = "银行卡开户城市不能为空")
+	private String banklocityname;
 
+	@ApiModelProperty(value = "银行预留手机号", required = true)
+    @NotNull(message = "银行预留手机号不能为空")
+	private String phoneno;
+	
 	@ApiModelProperty(value = "IP", required = true)
     private String orderIp;
 	
@@ -92,29 +105,52 @@ public class UserCashVo {
 	}
 
 
-
-	public String getOrderNo() {
-		return orderNo;
-	}
-
-	public void setOrderNo(String orderNo) {
-		this.orderNo = orderNo;
-	}
-
-	public String getOrderDate() {
-		return orderDate;
-	}
-
-	public void setOrderDate(String orderDate) {
-		this.orderDate = orderDate;
-	}
-
 	public String getOrderIp() {
 		return orderIp;
 	}
 
 	public void setOrderIp(String orderIp) {
 		this.orderIp = orderIp;
+	}
+
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	public String getBankNo() {
+		return bankNo;
+	}
+
+	public void setBankNo(String bankNo) {
+		this.bankNo = bankNo;
+	}
+
+	public String getBankloproname() {
+		return bankloproname;
+	}
+
+	public void setBankloproname(String bankloproname) {
+		this.bankloproname = bankloproname;
+	}
+
+	public String getBanklocityname() {
+		return banklocityname;
+	}
+
+	public void setBanklocityname(String banklocityname) {
+		this.banklocityname = banklocityname;
+	}
+
+	public String getPhoneno() {
+		return phoneno;
+	}
+
+	public void setPhoneno(String phoneno) {
+		this.phoneno = phoneno;
 	}
 	
 	

@@ -100,7 +100,8 @@ public class TradeInfoService {
     	AccountInfo aInfo = accountInfoMapper.selectByPrimaryKey(tradeInfo.getAccountid());
     	//System.out.println("345---------------"+aInfo.getUsermoney()+".."+tradeInfo.getTradeamount());
     	tradeInfo.setAccountamount(aInfo.getUsermoney().add(BigDecimal.valueOf(tradeInfo.getTradeamount())));
-    	tradeInfoMapper.insertSelective(tradeInfo);
+    	if (String.valueOf(tradeInfo.getAccountid()).length()>=4)
+    	    tradeInfoMapper.insertSelective(tradeInfo);
     	aInfo.setUsermoney(aInfo.getUsermoney().add(BigDecimal.valueOf(tradeInfo.getTradeamount())));
     	accountInfoMapper.updateByPrimaryKey(aInfo);
     	return "sucess";

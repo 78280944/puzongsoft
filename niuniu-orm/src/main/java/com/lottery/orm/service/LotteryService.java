@@ -1,9 +1,12 @@
 package com.lottery.orm.service;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
+import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,7 +25,7 @@ public class LotteryService {
 	  /**
      * 判断比较,无庄逻辑处理
      */
-    public synchronized String[][] doNoBankerHandle(String[][] str){
+    public synchronized String[][] doNoBankerHandle(String[][] str,String[][] str1){
    		
    /*
         str[0][0]="200";
@@ -67,7 +70,7 @@ public class LotteryService {
         str[3][6]="3";
         str[3][7]="0";
         str[3][8]="3";
-        str[3][9]="2";
+        str[3][9]="2";//noid
         str[3][10]="2";
       */
         int i = 0;
@@ -76,17 +79,28 @@ public class LotteryService {
        // System.out.println("7---"+j);
         if (str[0][9].equals(str[j][9])||str[0][10].equals(str[j][10]))
        	 return str;
-        
+		 str[i][0]=str1[i][0];
+		 str[i][1]=str1[i][1];
+		 str[i][2]=str1[i][2];
+		 str[i][3]=str1[i][3];
+		 str[i][4]=str1[i][4];
+		 str[i][5]=str1[i][5];
+		 str[i][6]=str1[i][6];
+		 str[i][7]=str1[i][7];
+		 str[i][8]=str1[i][8];
+		 str[i][9]=str1[i][9];
+		 str[i][10]=str1[i][10];
         str[0][1] = String.valueOf(Integer.valueOf(str[0][0])*Integer.valueOf(str[0][6]));
         str[j][1] = String.valueOf(Integer.valueOf(str[j][0])*Integer.valueOf(str[0][6]));
         str[j][6] = str[0][6];
         str[j][7] = String.valueOf(1);
+        
         int tmp = Integer.valueOf(str[0][1]);
         //System.out.println("7ddd---"+i+".."+j);
         while ((i<j) && (!(str[i][9].equals(str[j][9])||(str[i][10].equals(str[j][10]))))){
        	 if (tmp>=Integer.valueOf(str[j][1])){
        		 tmp = tmp - Integer.valueOf(str[j][1]);
-       		 System.out.println("j1--------------"+i+"..扣除。"+str[j][3]+"..-"+str[j][1]+"..."+j+".."+str[i][3]+".."+str[j][1]+".."+tmp);
+       		 System.out.println("j1--------------"+i+"..扣除。"+str[j][3]+"..-"+str[j][1]+"..."+j+".."+str[i][3]+".."+str[i][4]+"..0-"+str[j][1]+".."+tmp);
        		 LotteryGameDetail record = new LotteryGameDetail();
        		 record.setLgmid(Integer.valueOf(str[j][4]));
        		 record.setAccountid(Integer.valueOf(str[j][3]));
@@ -135,7 +149,7 @@ public class LotteryService {
        		 }
        	 }else{
        		 str[j][1] = String.valueOf((Integer.valueOf(str[j][1]) - tmp));
-       		 System.out.println("i12--------------"+i+".."+str[j][1]+".."+str[j][3]+"..-"+tmp+".."+str[i][3]+"..+"+tmp);
+       		 System.out.println("i12--------------"+i+".."+str[j][1]+".."+str[j][3]+"..-"+tmp+".."+str[i][3]+"..+"+str[i][4]+"..."+tmp);
        		 LotteryGameDetail record = new LotteryGameDetail();
        		 record.setLgmid(Integer.valueOf(str[j][4]));
        		 record.setAccountid(Integer.valueOf(str[j][3]));
@@ -165,7 +179,32 @@ public class LotteryService {
        			 //System.out.println("indexi--------------"+i);
        			// System.out.println("indexj--------------"+j);
        			// System.out.println("tablei--------------"+str[i][9]);
-       			// System.out.println("tablej--------------"+str[j][9]);
+       			 System.out.println("tablej--------------"+str[i][0]+"..."+str1[j][0]);
+       			 str[i][0]=str1[i][0];
+       			 str[i][1]=str1[i][1];
+       			 str[i][2]=str1[i][2];
+      			 str[i][3]=str1[i][3];
+      			 str[i][4]=str1[i][4];
+      			 str[i][5]=str1[i][5];
+      			 str[i][6]=str1[i][6];
+      			 str[i][7]=str1[i][7];
+      			 str[i][8]=str1[i][8];
+      			 str[i][9]=str1[i][9];
+      			 str[i][10]=str1[i][10];
+      			 if ((str[i][9].equals(str[i+1][9]))){
+	       			 str[i+1][0]=str1[i+1][0];
+	       			 str[i+1][1]=str1[i+1][1];
+	       			 str[i+1][2]=str1[i+1][2];
+	      			 str[i+1][3]=str1[i+1][3];
+	      			 str[i+1][4]=str1[i+1][4];
+	      			 str[i+1][5]=str1[i+1][5];
+	      			 str[i+1][6]=str1[i+1][6];
+	      			 str[i+1][7]=str1[i+1][7];
+	      			 str[i+1][8]=str1[i+1][8];
+	      			 str[i+1][9]=str1[i+1][9];
+	      			 str[i+1][10]=str1[i+1][10];
+      			 }
+      			 System.out.println("tablej-----update---------"+str[i][0]+"..."+str[i][3]+".."+str[i][4]);
        			 if (!(str[i][9].equals(str[j][9])||str[i][10].equals(str[j][10]))){
 		        		 str[i][1] = String.valueOf(Integer.valueOf(str[i][0])*Integer.valueOf(str[i][6])); 		
 		        		 tmp = Integer.valueOf(str[i][1]);
@@ -198,9 +237,9 @@ public class LotteryService {
       	   // 
       	    
       }
-     /*
+    /*
       for (int w = 0;w<str.length;w++)
-      System.out.println("90------------"+str[w][0]+"..."+str[w][1]+".."+str[w][2]);
+      System.out.println("90------------"+str[w][0]+"..."+str[w][1]+".."+str[w][2]+".."+str[w][3]+".."+str[w][4]);
       */
         return str;
        
@@ -211,7 +250,7 @@ public class LotteryService {
      */
     public synchronized Map<Integer, Object> doBankerHandleLess(int gains,int count,int values,int times,String[][] str,String[][] strEqual){
        /*
-   	 str[0][0]="2000";
+   	    str[0][0]="2000";
         str[0][1]="2000";
         str[0][2]="2000";
         str[0][3]="1019";
@@ -221,6 +260,7 @@ public class LotteryService {
         str[0][7]="0";
         str[0][8]="牛牛";
         str[0][9]="1";
+        str[0][10]="3";
         str[1][0]="200";
         str[1][1]="200";
         str[1][2]="200";
@@ -231,6 +271,7 @@ public class LotteryService {
         str[1][7]="0";
         str[1][8]="牛牛";
         str[1][9]="1";
+        str[1][10]="3";
         str[2][0]="2000";
         str[2][1]="2000";
         str[2][2]="2000";
@@ -240,9 +281,12 @@ public class LotteryService {
         str[2][6]="1";
         str[2][7]="0";
         str[2][9]="1";
-       */
+        str[2][10]="3";
+        */
         int i = 0;
         int j=str.length-1;
+
+        String[][] strtemp = new String[str.length][11];
         Map<Integer, Object> map = new HashMap<Integer, Object>();
        
         int base = values-gains-count;
@@ -257,6 +301,20 @@ public class LotteryService {
             map.put(3, values);
             map.put(4, str); 
         }
+        for (int m = 0;m<str.length;m++){
+         	strtemp[j-m][0]=str[m][0];
+         	strtemp[j-m][1]=str[m][1];
+         	strtemp[j-m][2]=str[m][2];
+         	strtemp[j-m][3]=str[m][3];
+         	strtemp[j-m][4]=str[m][4];
+         	strtemp[j-m][5]=str[m][5];
+         	strtemp[j-m][6]=str[m][6];
+         	strtemp[j-m][7]=str[m][7];
+         	strtemp[j-m][8]=str[m][8];
+         	strtemp[j-m][9]=str[m][9];
+         	strtemp[j-m][10]=str[m][10];
+         }
+         str = strtemp;
         for (;j>=0;j--){
        	 System.out.println("90---"+str[j][1]+".."+times+".."+base);
        	 if (Integer.valueOf(str[j][1])*times<base){
@@ -433,6 +491,5 @@ public class LotteryService {
    		 base = values - gains -count;
    	 return base;
     } 
-    
     
 }

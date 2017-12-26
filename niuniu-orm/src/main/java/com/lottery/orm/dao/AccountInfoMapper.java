@@ -47,4 +47,7 @@ public interface AccountInfoMapper {
  
     int updateResultAccountMount(@Param("usermoney")BigDecimal usermoney,@Param("accountid")Integer accountid);
     
+    int updateOffPercentage(@Param("percentage")Double percentage,@Param("accountid")Integer accountid);
+    
+    int updateOffState(@Param("state")String state,@Param("accountid")Integer accountid);
 }

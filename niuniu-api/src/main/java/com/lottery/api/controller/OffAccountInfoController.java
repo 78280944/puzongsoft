@@ -427,6 +427,7 @@ public class OffAccountInfoController {
 		}
 		return result;
 	}
+	*/
 	
 	@ApiOperation(value = "代理用户修改下线代理占成", notes = "代理用户修改下线代理占成", httpMethod = "POST")
 	@RequestMapping(value = "/updateAccountPercent", method = RequestMethod.POST)
@@ -434,55 +435,42 @@ public class OffAccountInfoController {
 	public RestResult updateAccountPercent(@ApiParam(value = "Json参数", required = true) @Validated @RequestBody UpdateAccountPerVo param) throws Exception {
 		RestResult result = new RestResult();
 		try {
-			int userid = param.getUserid();
+			int supaccountId = param.getSupaccountid();
+			int accountId = param.getAccountid();
 			double percentage = param.getPetcentage();
-            String supusername = param.getSupusername();
-            int offtype = param.getOfftype();
 			String ip = param.getIp();
 			
-			if (0==userid){
-			      result.fail("用户ID",MessageTool.Code_2002);
-			      LOG.info(result.getMessage());
-			      return result;
-			}
-			if(!ToolsUtil.checkUpdatePeriod()){
-				result.fail("修改失败，请于结算时间段重新操作!");
-				LOG.info(result.getMessage());
-			    return result;
-			}
-			
-			
-			OffAccountInfo offAccountInfo = offAccountInfoMapper.selectByPrimaryKey(param.getUserid());
+			AccountInfo offAccountInfo = accountInfoMapper.selectByPrimaryKey(supaccountId);
 			if(offAccountInfo==null){
 			      result.fail(MessageTool.Code_3001);
+			      return result;
 			}else{
-				//洗码比逻辑 
-				OffAccountInfo supAccount = offAccountInfoMapper.selectByUsername(offAccountInfo.getSupusername());
-		    	if (supAccount==null){
-		    		result.fail(offAccountInfo.getSupusername(),MessageTool.Code_2005);
+				if (!offAccountInfo.getLevel().equals("0")){
+					if(!ToolsUtil.checkUpdatePeriod()){
+						result.fail("修改失败，请于结算时间段重新操作!");
+						LOG.info(result.getMessage());
+					    return result;
+					}
+				}
+				AccountInfo accountInfo = accountInfoMapper.selectByPrimaryKey(accountId);
+		    	if (accountInfo==null){
+		    		result.fail(accountInfo.getUsername(),MessageTool.Code_3001);
 		    		return result;
 		    	}
 				//代理占比逻辑
-				if (percentage>supAccount.getPercentage()){
+				if (percentage>offAccountInfo.getPercentage()){
 				      result.fail("代理占成",MessageTool.Code_1008);
 				      LOG.info(result.getMessage());
 				      return result;	
 				}
-				//下线的洗码比对比
-				List<OffAccountInfo> offAccountInfos = offAccountInfoMapper.selectBySupuserAndPer(offAccountInfo.getUsername(),offAccountInfo.getOfftype());
-                if (offAccountInfos.size()>=1){
-                	if (percentage<offAccountInfos.get(0).getPercentage()){
-      			        result.fail("下级代理占成为"+offAccountInfos.get(0).getPercentage()+",",MessageTool.Code_2008);
-    			        LOG.info(result.getMessage());
-    			        return result;
-                	}
-                }
+				double ratio = (accountInfo.getPercentage()-percentage)/accountInfo.getPercentage();
+				accountInfo.setPercentage(percentage);
+				accountInfo.setIp(ip);
+				accountInfoMapper.updateByPrimaryKey(accountInfo);
 				
-				offAccountInfo.setPercentage(percentage);
-				offAccountInfo.setIp(ip);
-				offAccountInfoService.updateOffAccountInfo(offAccountInfo);
-				//offAccountInfoMapper.updateByPrimaryKey(offAccountInfo);
-			    LOG.info("修改代理占成记录详情为："+" 管理员："+supusername+" 账户类型："+offtype+" IP："+ip+" 修改下家ID"+userid+" 代理占成修改为"+offAccountInfo.getPercentage());
+				System.out.println("ces----------------"+accountId+".."+ratio);
+				accountInfoMapper.updateOffPercentage(ratio, accountId);
+			    LOG.info("修改代理占成记录详情为："+" 管理员："+supaccountId+" IP："+ip+" 修改下家ID"+accountId+" 代理占成修改为"+percentage);
 			    result.success();
 			}
 			LOG.info(result.getMessage());
@@ -492,7 +480,7 @@ public class OffAccountInfoController {
 		}
 		return result;
 	}
-	
+	/*
 	@ApiOperation(value = "代理用户修改下线洗码比", notes = "代理用户修改下线代洗码比", httpMethod = "POST")
 	@RequestMapping(value = "/updateAccountRatio", method = RequestMethod.POST)
 	@ResponseBody
@@ -555,24 +543,17 @@ public class OffAccountInfoController {
 		}
 		return result;
 	}
-	
+	*/
 	@ApiOperation(value = "代理用户修改下线状态", notes = "代理用户修改下线状态", httpMethod = "POST")
 	@RequestMapping(value = "/updateAccountState", method = RequestMethod.POST)
 	@ResponseBody
 	public RestResult updateAccountState(@ApiParam(value = "Json参数", required = true) @Validated @RequestBody UpdateAccountStateVo param) throws Exception {
 		RestResult result = new RestResult();
 		try {
-			int userid = param.getUserid();
+			int supaccountId = param.getSupaccountid();
+			int accountId = param.getAccountid();
 			String state = param.getState();
-            String supusername = param.getSupusername();
-            int offtype = param.getOfftype();
 			String ip = param.getIp();
-			
-			if (0==userid){
-			      result.fail("用户ID",MessageTool.Code_2002);
-			      LOG.info(result.getMessage());
-			      return result;
-			}
 			
 			if (!(state.equals("0")||state.equals("1"))){
 			      result.fail("状态",MessageTool.Code_1005);
@@ -580,29 +561,18 @@ public class OffAccountInfoController {
 			      return result;
 			}
 			
-			OffAccountInfo offAccountInfo = offAccountInfoMapper.selectByPrimaryKey(param.getUserid());
+			AccountInfo offAccountInfo = accountInfoMapper.selectByPrimaryKey(accountId);
 			if(offAccountInfo==null){
 			      result.fail(MessageTool.Code_3001);
+			      return result;
 			}else{
 				offAccountInfo.setState(state);
 				offAccountInfo.setIp(ip);
-				offAccountInfoMapper.updateByPrimaryKey(offAccountInfo);
+				offAccountInfo.setPercentage(0.0);
+				accountInfoMapper.updateByPrimaryKey(offAccountInfo);
 				//修改用户的状态
-				offAccountInfo.setSupusername(offAccountInfo.getUsername());
-				offAccountInfoMapper.updateOffAccountState(offAccountInfo);
-				
-				//修改账户的状态
-				AccountDetail accountDetail = accountDetailMapper.selectByUserId(offAccountInfo.getUserid(), offAccountInfo.getOfftype());
-				accountDetail.setState(state);
-				accountDetailMapper.updateByPrimaryKey(accountDetail);
-				
-				//accountDetail.setSupusername(offAccountInfo.getSupusername());
-				accountDetailMapper.updateAccountDetailState(accountDetail);
-				
-				//修改玩家的状态
-				accountInfoMapper.updateAccountState(state,offAccountInfo.getSupusername());
-				accountInfoMapper.updateAccountSupuserState(state,offAccountInfo.getSupusername());
-			    LOG.info("修改状态记录详情为："+" 管理员："+supusername+" 账户类型："+offtype+" IP："+ip+" 修改下家ID"+userid+" 状态修改为"+offAccountInfo.getState());
+				accountInfoMapper.updateOffState(state, accountId);
+			    LOG.info("修改状态记录详情为："+" 管理员："+supaccountId+" IP："+ip+" 修改下家ID"+accountId+" 状态修改为"+state);
 			    result.success();
 			}
 			LOG.info(result.getMessage());
@@ -612,7 +582,7 @@ public class OffAccountInfoController {
 		}
 		return result;
 	}
-	
+	/*
 	@ApiOperation(value = "超级用户修改公告", notes = "超级用户修改公告", httpMethod = "POST")
 	@RequestMapping(value = "/updateNotice", method = RequestMethod.POST)
 	@ResponseBody

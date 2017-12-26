@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.lottery.api.dto.AgencyWinReVo;
 import com.lottery.api.dto.AgencyWinVo;
 import com.lottery.api.dto.PlayTradeVo;
+import com.lottery.api.dto.ProWinReVo;
 import com.lottery.api.dto.ReportParamVo;
 import com.lottery.api.dto.RoomParamVo;
 import com.lottery.api.dto.TradeReportVo;
@@ -215,7 +216,18 @@ public class LotteryReportController {
 		AgencyWinReportResult result = new AgencyWinReportResult();
 		try {	
 			Date[] param1 = CommonUtils.getDateTime(param.getStartTime(), param.getEndTime());
-			List<ProAccAmountDto> list = lotteryReportService.getProAccWinReport(param1[0], param1[1], param.getAccountId(), param.getLevel(), param.getBeginRow(), param.getPageSize());		
+			Integer accountID = param.getAccountId();
+			String offtype = "";
+			AccountInfo accountInfo = accountInfoMapper.selectByPrimaryKey(accountID);
+			if (null == accountInfo){
+		        result.fail(MessageTool.Code_3001);
+		        return result;
+			}
+			if (param.getLevel().equals("0"))
+			    offtype = "0";
+			else
+				offtype = "1";
+			List<ProAccAmountDto> list = lotteryReportService.getProAccWinReport(param1[0], param1[1], accountID, param.getLevel(), offtype,param.getBeginRow(), param.getPageSize());		
 			result.success(list);	
 			LOG.info(result.getMessage());
 		} catch (Exception e) {
@@ -233,7 +245,18 @@ public class LotteryReportController {
 		AccWinReportResult result = new AccWinReportResult();
 		try {	
 			Date[] param1 = CommonUtils.getDateTime(param.getStartTime(), param.getEndTime());
-			List<AccAmountDto> list = lotteryReportService.getAccWinReport(param1[0], param1[1], param.getAccountId(), param.getLevel(), param.getBeginRow(), param.getPageSize());		
+			Integer accountID = param.getAccountId();
+			AccountInfo accountInfo = accountInfoMapper.selectByPrimaryKey(accountID);
+			String offtype = "";
+			if (null == accountInfo){
+		        result.fail(MessageTool.Code_3001);
+		        return result;
+			}
+			if (param.getLevel().equals("0"))
+			    offtype = "0";
+			else
+				offtype = "1";
+			List<AccAmountDto> list = lotteryReportService.getAccWinReport(param1[0], param1[1], accountID, param.getLevel(),offtype, param.getBeginRow(), param.getPageSize());		
 			result.success(list);	
 			LOG.info(result.getMessage());
 		} catch (Exception e) {
@@ -287,7 +310,24 @@ public class LotteryReportController {
 		return result;
 	}
 	
-	
+	@ApiOperation(value = "获取代理点数出入报表", notes = "获取代理点数出入报表", httpMethod = "POST")
+	@RequestMapping(value = "/getProInoutReport", method = RequestMethod.POST)
+	@ResponseBody
+	public InoutAccReportResult getProInoutReport(
+			@ApiParam(value = "Json参数", required = true) @Validated @RequestBody ProWinReVo param) throws Exception {
+		InoutAccReportResult result = new InoutAccReportResult();
+		try {
+			Date[] param1 = CommonUtils.getDateTime(param.getStartTime(), param.getEndTime());
+			System.out.println("9---------------"+param1[0]+"..."+param1[1]);
+			List<InoutAccReportDto> list = lotteryReportService.selectProInoutReport(param1[0], param1[1], param.getAccountId(),param.getBeginRow(), param.getPageSize());		
+			result.success(list);	
+			LOG.info(result.getMessage());
+		} catch (Exception e) {
+			result.error();
+			LOG.error(e.getMessage(), e);
+		}
+		return result;
+	}
 	
 	/*
 	@ApiOperation(value = "获取玩家点数出入报表", notes = "获取玩家点数出入报表", httpMethod = "POST")

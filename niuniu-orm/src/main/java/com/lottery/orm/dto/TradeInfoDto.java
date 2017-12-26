@@ -8,12 +8,15 @@ import com.wordnik.swagger.annotations.ApiModelProperty;
 
 public class TradeInfoDto {
 
-    @ApiModelProperty(value = "存款金额")
+    @ApiModelProperty(value = "存/取款金额")
     private  BigDecimal tradeamount;
        
-    @ApiModelProperty(value = "存款时间")
+    @ApiModelProperty(value = "存/取款时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date tradetime;
+    
+    @ApiModelProperty(value = "状态，01，成功；02，失败；03，处理中")
+    private String orderstate;
 
 	public BigDecimal getTradeamount() {
 		return tradeamount;
@@ -31,7 +34,13 @@ public class TradeInfoDto {
 		this.tradetime = tradetime;
 	}
 
+	public String getOrderstate() {
+		return orderstate;
+	}
 
-    
+	public void setOrderstate(String orderstate) {
+		this.orderstate = orderstate;
+	}
+   
     
 }

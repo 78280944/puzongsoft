@@ -194,18 +194,17 @@
     SUM(b.gains) AS gains,SUM(b.cfee) AS cfee,SUM(b.profits) AS profits 
     FROM account_info a,account_amount b 
     WHERE
-	a.accountid=b.accountid and a.level = #{level,jdbcType=VARCHAR} and a.offtype = '1'
+	a.accountid=b.accountid and a.level = #{level,jdbcType=VARCHAR} and a.offtype = #{offtype,jdbcType=VARCHAR}
 	AND 
 	(b.starttime BETWEEN #{startTime,jdbcType=TIMESTAMP} and #{endTime,jdbcType=TIMESTAMP}) 
 	AND
-    FIND_IN_SET(a.accountid, 
+    (FIND_IN_SET(a.accountid, 
 	   (SELECT GROUP_CONCAT(LEVEL SEPARATOR ',') FROM (
 	      SELECT @Ids := (SELECT GROUP_CONCAT(c.accountid SEPARATOR ',') FROM account_info c WHERE FIND_IN_SET(supuserid, @Ids) ) LEVEL
 	      FROM account_info d
 	      JOIN (SELECT @Ids := #{accountid,jdbcType=INTEGER}) temp1
 	      WHERE FIND_IN_SET(d.supuserid, @Ids)
-	   ) temp2 )) 
-	OR (a.accountid = #{accountid,jdbcType=INTEGER} AND a.accountid = b.accountid AND a.level= #{level,jdbcType=VARCHAR})	     
+	   ) temp2 )) OR a.accountid = #{accountid,jdbcType=INTEGER}) 
 	   group by a.accountid order by a.accountid desc
      <if test="beginRow != null and pageSize !=null">
 	limit #{beginRow,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
@@ -241,14 +240,15 @@
 	a.accountid=b.accountid and a.level = '9' and offtype = '3'
 	AND 
 	(b.starttime BETWEEN #{startTime,jdbcType=TIMESTAMP} and #{endTime,jdbcType=TIMESTAMP}) 
-	AND
-    FIND_IN_SET(a.accountid, 
+	AND a.supuserid IN(select accountid FROM account_info n WHERE  (n.accountid = #{accountid,jdbcType=INTEGER}  and n.level = #{level,jdbcType=VARCHAR}) 
+	OR (n.offtype = #{offtype,jdbcType=VARCHAR} and n.level =  #{level,jdbcType=VARCHAR}
+	AND FIND_IN_SET(n.accountid, 
 	   (SELECT GROUP_CONCAT(LEVEL SEPARATOR ',') FROM (
 	      SELECT @Ids := (SELECT GROUP_CONCAT(c.accountid SEPARATOR ',') FROM account_info c WHERE FIND_IN_SET(supuserid, @Ids) ) LEVEL
 	      FROM account_info d
 	      JOIN (SELECT @Ids := #{accountid,jdbcType=INTEGER}) temp1
 	      WHERE FIND_IN_SET(d.supuserid, @Ids)
-	   ) temp2 )) group by a.accountid order by a.accountid desc
+	   ) temp2 )))) group by a.accountid order by a.accountid desc
      <if test="beginRow != null and pageSize !=null">
 	limit #{beginRow,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
 	</if>

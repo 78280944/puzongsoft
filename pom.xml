@@ -27,7 +27,8 @@
 		<swagger-springmvc.version>1.0.2</swagger-springmvc.version>
 		<jackson-databind.version>2.4.2</jackson-databind.version>
 		<gson.version>2.6.2</gson.version>
-
+        <bcpkix-jdk15on.version>1.53</bcpkix-jdk15on.version>
+        <bcprov-jdk15on.version>1.53</bcprov-jdk15on.version>
 		<mybatis.version>3.2.0</mybatis.version>
 		<mybatis-spring>1.2.0</mybatis-spring>
 		<spring.version>4.0.0.RELEASE</spring.version>
@@ -296,7 +297,48 @@
 	            <groupId>io.jsonwebtoken</groupId>
 	            <artifactId>jjwt</artifactId>
 	            <version>${jjwt.version}</version>
+	        </dependency>   
+	        <dependency>
+	            <groupId>bcprov-jdk15on</groupId>
+	            <artifactId>bcprov-jdk15on</artifactId>
+	            <version>${bcprov-jdk15on.version}</version>
+	        </dependency> 
+	        
+	        <dependency>
+	            <groupId>fastjson</groupId>
+	            <artifactId>fastjson</artifactId>
+	            <version>1.2.7</version>
 	        </dependency>
+	        
+	         <dependency>
+	            <groupId>module</groupId>
+	            <artifactId>module</artifactId>
+	            <version>1.0</version>
+	        </dependency>
+
+	         <dependency>
+	         	<groupId>bcpkix-jdk15on</groupId>
+	         	<artifactId>bcpkix-jdk15on</artifactId>
+	         	<version>${bcpkix-jdk15on.version}</version>
+	         </dependency>
 		</dependencies>
 	</dependencyManagement>
+	<dependencies>
+		<dependency>
+			<groupId>bcpkix-jdk15on</groupId>
+			<artifactId>bcpkix-jdk15on</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>bcprov-jdk15on</groupId>
+			<artifactId>bcprov-jdk15on</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>fastjson</groupId>
+			<artifactId>fastjson</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>module</groupId>
+			<artifactId>module</artifactId>
+		</dependency>
+	</dependencies>
 </project>
