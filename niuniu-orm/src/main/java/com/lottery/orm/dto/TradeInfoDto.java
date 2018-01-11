@@ -15,7 +15,7 @@ public class TradeInfoDto {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date tradetime;
     
-    @ApiModelProperty(value = "状态，01，成功；02，失败；03，处理中")
+    @ApiModelProperty(value = "状态，01，成功；02，失败；03，处理中;04,审批不通过")
     private String orderstate;
 
 	public BigDecimal getTradeamount() {

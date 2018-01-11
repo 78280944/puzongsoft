@@ -54,11 +54,12 @@
   
   <resultMap id="InoutAccReportMap" type="com.lottery.orm.dto.InoutAccReportDto">
     <result column="INPUTTIME" jdbcType="TIMESTAMP" property="inputTime" />
-    <result column="ACCOUNTID" jdbcType="INTEGER" property="accountId" />
-    <result column="USERNAME" jdbcType="VARCHAR" property="userName" />
+    <result column="USERNAME" jdbcType="INTEGER" property="userName" />
+    <result column="SUPUSERNAME" jdbcType="VARCHAR" property="supuserName" />
     <result column="TRADEAMOUNT" jdbcType="DECIMAL" property="tradeAmount" />
     <result column="ACCOUNTAMOUNT" jdbcType="DECIMAL" property="accountAmount" />
     <result column="REMARK" jdbcType="VARCHAR" property="remark" />
+    <result column="ORDERSTATE" jdbcType="VARCHAR" property="orderState" />
   </resultMap>
   
   
@@ -186,21 +187,21 @@
   
   <select id="selectAccInoutReport" resultMap="InoutAccReportMap">
     select 
-    t.inputtime,a.ACCOUNTID, getSupUsername(a.supuserid) as username, t.transamt as TRADEAMOUNT, t.ACCOUNTAMOUNT, t.REMARK
+    t.inputtime,a.username, getSupUsername(a.supuserid) as supusername, t.transamt as TRADEAMOUNT, t.ACCOUNTAMOUNT, t.REMARK,t.orderstate,t.relativetype
     from account_info a, account_recharge t
     where a.ACCOUNTID = t.ACCOUNTID and t.relativetype in ('In','Out')  and a.level =  '9' 
 	<if test="startTime != null and endTime != null">
-	and (Date(INPUTTIME) between #{startTime,jdbcType=TIMESTAMP} and #{endTime,jdbcType=TIMESTAMP})
+	and (t.INPUTTIME between #{startTime,jdbcType=TIMESTAMP} and #{endTime,jdbcType=TIMESTAMP})
 	</if>
-	<![CDATA[and (FIND_IN_SET(a.supuserid, 
+	AND a.supuserid IN(select accountid FROM account_info n WHERE  (n.accountid = #{accountId,jdbcType=INTEGER}  and n.level = #{level,jdbcType=VARCHAR}) 
+	OR (n.level =  #{level,jdbcType=VARCHAR}
+	AND FIND_IN_SET(n.accountid, 
 	   (SELECT GROUP_CONCAT(LEVEL SEPARATOR ',') FROM (
-	      SELECT @Ids := (SELECT GROUP_CONCAT(c.accountid SEPARATOR ',') FROM account_info c  WHERE c.level = #{level,jdbcType=VARCHAR} and  FIND_IN_SET(supuserid, @Ids) ) LEVEL
+	      SELECT @Ids := (SELECT GROUP_CONCAT(c.accountid SEPARATOR ',') FROM account_info c  WHERE  FIND_IN_SET(supuserid, @Ids) ) LEVEL
 	      FROM account_info d
 	      JOIN (SELECT @Ids := #{accountId,jdbcType=INTEGER}) temp1
 	      WHERE FIND_IN_SET(d.supuserid, @Ids)
-	   ) temp2 )
-	)]]> or supuserid =  #{accountId,jdbcType=INTEGER})
-	order by INPUTTIME desc 
+	   ) temp2 )))) order by t.INPUTTIME desc 
 	<if test="beginRow != null and pageSize !=null">
 	limit #{beginRow,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
 	</if>
@@ -208,11 +209,11 @@
   
     <select id="selectProInoutReport" resultMap="InoutAccReportMap">
     select 
-    t.inputtime,a.ACCOUNTID, getSupUsername(a.supuserid) as username, t.transamt as TRADEAMOUNT, t.ACCOUNTAMOUNT, t.REMARK
+    t.inputtime,a.username, getSupUsername(a.supuserid) as supusername, t.transamt as TRADEAMOUNT, t.ACCOUNTAMOUNT, t.REMARK,t.orderstate,t.relativetype
     from account_info a, account_recharge t
     where a.ACCOUNTID = t.ACCOUNTID and t.relativetype in ('In','Out') and a.level != '9' 
 	<if test="startTime != null and endTime != null">
-	and (Date(INPUTTIME) between #{startTime,jdbcType=TIMESTAMP} and #{endTime,jdbcType=TIMESTAMP})
+	and (t.INPUTTIME between #{startTime,jdbcType=TIMESTAMP} and #{endTime,jdbcType=TIMESTAMP})
 	</if>
 	<![CDATA[and (FIND_IN_SET(a.supuserid, 
 	   (SELECT GROUP_CONCAT(LEVEL SEPARATOR ',') FROM (

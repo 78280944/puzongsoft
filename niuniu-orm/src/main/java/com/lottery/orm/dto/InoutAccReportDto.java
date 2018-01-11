@@ -12,11 +12,11 @@ public class InoutAccReportDto {
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
 	private Date inputTime;
 	
-	@ApiModelProperty(value = "账户ID", required = true)
-	private Integer accountId;
+	@ApiModelProperty(value = "账户号", required = true)
+	private String userName;
 	
 	@ApiModelProperty(value = "所属代理", required = true)
-	private String userName;
+	private String supuserName;
 	
 	@ApiModelProperty(value = "存/取款", required = true)
 	private Double tradeAmount;
@@ -26,6 +26,12 @@ public class InoutAccReportDto {
 
 	@ApiModelProperty(value = "备注")
 	private String remark;
+	
+	@ApiModelProperty(value = "状态，01，成功，02，失败，03，处理中")
+	private String orderState;
+	
+	@ApiModelProperty(value = "充值/取现.In,充值;Out,取现")
+	private String relativeType;
 
 	public Date getInputTime() {
 		return inputTime;
@@ -35,13 +41,7 @@ public class InoutAccReportDto {
 		this.inputTime = inputTime;
 	}
 
-	public Integer getAccountId() {
-		return accountId;
-	}
 
-	public void setAccountId(Integer accountId) {
-		this.accountId = accountId;
-	}
 
 	public String getUserName() {
 		return userName;
@@ -49,6 +49,14 @@ public class InoutAccReportDto {
 
 	public void setUserName(String userName) {
 		this.userName = userName;
+	}
+
+	public String getSupuserName() {
+		return supuserName;
+	}
+
+	public void setSupuserName(String supuserName) {
+		this.supuserName = supuserName;
 	}
 
 	public Double getTradeAmount() {
@@ -74,6 +82,21 @@ public class InoutAccReportDto {
 	public void setRemark(String remark) {
 		this.remark = remark;
 	}
-	
+
+	public String getOrderState() {
+		return orderState;
+	}
+
+	public void setOrderState(String orderState) {
+		this.orderState = orderState;
+	}
+
+	public String getRelativeType() {
+		return relativeType;
+	}
+
+	public void setRelativeType(String relativeType) {
+		this.relativeType = relativeType;
+	}
 	
 }

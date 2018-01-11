@@ -48,12 +48,12 @@ public synchronized  AccountRecharge getPayTrans(AccountRecharge aRecharge) thro
       1207：支付宝反扫*/
     nvps.add(new BasicNameValuePair("productId", aRecharge.getProductid()));//1202
     nvps.add(new BasicNameValuePair("transAmt", String.valueOf(aRecharge.getTransamt())));//transAmt
-    nvps.add(new BasicNameValuePair("commodityName",aRecharge.getAccountid()+",充值金额："+ aRecharge.getTransamt()+",IP:"+aRecharge.getOrderip()));
+    nvps.add(new BasicNameValuePair("commodityName",aRecharge.getAccountid()+",充值金额："+ (aRecharge.getTransamt()/100)+",IP:"+aRecharge.getOrderip()));
     nvps.add(new BasicNameValuePair("notifyUrl", ConfigUtils.getProperty("notifyUrl")));
     nvps.add(new BasicNameValuePair("returnUrl", ConfigUtils.getProperty("returnUrl")));
     nvps.add(new BasicNameValuePair("mchId", ""));
     nvps.add(new BasicNameValuePair("opName", ""));
-    nvps.add(new BasicNameValuePair("remark", aRecharge.getAccountid()+",充值金额："+ aRecharge.getTransamt()+",IP:"+aRecharge.getOrderip()+",充值时间:"+new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date())));
+    nvps.add(new BasicNameValuePair("remark", "充值金额:"+ (aRecharge.getTransamt()/100)+",充值时间:"+new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date())));
     nvps.add(new BasicNameValuePair("extendField", ""));
     //<autoCode>当产品为1203时，可输
     //nvps.add(new BasicNameValuePair("autoCode", ""));
@@ -118,9 +118,9 @@ public static void main(String[] args) throws Exception {
 	TransScanCodePayTest a = new TransScanCodePayTest();
 	AccountRecharge aRecharge = new AccountRecharge();
 	aRecharge.setAccountid(1000);
-	aRecharge.setTransamt(101);
+	aRecharge.setTransamt(1000);
 	aRecharge.setProductid("1205");
 	AccountRecharge c = a.getPayTrans(aRecharge);
-	System.out.println("90---"+c);
+	System.out.println("90---"+c.getMweburl());
 }
 }

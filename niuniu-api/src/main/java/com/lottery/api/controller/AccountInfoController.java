@@ -2,11 +2,13 @@ package com.lottery.api.controller;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.http.message.BasicNameValuePair;
 import org.apache.log4j.Logger;
 import org.dozer.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.lottery.api.dto.AccountInfoVo;
 import com.lottery.api.dto.AccountRecordVo;
+import com.lottery.api.dto.CashOrderVo;
 import com.lottery.api.dto.DemoInfoVo;
 import com.lottery.api.dto.LoginParamVo;
 import com.lottery.api.dto.NoticeTypeVo;
@@ -123,6 +126,12 @@ public class AccountInfoController {
 	
 	@Autowired
 	private TransScanCodePayTest transScanCodePayTest;
+	
+	@Autowired
+	private TransProxyPayTest transProxyPayTest;
+	
+	@Autowired
+	private QueryTransStatusTest queryTransStatusTest;
 	
 	@Autowired
 	private BankCashMapper bankCashMapper;
@@ -610,7 +619,7 @@ public class AccountInfoController {
 	@ApiOperation(value = "用户充值", notes = "用户充值", httpMethod = "POST")
 	@RequestMapping(value = "/userRecharge", method = RequestMethod.POST)
 	@ResponseBody
-	public UserRechargeResult userRecharge(@ApiParam(value = "Json参数", required = true) @Validated @RequestBody UserRechargeVo param) throws Exception {
+	public  UserRechargeResult userRecharge(@ApiParam(value = "Json参数", required = true) @Validated @RequestBody UserRechargeVo param) throws Exception {
 		UserRechargeResult result = new UserRechargeResult();
 		try {
 			AccountRecharge aRecharge = new AccountRecharge();
@@ -632,6 +641,7 @@ public class AccountInfoController {
 			      LOG.info(result.getMessage());
 			      return result;
 	    	}
+	    	aRecharge.setTransamt((int)(param.getTransAmt()/100));
 			aRecharge.setRelativetype(EnumType.RalativeType.In.ID);
 			aRecharge.setOpuserid(String.valueOf(param.getAccountId()));
 			aRecharge.setOpusertime(new Date());
@@ -639,6 +649,7 @@ public class AccountInfoController {
 	    	accountRechargeMapper.insert(aRecharge);
 	    	UserRechargeResDto urDto = mapper.map(aRecharge, UserRechargeResDto.class);	 
 	    	urDto.setUsername(param.getUsername());
+	    	urDto.setTransAmt(param.getTransAmt());
 			result.success(urDto);
 			LOG.info(result.getMessage());
 		} catch (Exception e) {
@@ -739,11 +750,10 @@ public class AccountInfoController {
 	@ApiOperation(value = "用户充值结果", notes = "用户充值结果", httpMethod = "POST")
 	@RequestMapping(value = "/userRechargeResult", method = RequestMethod.POST)
 	@ResponseBody
-	public RestResult userRechargeResult(@ApiParam(value = "Json参数", required = true) @Validated @RequestBody UserRechargeResVo param) throws Exception {
+	public synchronized RestResult userRechargeResult(@ApiParam(value = "Json参数", required = true) @Validated @RequestBody UserRechargeResVo param) throws Exception {
 		RestResult result = new RestResult();
 		try {
-			
-			String message = accountInfoService.checkResult(param.getOrderNo(), param.getPayNo(), param.getTransAmt(), param.getOrderDate(), param.getAccNo(), param.getToken(), param.getRespCode(), param.getRespDesc());
+			String message = accountInfoService.checkResult(param.getOrderNo(), param.getPayNo(), param.getTransAmt(), param.getOrderDate(), param.getRespCode(), param.getRespDesc());
 			result.success(message);
 			return result;
 	    
@@ -757,7 +767,7 @@ public class AccountInfoController {
 	@ApiOperation(value = "用户取现申请", notes = "用户取现申请", httpMethod = "POST")
 	@RequestMapping(value = "/userCashApply", method = RequestMethod.POST)
 	@ResponseBody
-	public RestResult userCashApply(@ApiParam(value = "Json参数", required = true) @Validated @RequestBody UserCashVo param) throws Exception {
+	public synchronized RestResult userCashApply(@ApiParam(value = "Json参数", required = true) @Validated @RequestBody UserCashVo param) throws Exception {
 		RestResult result = new RestResult();
 		AccountRecharge aRecharge = new AccountRecharge();
 		aRecharge = mapper.map(param, AccountRecharge.class);	
@@ -784,7 +794,9 @@ public class AccountInfoController {
 			result.fail(checkInfo);
 			return result;
 		}
-		aInfo.setUsermoney(aInfo.getUsermoney().subtract(BigDecimal.valueOf((double)(aRecharge.getTransamt()/100))));	
+		LOG.info(aInfo.getUsername()+",账户金额:"+aInfo.getUsermoney()+",取现金额:"+(aRecharge.getTransamt()/100)+",账户取现后余额："+aInfo.getUsermoney().subtract(BigDecimal.valueOf((double)(aRecharge.getTransamt()/100))));
+		aInfo.setUsermoney(aInfo.getUsermoney().subtract(BigDecimal.valueOf((double)(aRecharge.getTransamt()/100))));
+		aRecharge.setAccountamount(aInfo.getUsermoney().subtract(BigDecimal.valueOf((double)(aRecharge.getTransamt()/100))));
 		accountInfoMapper.updateByPrimaryKey(aInfo);
 		if((aRecharge.getTransamt()/100) % (sf.getRatio().doubleValue()) != 0){
 			result.fail("取现必须为"+sf.getRatio().doubleValue()+"的倍数");
@@ -795,9 +807,148 @@ public class AccountInfoController {
 			result.fail("当天取现次数不允许超过"+sf.getTime()+"次");
 			return result;
 		}
-		
+		if (aRecharge.getFee()>0){
+    		aInfo = accountInfoMapper.selectByPrimaryKey(1000);
+    		aInfo.setUsermoney(aInfo.getUsermoney().add(BigDecimal.valueOf(aRecharge.getFee())));
+	    	accountInfoMapper.updateByPrimaryKey(aInfo);
+    	}
+		aRecharge.setTransamt(aRecharge.getTransamt()/100);
+		aRecharge.setRemark("取现金额:"+aRecharge.getTransamt()/100+",取现时间:"+new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
 		accountRechargeMapper.insert(aRecharge);
 		result.success();
+		LOG.info(result.getMessage());
+		return result;
+      }
+	
+	@ApiOperation(value = "后台审核", notes = "后台审核", httpMethod = "POST")
+	@RequestMapping(value = "/userCashAudit", method = RequestMethod.POST)
+	@ResponseBody
+	public synchronized RestResult userCashAudit(@ApiParam(value = "Json参数", required = true) @Validated @RequestBody CashOrderVo param) throws Exception {
+		RestResult result = new RestResult();
+		AccountRecharge aRecharge = new AccountRecharge();
+		aRecharge = mapper.map(param, AccountRecharge.class);	
+		SysFee sf = sysFeeMapper.selectByPrimaryKey(1001);
+		aRecharge = accountRechargeMapper.selectByPrimaryKey(aRecharge.getArid());
+		aRecharge.setTransamt(aRecharge.getTransamt()*100);
+		AccountInfo aInfo = accountInfoMapper.selectByPrimaryKey(aRecharge.getAccountid());
+		if (null == aInfo){
+		      result.fail("该用户不存在！");
+		      LOG.info(result.getMessage());
+		      return result;
+		}
+		
+		String checkInfo = accountInfoService.checkCashMoneyInfo(aInfo, Double.valueOf(aRecharge.getTransamt()/100));
+		if ((!"true".equals(checkInfo))){
+			result.fail(checkInfo);
+			return result;
+		}
+		
+		if((aRecharge.getTransamt()/100) % (sf.getRatio().doubleValue()) != 0){
+			result.fail("取现必须为"+sf.getRatio().doubleValue()+"的倍数");
+			return result;
+	    }
+		List<AccountRecharge> list =  accountRechargeMapper.selectByTime(aRecharge.getOrderdate(),EnumType.RalativeType.Out.ID,aRecharge.getAccountid());
+		if (null != list&&list.size()>sf.getTime()){
+			result.fail("当天取现次数不允许超过"+sf.getTime()+"次");
+			return result;
+		}
+		
+		result.success("success");
+		LOG.info(result.getMessage());
+		return result;
+      }
+	
+	@ApiOperation(value = "后台打款", notes = "后台打款", httpMethod = "POST")
+	@RequestMapping(value = "/userCashdo", method = RequestMethod.POST)
+	@ResponseBody
+	public synchronized RestResult userCashdo(@ApiParam(value = "Json参数", required = true) @Validated @RequestBody CashOrderVo param) throws Exception {
+		RestResult result = new RestResult();
+		AccountRecharge aRecharge = new AccountRecharge();
+		aRecharge = mapper.map(param, AccountRecharge.class);	
+		aRecharge = accountRechargeMapper.selectByPrimaryKey(aRecharge.getArid());
+		if (null == aRecharge){
+		      result.fail("取现订单异常！");
+		      LOG.info(result.getMessage());
+		      return result;
+		}
+		if (null!=aRecharge.getRespcode()&&aRecharge.getRespcode().equals("P000")){
+		      result.fail("该订单已取现！");
+		      LOG.info(result.getMessage());
+		      return result;
+		}
+		aRecharge.setOrderno(new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()));
+		aRecharge.setOrderdate(new SimpleDateFormat("yyyyMMdd").format(new Date()));
+		aRecharge.setOpusertime(new Date());
+		aRecharge.setOpuserid(param.getOpuserid());
+		SysFee sf = sysFeeMapper.selectByPrimaryKey(1001);
+		aRecharge.setTransamt(aRecharge.getTransamt()*100);
+		AccountInfo aInfo = accountInfoMapper.selectByPrimaryKey(aRecharge.getAccountid());
+		if (null == aInfo){
+		      result.fail("该用户不存在！");
+		      LOG.info(result.getMessage());
+		      return result;
+		}
+		
+		String checkInfo = accountInfoService.checkCashMoneyInfo(aInfo, Double.valueOf(aRecharge.getTransamt()/100));
+		if ((!"true".equals(checkInfo))){
+			result.fail(checkInfo);
+			return result;
+		}
+		
+		if((aRecharge.getTransamt()/100) % (sf.getRatio().doubleValue()) != 0){
+			result.fail("取现必须为"+sf.getRatio().doubleValue()+"的倍数");
+			return result;
+	    }
+		List<AccountRecharge> list =  accountRechargeMapper.selectByTime(aRecharge.getOrderdate(),EnumType.RalativeType.Out.ID,aRecharge.getAccountid());
+		if (null != list&&list.size()>sf.getTime()){
+			result.fail("当天取现次数不允许超过"+sf.getTime()+"次");
+			return result;
+		}
+		String results = transProxyPayTest.getPayTrans(aRecharge);
+    	if (null == results||results.equals("")||results.equals("false")){
+    	      result.fail("该用户充值出现异常！");
+		      LOG.info(result.getMessage());
+		      return result;
+    	}
+		result.success("success");
+		LOG.info(result.getMessage());
+		return result;
+      }
+	
+	@ApiOperation(value = "后台取消", notes = "后台取消", httpMethod = "POST")
+	@RequestMapping(value = "/userCashCancel", method = RequestMethod.POST)
+	@ResponseBody
+	public synchronized RestResult userCashCancel(@ApiParam(value = "Json参数", required = true) @Validated @RequestBody CashOrderVo param) throws Exception {
+		RestResult result = new RestResult();
+		AccountRecharge aRecharge = new AccountRecharge();
+		aRecharge = mapper.map(param, AccountRecharge.class);	
+		aRecharge = accountRechargeMapper.selectByPrimaryKey(aRecharge.getArid());
+		if (null == aRecharge){
+		      result.fail("取现订单异常！");
+		      LOG.info(result.getMessage());
+		      return result;
+		}
+		AccountInfo aInfo = accountInfoMapper.selectByPrimaryKey(aRecharge.getAccountid());
+		if (null == aInfo){
+		      result.fail("该用户不存在！");
+		      LOG.info(result.getMessage());
+		      return result;
+		}
+
+		if (null!=aRecharge.getRespcode()&&aRecharge.getRespcode().equals("P000")){
+		      result.fail("该订单已取现或已人工处理，无法取消！");
+		      LOG.info(result.getMessage());
+		      return result;
+		}
+		aInfo.setUsermoney(aInfo.getUsermoney().add(BigDecimal.valueOf(aRecharge.getTransamt().doubleValue())));
+		aRecharge.setAccountamount(aInfo.getUsermoney().add(BigDecimal.valueOf(aRecharge.getTransamt().doubleValue())));
+		accountInfoMapper.updateByPrimaryKey(aInfo);
+		aInfo = accountInfoMapper.selectByPrimaryKey(1000);
+		aInfo.setUsermoney(aInfo.getUsermoney().subtract(BigDecimal.valueOf(aRecharge.getTransamt().doubleValue())));
+		accountInfoMapper.updateByPrimaryKey(aInfo);
+		aRecharge.setOrderstate("04");
+		accountRechargeMapper.updateByPrimaryKey(aRecharge);
+		result.success("success");
 		LOG.info(result.getMessage());
 		return result;
       }
@@ -813,23 +964,27 @@ public class AccountInfoController {
 		return result;
       }
 	
-	/*
-	@ApiOperation(value = "用户取现审批结果", notes = "用户取现审批结果", httpMethod = "POST")
-	@RequestMapping(value = "/userCashResult", method = RequestMethod.POST)
-	@ResponseBody
 	
-	public UserRechargeResult userCashResult(@ApiParam(value = "Json参数", required = true) @Validated @RequestBody UserOrderVo param) throws Exception {
-		UserRechargeResult result = new UserRechargeResult();
-
-		AccountRecharge aRecharge = new AccountRecharge();
-		aRecharge = accountRechargeMapper.selectByOrderNo(param.getOrderNo(), EnumType.RalativeType.Out.ID,param.getAccountId());
-		UserRechargeDto urDto = mapper.map(aRecharge, UserRechargeDto.class);
-		urDto.setTransAmt(urDto.getTransAmt()*100);
-		result.success(urDto);
+	@ApiOperation(value = "后台取现结果查询", notes = "后台取现结果查询", httpMethod = "POST")
+	@RequestMapping(value = "/userOutResult", method = RequestMethod.POST)
+	@ResponseBody
+	public synchronized RestResult userOutResult() throws Exception {
+		RestResult result = new RestResult();
+		List<AccountRecharge> list = accountRechargeMapper.selectByOutResult(EnumType.RalativeType.Out.ID);
+		if (null != list){
+			  for (int i = 0;i<list.size();i++){
+				  AccountRecharge aRecharge = new AccountRecharge();
+				  aRecharge = list.get(i);
+				  String results = queryTransStatusTest.getPayResults(aRecharge);
+				  System.out.println(results +",accountid = "+aRecharge.getAccountid()+",transAmt = "+aRecharge.getTransamt());
+				  LOG.info(results +",accountid = "+aRecharge.getAccountid()+",transAmt = "+aRecharge.getTransamt());
+			  }
+		}
+		result.success("success");
 		LOG.info(result.getMessage());
 		return result;
       }
-
+/*
 	@ApiOperation(value = "用户取现结果通知", notes = "用户取现结果通知", httpMethod = "POST")
 	@RequestMapping(value = "/userCashResultNotice", method = RequestMethod.POST)
 	@ResponseBody

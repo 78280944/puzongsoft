@@ -2,6 +2,7 @@ package com.lottery.orm.util;
 
 import java.math.BigDecimal;
 import java.text.DateFormat;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
@@ -1330,6 +1331,7 @@ public class CommonUtils {
 		//Date[] param1 = CommonUtils.getDateTime(param.getStartDate(), param.getEndDate());
 		//Date currentTime = AppUtils.getCurrentDate();
 		  //获取昨天时间
+		System.out.println(new DecimalFormat("#.00").format(223.678));
 		  Date backupTime=DateUtils.addDays(new Date(), -1);
 		System.out.println("12----"+dateAddMin(1));
 		Date[] param1 = getDateTime(new Date(),new Date());

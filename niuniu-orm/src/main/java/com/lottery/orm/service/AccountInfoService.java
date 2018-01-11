@@ -93,12 +93,12 @@ public class AccountInfoService {
 	}
 	
 	
-	public String checkResult(String orderNo,String payNo,String transAmt,String orderDate,String accNo,String token,String respCode,String respDesc){
-		LOG.info("返回时间："+new Date()+"，订单编号："+orderNo+",支付订单号："+payNo+",交易金额："+transAmt+",返回消息代码："+respCode+",消息描述："+respDesc+",持卡人信息："+token+",卡号："+accNo);
+	public synchronized String checkResult(String orderNo,String payNo,String transAmt,String orderDate,String respCode,String respDesc){
+		LOG.info("返回时间："+new Date()+"，订单编号："+orderNo+",支付订单号："+payNo+",交易金额："+transAmt+",返回消息代码："+respCode+",消息描述："+respDesc);
 		AccountRecharge aRecharge = new AccountRecharge();
     	aRecharge.setOrderno(orderNo);
 		aRecharge.setPayno(payNo);
-		aRecharge.setTransamt(Integer.valueOf(transAmt));
+		aRecharge.setTransamt(Integer.valueOf(transAmt)/100);
 		aRecharge.setOrderdate(orderDate);
 		aRecharge.setRespcode(respCode);
 		aRecharge.setRespdesc(respDesc);
@@ -113,8 +113,10 @@ public class AccountInfoService {
 			      return "false";
     		}
     	}
+    	if (ar.getOrderstate().equals("01"))
+    		return "success";
     	if (null!=payNo){
-    		SysBene sb = sysBeneMapper.selectByAmount(BigDecimal.valueOf(aRecharge.getTransamt()/100));
+    		SysBene sb = sysBeneMapper.selectByAmount(BigDecimal.valueOf(aRecharge.getTransamt()));
 			Double bene = 0.0;
 			Double amount = 0.0;
 			if (null == sb||sb.getBenefit() == null||sb.getBenefit() == BigDecimal.valueOf(0.0)){
@@ -124,8 +126,8 @@ public class AccountInfoService {
 			}
 			SysFee sf = sysFeeMapper.selectByPrimaryKey(1001);
 			ar.setDonatamt(bene);//赠送金额
-			ar.setFee(ar.getTransamt()/100*sf.getRefee().doubleValue());//充值费用
-			ar.setPayamt(ar.getTransamt()/100-ar.getFee());//实际金额
+			ar.setFee(ar.getTransamt()*sf.getRefee().doubleValue());//充值费用
+			ar.setPayamt(ar.getTransamt()-ar.getFee());//实际金额
 			AccountInfo aInfo = accountInfoMapper.selectByPrimaryKey(ar.getAccountid());
 			if (null == aInfo){
 			      LOG.info("该用户不存在！,订单号为："+orderNo);

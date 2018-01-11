@@ -28,11 +28,15 @@
     <result column="BANKNAME" property="bankname" jdbcType="VARCHAR" />
     <result column="BANKADDRESS" property="bankaddress" jdbcType="VARCHAR" />
     <result column="BANKACCOUNT" property="bankaccount" jdbcType="VARCHAR" />
+    <result column="BANKNO" property="bankno" jdbcType="VARCHAR" />
+    <result column="BANKLOPRONAME" property="bankloproname" jdbcType="VARCHAR" />
+    <result column="BANKLOCITYNAME" property="banklocityname" jdbcType="VARCHAR" />
+    <result column="PHONENO" property="phoneno" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
     ACCOUNTID, USERNAME, AUSERNAME, PASSWORD, LIMITED, RATIO, IP, INPUTDATE, UPDATEIP, UPDATEDATE, 
     STATE, SUPUSERID, LEVEL, PHONE, WEBCHAT, USERMONEY, OFFTYPE, PERCENTAGE, QUERY, BUDGET, 
-    CODE, SFCODE, BANKID, BANKNAME, BANKADDRESS, BANKACCOUNT
+    CODE, SFCODE, BANKID, BANKNAME, BANKADDRESS, BANKACCOUNT,BANKNO,BANKLOPRONAME,BANKLOCITYNAME,PHONENO
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select 
@@ -55,7 +59,7 @@
       WEBCHAT, USERMONEY, OFFTYPE, 
       PERCENTAGE, QUERY, BUDGET, 
       CODE, SFCODE, BANKID, 
-      BANKNAME, BANKADDRESS, BANKACCOUNT
+      BANKNAME, BANKADDRESS, BANKACCOUNT,BANKNO,BANKLOPRONAME,BANKLOCITYNAME,PHONENO
       )
     values (#{username,jdbcType=VARCHAR}, #{ausername,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, 
       #{limited,jdbcType=DOUBLE}, #{ratio,jdbcType=DOUBLE}, #{ip,jdbcType=VARCHAR}, #{inputdate,jdbcType=TIMESTAMP}, 
@@ -64,7 +68,9 @@
       #{webchat,jdbcType=VARCHAR}, #{usermoney,jdbcType=DECIMAL}, #{offtype,jdbcType=VARCHAR}, 
       #{percentage,jdbcType=DOUBLE}, #{query,jdbcType=VARCHAR}, #{budget,jdbcType=VARCHAR}, 
       #{code,jdbcType=VARCHAR}, #{sfcode,jdbcType=VARCHAR}, #{bankid,jdbcType=VARCHAR}, 
-      #{bankname,jdbcType=VARCHAR}, #{bankaddress,jdbcType=VARCHAR}, #{bankaccount,jdbcType=VARCHAR}
+      #{bankname,jdbcType=VARCHAR}, #{bankaddress,jdbcType=VARCHAR}, #{bankaccount,jdbcType=VARCHAR},
+      #{bankno,jdbcType=VARCHAR},#{bankloproname,jdbcType=VARCHAR},#{banklocityname,jdbcType=VARCHAR},
+      #{phoneno,jdbcType=VARCHAR}
       )
   </insert>
   <insert id="insertSelective" parameterType="com.lottery.orm.bo.AccountInfo" >
@@ -148,7 +154,20 @@
       <if test="bankaccount != null" >
         BANKACCOUNT,
       </if>
+            <if test="bankno != null" >
+        BANKNO,
+      </if>
+            <if test="bankloproname != null" >
+        BANKLOPRONAME,
+      </if>
+            <if test="banklocityname != null" >
+        BANKLOCITYNAME,
+      </if>
+            <if test="phoneno != null" >
+        PHONENO,
+      </if>
     </trim>
+   
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="username != null" >
         #{username,jdbcType=VARCHAR},
@@ -224,6 +243,18 @@
       </if>
       <if test="bankaccount != null" >
         #{bankaccount,jdbcType=VARCHAR},
+      </if>
+      <if test="bankno != null" >
+        #{bankno,jdbcType=VARCHAR},
+      </if>
+        <if test="bankloproname != null" >
+        #{bankloproname,jdbcType=VARCHAR},
+      </if>
+        <if test="banklocityname != null" >
+        #{banklocityname,jdbcType=VARCHAR},
+      </if>
+        <if test="phoneno != null" >
+        #{phoneno,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -305,6 +336,19 @@
       <if test="bankaccount != null" >
         BANKACCOUNT = #{bankaccount,jdbcType=VARCHAR},
       </if>
+      
+      <if test="bankno != null" >
+       BANKNO =  #{bankno,jdbcType=VARCHAR},
+      </if>
+        <if test="bankloproname != null" >
+       BANKLOPRONAME = #{bankloproname,jdbcType=VARCHAR},
+      </if>
+        <if test="banklocityname != null" >
+       BANKLOCITYNAME = #{banklocityname,jdbcType=VARCHAR},
+      </if>
+        <if test="phoneno != null" >
+       PHONENO = #{phoneno,jdbcType=VARCHAR},
+       </if>
     </set>
     where ACCOUNTID = #{accountid,jdbcType=INTEGER}
   </update>
@@ -364,7 +408,11 @@
       BANKID = #{bankid,jdbcType=VARCHAR},
       BANKNAME = #{bankname,jdbcType=VARCHAR},
       BANKADDRESS = #{bankaddress,jdbcType=VARCHAR},
-      BANKACCOUNT = #{bankaccount,jdbcType=VARCHAR}
+      BANKACCOUNT = #{bankaccount,jdbcType=VARCHAR},
+      BANKNO =  #{bankno,jdbcType=VARCHAR},
+      BANKLOPRONAME = #{bankloproname,jdbcType=VARCHAR},
+      BANKLOCITYNAME = #{banklocityname,jdbcType=VARCHAR},
+      PHONENO = #{phoneno,jdbcType=VARCHAR}
     where ACCOUNTID = #{accountid,jdbcType=INTEGER}
   </update>
   

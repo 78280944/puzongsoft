@@ -71,6 +71,13 @@
 	limit #{beginRow,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
 	</if>
   </select>
+  <select id="selectByOutResult" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from account_recharge
+    where relativetype = #{relativetype,jdbcType=VARCHAR} and respcode = 'P000' order by inputtime asc;
+  </select>
+  
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from account_recharge
     where arid = #{arid,jdbcType=INTEGER}
@@ -542,6 +549,34 @@
       accountamount = #{accountamount,jdbcType=DECIMAL},
       orderstate = #{orderstate,jdbcType=VARCHAR},
       upusertime = #{upusertime,jdbcType=TIMESTAMP}
+    where orderno = #{orderno,jdbcType=VARCHAR}
+  </update>
+  
+  <update id="updateByRechargeCashReady" parameterType="com.lottery.orm.bo.AccountRecharge">
+   update account_recharge
+    set 
+      requestno = #{requestno,jdbcType=VARCHAR},
+      version = #{version,jdbcType=VARCHAR},
+      transid = #{transid,jdbcType=VARCHAR},
+      merno = #{merno,jdbcType=VARCHAR},
+      productid = #{productid,jdbcType=VARCHAR},
+      orderdate = #{orderdate,jdbcType=VARCHAR},
+      orderno = #{orderno,jdbcType=VARCHAR},
+      payno = #{payno,jdbcType=VARCHAR},
+      respcode = #{respcode,jdbcType=VARCHAR},
+      respdesc = #{respdesc,jdbcType=VARCHAR},
+      opuserid = #{opuserid,jdbcType=VARCHAR},
+      opusertime = #{opusertime,jdbcType=VARCHAR},
+      signature = #{signature,jdbcType=VARCHAR}     
+    where arid = #{arid,jdbcType=INTEGER}
+  </update>
+  
+  <update id="updateByRechargeCashResult" parameterType="com.lottery.orm.bo.AccountRecharge">
+    update account_recharge
+    set 
+      orderstate = #{orderstate,jdbcType=VARCHAR},
+      respcode = #{respcode,jdbcType=VARCHAR},
+      respdesc = #{respdesc,jdbcType=VARCHAR}
     where orderno = #{orderno,jdbcType=VARCHAR}
   </update>
   

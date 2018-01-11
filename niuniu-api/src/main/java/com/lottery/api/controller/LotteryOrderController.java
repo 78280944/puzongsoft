@@ -31,6 +31,7 @@ import com.lottery.api.dto.RoomOrderVo;
 import com.lottery.orm.bo.AccountDetail;
 import com.lottery.orm.bo.AccountInfo;
 import com.lottery.orm.bo.LotteryGameOrder;
+import com.lottery.orm.bo.LotteryGameRound;
 import com.lottery.orm.bo.LotteryItem;
 import com.lottery.orm.bo.LotteryOrder;
 import com.lottery.orm.bo.LotteryOrderDetail;
@@ -41,6 +42,7 @@ import com.lottery.orm.dao.AccountInfoMapper;
 import com.lottery.orm.dao.CustomLotteryMapper;
 import com.lottery.orm.dao.LotteryGameDetailMapper;
 import com.lottery.orm.dao.LotteryGameOrderMapper;
+import com.lottery.orm.dao.LotteryGameRoundMapper;
 import com.lottery.orm.dao.LotteryOrderMapper;
 import com.lottery.orm.dao.LotteryReportMapper;
 import com.lottery.orm.dao.LotteryRoundMapper;
@@ -116,6 +118,9 @@ public class LotteryOrderController {
 	@Autowired
 	private LotteryGameDetailMapper lotteryGameDetailMapper;
 	
+	@Autowired
+	private LotteryGameRoundMapper lotteryGameRoundMapper;
+	
 	@ApiOperation(value = "新增投注记录", notes = "新增投注记录", httpMethod = "POST")
 	@RequestMapping(value = "/addLotteryOrder", method = RequestMethod.POST)
 	@ResponseBody
@@ -129,6 +134,11 @@ public class LotteryOrderController {
 			LotteryGameOrder order = mapper.map(param, LotteryGameOrder.class);
 			//System.out.println("投注开始时间------------------"+new Date());
 			LOG.info("投注开始时间------------------"+new Date());
+			LotteryGameRound lgr = lotteryGameRoundMapper.selectLotteryGameResult(order.getSid(), order.getLotteryterm());
+			if (lgr.getOvertime().getTime()<(new java.util.Date()).getTime()){
+				result.fail("该游戏已封盘");
+				return result;
+			}
 			AccountInfo accountInfo = accountInfoMapper.selectByPrimaryKey(order.getAccountid());
 			if (accountInfo == null){
 				result.fail(MessageTool.Code_3001);
@@ -189,6 +199,7 @@ public class LotteryOrderController {
 				
 				//投注
 				//System.out.println("123-------------"+order.getLotteryterm());
+		
 				lotteryOrderService.insertLotteryGameOrder(order);
 				
 			}

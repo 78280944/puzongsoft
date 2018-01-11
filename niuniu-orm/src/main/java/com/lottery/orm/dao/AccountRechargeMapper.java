@@ -24,7 +24,13 @@ public interface AccountRechargeMapper {
    
     int updateByRechargeMessage(AccountRecharge record);
     
+    int updateByRechargeCashReady(AccountRecharge record);
+    
+    int updateByRechargeCashResult(AccountRecharge record);
+    
     List<AccountRecharge> selectByTime(@Param("orderdate")String orderdate,@Param("relativetype")String relativetype,@Param("accountid")Integer accountid);
+    
+    List<AccountRecharge> selectByOutResult(@Param("relativetype")String relativetype);
     
     AccountRecharge selectByOrderNo(@Param("orderno")String orderno,@Param("relativetype")String relativetype,@Param("accountid")Integer accountid);
     

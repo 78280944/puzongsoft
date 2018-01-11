@@ -302,7 +302,7 @@ public class LotteryOrderService {
 	}
 
 	//投注金额检查
-	public String checkLotteryOrderInfo(AccountInfo accountInfo, LotteryGameOrder order,SysLimit sys) {
+	public synchronized String checkLotteryOrderInfo(AccountInfo accountInfo, LotteryGameOrder order,SysLimit sys) {
 		//System.out.println("9-3333333----"+sys.getLimited()+"..."+order.getOrderamount()+".."+accountInfo.getUsermoney()+".."+(order.getOrderamount().compareTo(accountInfo.getUsermoney())<0));
 		
 		if((order.getOrderamount()).compareTo(accountInfo.getUsermoney())>0){
@@ -345,7 +345,7 @@ public class LotteryOrderService {
 	}
 	
 	//账户变动
-	public void changeAccountAmount(AccountInfo accountInfo,LotteryGameOrder order){
+	public synchronized void changeAccountAmount(AccountInfo accountInfo,LotteryGameOrder order){
 		//账户变动明细
 		TradeInfo trade = new TradeInfo();
 		trade.setAccountid(accountInfo.getAccountid());
@@ -553,7 +553,7 @@ public class LotteryOrderService {
 		return roundList;
 	}
 	
-	public void insertLotteryGameOrder(LotteryGameOrder record) throws Exception{
+	public synchronized void insertLotteryGameOrder(LotteryGameOrder record) throws Exception{
 		lotteryGameOrderMapper.insert(record);
 	}
 }

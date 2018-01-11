@@ -55,6 +55,14 @@ public class AccountInfo {
     private String bankaddress;
 
     private String bankaccount;
+    
+    private String bankno;
+    
+    private String bankloproname;
+    
+    private String banklocityname;
+    
+    private String phoneno;
 
 	public Integer getAccountid() {
 		return accountid;
@@ -263,4 +271,38 @@ public class AccountInfo {
     public void setBankaccount(String bankaccount) {
         this.bankaccount = bankaccount == null ? null : bankaccount.trim();
     }
+
+	public String getBankno() {
+		return bankno;
+	}
+
+	public void setBankno(String bankno) {
+		this.bankno = bankno;
+	}
+
+	public String getBankloproname() {
+		return bankloproname;
+	}
+
+	public void setBankloproname(String bankloproname) {
+		this.bankloproname = bankloproname;
+	}
+
+	public String getBanklocityname() {
+		return banklocityname;
+	}
+
+	public void setBanklocityname(String banklocityname) {
+		this.banklocityname = banklocityname;
+	}
+
+	public String getPhoneno() {
+		return phoneno;
+	}
+
+	public void setPhoneno(String phoneno) {
+		this.phoneno = phoneno;
+	}
+    
+    
 }

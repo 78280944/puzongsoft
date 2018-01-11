@@ -122,4 +122,10 @@
     where gametype = getGameType(#{gametype,jdbcType=VARCHAR}) and offtype= #{offtype,jdbcType=VARCHAR} and state = '1'
   </select>
   
+   <select id="selectByLimit" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from sys_limit
+    where gametype = '01' or gametype = '02'
+  </select>
 </mapper>

@@ -73,6 +73,12 @@
 		<property name="concurrent" value="false" />
 	</bean>
 	
+	<bean id="outResultTaskJob"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="lotteryTaskService" />
+		<property name="targetMethod" value="getCashResult" />
+		<property name="concurrent" value="false" />
+	</bean>
 	
 	<bean id="deletePlayerTaskJob"
 		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
@@ -167,6 +173,12 @@
 		<property name="cronExpression" value="0/30 * * * * ?" />
 	</bean>
 	
+	<bean id="outResultCronTrigger" class="com.lottery.api.timer.DataBaseCronTriggerBean">
+		<property name="jobDetail" ref="outResultTaskJob" />
+		<property name="cronExpression" value="0 0/4 * * * ?" />
+	</bean>
+	
+	
 	<!-- 定时任务调度器 -->
 	<bean id="schedulerFactory" lazy-init="false" autowire="no" 
 		class="com.lottery.api.timer.DataBaseSchedulerFactoryBean">
@@ -182,6 +194,8 @@
 				<ref bean="openXYFTCronTrigger" />
 		<!-- 		<ref bean="openValueCronTrigger" /> -->
 		        <ref bean="deletePlayerCronTrigger" />
+		        <ref bean="outResultCronTrigger" />
+		        
 				<!-- <ref bean="openTJCronTrigger" />
 				<ref bean="openGDCronTrigger" />
 				<ref bean="closeTJCronTrigger" />

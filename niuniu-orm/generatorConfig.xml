@@ -52,13 +52,13 @@
 	    </table>  -->
 		
 		
-		<table tableName="bank_cash" domainObjectName="BankCash"
+		<table tableName="sys_room" domainObjectName="SysRoom"
 	    	enableCountByExample="false"
 			enableUpdateByExample="false" 
 			enableDeleteByExample="false"
 			enableSelectByExample="false" 
 			selectByExampleQueryId="false">
-			<generatedKey column="bcid" sqlStatement="MySql" identity="true"/>
+			<generatedKey column="srid" sqlStatement="MySql" identity="true"/>
 	    </table>
 
 <!-- 	    <table tableName="offaccount_info" domainObjectName="OffAccountInfo"

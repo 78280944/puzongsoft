@@ -37,7 +37,7 @@ public class UserCashVo {
     @NotNull(message = "开户行/地址不能为空")
     private String bankAddress;
 	
-	@ApiModelProperty(value = "银行联行号,人行规定的12位联行号", required = true)
+	@ApiModelProperty(value = "银行联行号,人行规定的12位联行号,可默认空")
     @NotNull(message = "银行联行号能为空")
 	private String bankNo;
 

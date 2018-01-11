@@ -104,7 +104,7 @@ public class TradeInfoController {
 		TradeListResult result = new TradeListResult();
 		try {
 			Date[] param1 = CommonUtils.getDateTime(param.getStarttime(), param.getOvertime());
-			List<TradeInfoDto> list  = accountRechargeMapper.selectByTrade(param.getAccountid(),param.getRelativetype(),param.getStarttime(),param.getOvertime(),Integer.valueOf(param.getBeginRow()),Integer.valueOf(param.getPageSize()));
+			List<TradeInfoDto> list  = accountRechargeMapper.selectByTrade(param.getAccountid(),param.getRelativetype(),param1[0],param1[1],Integer.valueOf(param.getBeginRow()),Integer.valueOf(param.getPageSize()));
 			if (list.size() == 0){
 				result.fail("该查询条件下", MessageTool.Code_1010);
 				LOG.info(result.getMessage());

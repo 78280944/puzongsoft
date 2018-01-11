@@ -31,6 +31,18 @@ public class UpdateAccountVo{
 
 		@ApiModelProperty(value = "银行账号", required = true)
 	    private String bankaccount;
+		
+		@ApiModelProperty(value = "银行联行号", required = true)
+	    private String bankno;
+		
+		@ApiModelProperty(value = "银行开户省份", required = true)
+	    private String bankloproname;
+		
+		@ApiModelProperty(value = "银行开户城市", required = true)
+	    private String banklocityname;
+		
+		@ApiModelProperty(value = "银行预留手机号码", required = true)
+	    private String phoneno;
 	    
 	    @ApiModelProperty(value = "ip")
 	    private String ip;
@@ -116,6 +128,38 @@ public class UpdateAccountVo{
 
 		public void setIp(String ip) {
 			this.ip = ip;
+		}
+
+		public String getBankno() {
+			return bankno;
+		}
+
+		public void setBankno(String bankno) {
+			this.bankno = bankno;
+		}
+
+		public String getBankloproname() {
+			return bankloproname;
+		}
+
+		public void setBankloproname(String bankloproname) {
+			this.bankloproname = bankloproname;
+		}
+
+		public String getBanklocityname() {
+			return banklocityname;
+		}
+
+		public void setBanklocityname(String banklocityname) {
+			this.banklocityname = banklocityname;
+		}
+
+		public String getPhoneno() {
+			return phoneno;
+		}
+
+		public void setPhoneno(String phoneno) {
+			this.phoneno = phoneno;
 		}    
 	    
 		
