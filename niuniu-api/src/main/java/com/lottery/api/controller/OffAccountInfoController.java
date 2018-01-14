@@ -48,6 +48,7 @@ import com.lottery.orm.result.OffAccountResult;
 import com.lottery.orm.result.RemarkResult;
 import com.lottery.orm.result.RestResult;
 import com.lottery.orm.service.AccountInfoService;
+import com.lottery.orm.service.EasemobService;
 import com.lottery.orm.service.OffAccountInfoService;
 import com.lottery.orm.util.EnumType;
 import com.lottery.orm.util.MessageTool;
@@ -81,6 +82,9 @@ public class OffAccountInfoController {
 	
 	@Autowired
     private NoticeInfoMapper noticeInfoMapper;
+	
+	@Autowired
+	private EasemobService easemobService;
 	
 	@ApiOperation(value = "新增下线代理", notes = "新增下线代理", httpMethod = "POST")
 	@RequestMapping(value = "/addOffAccountInfo", method = RequestMethod.POST)
@@ -157,9 +161,16 @@ public class OffAccountInfoController {
 			    paraInfo.setInputdate(new Date());
 			    paraInfo.setUsermoney(BigDecimal.valueOf(0.0));
 			    paraInfo.setSupuserid(param.getAccountid());
-			    accountInfoService.addAccountInfo(paraInfo);
+			    //注册环信帐号
+                Boolean easeRegisterResult = easemobService.registerEaseMobUser(paraInfo.getUsername(), paraInfo.getUsername());
+                if (easeRegisterResult) {
+                    //环信帐号注册成功
+                    accountInfoService.addAccountInfo(paraInfo);
+                    result.success();
+                } else {
+                    result.fail("环信注册",MessageTool.Code_3002);
+                }
 			    
-			    result.success();
 		    }
 
 			LOG.info(result.getMessage());

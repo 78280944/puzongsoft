@@ -110,7 +110,6 @@
 		   <mvc:exclude-mapping path="/order/**"/>
 		   <mvc:exclude-mapping path="/report/**"/>
 		   <mvc:exclude-mapping path="/rule.html" />
-		   <mvc:exclude-mapping path="/001.png" />
 		   <ref bean="responseInterceptor"/>
 	  </mvc:interceptor>
     </mvc:interceptors>

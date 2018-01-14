@@ -10,11 +10,17 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.lottery.orm.bo.LotteryGameOrder;
 import com.lottery.orm.bo.LotteryGameRound;
+import com.lottery.orm.bo.SysLimit;
 import com.lottery.orm.dao.AccountAmountMapper;
 import com.lottery.orm.dao.LotteryGameOrderMapper;
 import com.lottery.orm.dao.LotteryGameRoundMapper;
+import com.lottery.orm.dao.LotteryServiceMapper;
+import com.lottery.orm.dao.SysLimitMapper;
 import com.lottery.orm.dao.TradeInfoMapper;
 import com.lottery.orm.dto.LotteryAmountDto;
+import com.lottery.orm.util.CommonUtils;
+import com.lottery.orm.util.MessageTool;
+import com.lottery.orm.bo.LotteryService;
 
 @Service
 @Transactional
@@ -32,6 +38,13 @@ public class JobsTaskService {
 	
 	@Autowired
 	private TradeInfoMapper tradeInfoMapper;
+	
+	@Autowired
+	private SysLimitMapper sysLimitMapper;
+	
+	@Autowired
+	private LotteryServiceMapper lotteryServiceMapper;
+	
 	/**
 	 *试玩账户删除
 	 * @throws Exception 
@@ -58,41 +71,44 @@ public class JobsTaskService {
 	 *公司上庄
 	 * @throws Exception 
 	 */
-	public synchronized void Taskplayoridel() throws Exception{
+	public synchronized void taskplayoridle(LotteryGameRound lgr) throws Exception{
 		java.util.Random random=new java.util.Random();// 定义随机类
-		List<LotteryGameRound> list =  lotteryGameRoundMapper.selectLotteryPlayoridle();
-		String sid = "";
+		//List<LotteryGameRound> list =  lotteryGameRoundMapper.selectLotteryPlayoridle();
+		String offtype = "";
 		Date currentDate = new Date();
 		Date overTime = null;
 	    int  noid  = 0;
-		for (int i = 0;i<list.size();i++){
-			LotteryGameRound lr = new LotteryGameRound();
-			lr = list.get(i);	
-			sid = String.valueOf(lr.getSid());
-			overTime = lr.getOvertime();
-			if ((currentDate.getTime()-overTime.getTime())/1000<=50){
-				if (sid.substring(0, 1).equals("1"))
-					noid = 10;
-				else 
-					noid = 5;
-				List<LotteryGameOrder> lists =  lotteryGameOrderMapper.selectGamePlayoridle(lr.getLotteryterm(), lr.getSid());
+		overTime = lgr.getOvertime();
+		LotteryService ls = lotteryServiceMapper.selectByPrimaryKey(1000);
+		if (ls.getAremarksercie().equals("1")){
+			if ((currentDate.getTime() - overTime.getTime())/1000>=-40&&((currentDate.getTime() - overTime.getTime())<0)){	
+				List<LotteryGameOrder> lists =  lotteryGameOrderMapper.selectGamePlayoridle(lgr.getLotteryterm(), lgr.getSid());
 				for (int j = 0;j<lists.size();j++){
+	                if (lgr.getSid()==2001||lgr.getSid()==2002){
+						offtype = "2";
+						noid = 10;
+					}else{
+						offtype = "1";
+						noid = 5;
+					}
+					SysLimit sys = sysLimitMapper.selectByOrderGs("03",offtype);
 					LotteryGameOrder la = new LotteryGameOrder();
 					la = lists.get(j);
 					int result = random.nextInt(noid);
 			        LotteryGameOrder order = new LotteryGameOrder();
-			        order.setSid(lr.getSid());
+			        order.setAccountid(1003);
+			        order.setSid(lgr.getSid());
 			    	order.setRmid(la.getRmid());
 			    	order.setLtdid(result+1);
 			    	order.setNoid(result+1);
 			    	order.setPlayoridle("1");
-			    	order.setLotteryterm(lr.getLotteryterm());
-			    	order.setOrderamount(BigDecimal.valueOf(20000));
+			    	order.setLotteryterm(lgr.getLotteryterm());
+			    	order.setOrderamount(sys.getLimited());
 			    	order.setOrdertime(new Date());
-			    	order.setOpentime(lr.getOpentime());
+			    	order.setOpentime(lgr.getOpentime());
 			        lotteryGameOrderMapper.insertSelective(order);
+					}
 				}
-			}
 		}
 	}
 	

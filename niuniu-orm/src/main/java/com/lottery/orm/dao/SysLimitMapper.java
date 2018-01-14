@@ -22,5 +22,7 @@ public interface SysLimitMapper {
     
     SysLimit selectByOrder(@Param("gametype")String gametype,@Param("offtype")String offtype);
     
+    SysLimit selectByOrderGs(@Param("gametype")String gametype,@Param("offtype")String offtype);
+    
     List<SysLimit> selectByLimit();
 }

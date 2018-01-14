@@ -36,6 +36,8 @@ import com.lottery.orm.dto.SubsAccountDto;
 import com.lottery.orm.result.OffAccountListResult;
 import com.lottery.orm.result.RestResult;
 import com.lottery.orm.result.SubAccountListResult;
+import com.lottery.orm.service.AccountInfoService;
+import com.lottery.orm.service.EasemobService;
 import com.lottery.orm.service.OffAccountInfoService;
 import com.lottery.orm.util.EnumType;
 import com.lottery.orm.util.MessageTool;
@@ -53,7 +55,7 @@ public class SubAccountInfoController {
 	private Mapper mapper;
 	
 	@Autowired
-    private OffAccountInfoService offAccountInfoService;
+    private AccountInfoService accountInfoService;
 	
 	@Autowired
 	private OffAccountInfoMapper offAccountInfoMapper;
@@ -63,6 +65,9 @@ public class SubAccountInfoController {
 	
 	@Autowired
     private AccountInfoMapper accountInfoMapper;
+	
+	@Autowired
+	private EasemobService easemobService;
 	
 	@ApiOperation(value = "新增子帐号", notes = "新增子帐号", httpMethod = "POST")
 	@RequestMapping(value = "/addSubAccountInfo", method = RequestMethod.POST)
@@ -102,7 +107,16 @@ public class SubAccountInfoController {
 			    paraInfo.setInputdate(new Date());
 			    paraInfo.setUsermoney(BigDecimal.valueOf(0.0));
 			    paraInfo.setSupuserid(param.getAccountid());
-			    accountInfoMapper.insert(paraInfo);
+			    //注册环信帐号
+                Boolean easeRegisterResult = easemobService.registerEaseMobUser(paraInfo.getUsername(), paraInfo.getUsername());
+                if (easeRegisterResult) {
+                    //环信帐号注册成功
+                    accountInfoService.addAccountInfo(paraInfo);
+                    result.success();
+                } else {
+                    result.fail("环信注册",MessageTool.Code_3002);
+                }
+			   
 			    result.success();
 		    }
 

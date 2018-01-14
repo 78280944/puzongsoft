@@ -128,6 +128,9 @@ public class LotteryTaskService {
 	@Autowired
 	private LotteryService lotteryService;
 	
+	@Autowired
+	private JobsTaskService jobsTaskService;
+	
 	
 	@Value("${lottery.apiUrl.cqklsf}")
     private String lotteryApiUrlCQ;
@@ -547,7 +550,11 @@ public class LotteryTaskService {
 				    	*/
 					if ((lgr1.getSid()==1001&&CommonUtils.dateRange())||lgr1.getSid()==2001||lgr1.getSid()==2002){
 						//nOpentime = CommonUtils.dateAddMin(5);
-						nOpentime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(nextOpenTime);
+						if (CommonUtils.getCompareMin(CommonUtils.StrToDate(nextObj.getString("opentime")), new Date())>6)
+							nOpentime = CommonUtils.dateAddMin(5);
+					    else 
+					    	nOpentime = nextObj.getString("opentime"); 
+						//nOpentime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(nextOpenTime);
 					    lgr1.setStarttime(CommonUtils.getStringToMillon(nOpentime,255));
 					    lgr1.setOvertime(CommonUtils.getStringToMillon(nOpentime,40));
 					    lgr1.setOpentime(CommonUtils.getStringToMillon(nOpentime,0));
@@ -555,13 +562,19 @@ public class LotteryTaskService {
 					}
 					else{
 						//nOpentime = CommonUtils.dateAddMin(10);
-						nOpentime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(nextOpenTime);
+						//nOpentime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(nextOpenTime);
+						if (CommonUtils.getCompareMin(CommonUtils.StrToDate(nextObj.getString("opentime")), new Date())>12)
+							nOpentime = CommonUtils.dateAddMin(10);
+					    else 
+					    	nOpentime = nextObj.getString("opentime"); 
 						lgr1.setStarttime(CommonUtils.getStringToMillon(nOpentime,560));
 						lgr1.setOvertime(CommonUtils.getStringToMillon(nOpentime,60));
 						lgr1.setOpentime(CommonUtils.getStringToMillon(nOpentime,0));
 						lgr1.setClosetime(CommonUtils.getStringToMillon(nOpentime,60));
 					}
+					
 					LotteryGameRound gRound1 = lotteryRoundService.getLotteryTermResult(Integer.valueOf(lotteryType), lgr1.getLotteryterm());
+					jobsTaskService.taskplayoridle(lgr1);
 					//System.out.println("9--45--------------"+gRound+".."+lgr1.getLotteryterm()+".."+lgr1.getSid());
 					if (gRound1==null){
 						//System.out.println("9--678--"+lgr1.getSid()+".."+lgr1.getLotteryterm()+".."+lgr1.getLotteryresult());
@@ -828,6 +841,24 @@ public class LotteryTaskService {
 	    }
 	}
 	
+	/**
+	 * 上庄处理
+	 * @throws Exception 
+	 */
+	public synchronized void LotteryPlayoridleHandle(LotteryGameRound lottery) throws Exception{
+		LotteryOrderRecord record = new LotteryOrderRecord();
+		record.setLotteryterm(lottery.getLotteryterm());
+		record.setSid(lottery.getSid());
+		System.out.println("time----------"+CommonUtils.getStringToMillon(lottery.getOvertime().toString(),1*60));
+		
+		record.setFirsttime(CommonUtils.getStringToMillon(lottery.getOvertime().toString(),1*60));
+		record.setAccoundids("1008,1009");
+		LotteryOrderRecord lr = lotteryOrderRecordMapper.selectByKeyValue(lottery.getSid(), lottery.getLotteryterm());
+		if (lr == null){
+			lotteryOrderRecordMapper.insertSelective(record);
+		}
+		
+	}
 	
 	
 	/**

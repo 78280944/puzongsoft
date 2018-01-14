@@ -72,6 +72,7 @@ import com.lottery.orm.result.RemarkResult;
 import com.lottery.orm.result.RestResult;
 import com.lottery.orm.result.UserRechargeResult;
 import com.lottery.orm.service.AccountInfoService;
+import com.lottery.orm.service.EasemobService;
 import com.lottery.orm.util.CommonUtils;
 import com.lottery.orm.util.EnumType;
 import com.lottery.orm.util.MessageTool;
@@ -135,6 +136,9 @@ public class AccountInfoController {
 	
 	@Autowired
 	private BankCashMapper bankCashMapper;
+	
+	@Autowired
+	private EasemobService easemobService;
 	
 	@Value("${jwt.splitter}")
     private String tokenSplitter;
@@ -374,8 +378,15 @@ public class AccountInfoController {
 			    	accountInfo.setState("1");//默认状态正常
 			    	accountInfo.setInputdate(new Date());
 			    	accountInfo.setUsermoney(BigDecimal.valueOf(0.0));
-				    accountInfoService.addAccountInfo(accountInfo);
-				    result.success();
+			    	//注册环信帐号
+	                Boolean easeRegisterResult = easemobService.registerEaseMobUser(accountInfo.getUsername(), accountInfo.getUsername());
+	                if (easeRegisterResult) {
+	                    //环信帐号注册成功
+	                    accountInfoService.addAccountInfo(accountInfo);
+	                    result.success();
+	                } else {
+	                    result.fail("环信注册",MessageTool.Code_3002);
+	                }
 		    	}else {
 				     result.fail("邀请码",MessageTool.Code_3003);
 				     return result;
