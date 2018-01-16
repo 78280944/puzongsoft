@@ -1,5 +1,7 @@
 package com.lottery.orm.dao;
 
+import java.util.List;
+
 import com.lottery.orm.bo.NoticeInfo;
 
 public interface NoticeInfoMapper {
@@ -14,4 +16,9 @@ public interface NoticeInfoMapper {
     int updateByPrimaryKeySelective(NoticeInfo record);
 
     int updateByPrimaryKey(NoticeInfo record);
-}
+    
+    NoticeInfo selectByNotice(String offtype);
+    
+    List<NoticeInfo> selectByHisNotice(String offtype);
+    
+} 

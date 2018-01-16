@@ -2,6 +2,8 @@ package com.lottery.orm.bo;
 
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 public class NoticeInfo {
     private Integer noticeid;
 
@@ -12,7 +14,8 @@ public class NoticeInfo {
     private String stype;
 
     private String updateip;
-
+    
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date updatedate;
 
     private String state;

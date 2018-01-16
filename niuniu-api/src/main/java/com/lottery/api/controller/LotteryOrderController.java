@@ -45,12 +45,14 @@ import com.lottery.orm.dao.LotteryGameOrderMapper;
 import com.lottery.orm.dao.LotteryGameRoundMapper;
 import com.lottery.orm.dao.LotteryOrderMapper;
 import com.lottery.orm.dao.LotteryReportMapper;
+import com.lottery.orm.dao.LotteryRoomMapper;
 import com.lottery.orm.dao.LotteryRoundMapper;
 import com.lottery.orm.dao.SysLimitMapper;
 import com.lottery.orm.dto.HistoryOrderDto;
 import com.lottery.orm.dto.LotteryGameDetailDto;
 import com.lottery.orm.dto.LotteryNoidDto;
 import com.lottery.orm.dto.LotteryOrderDto;
+import com.lottery.orm.dto.LotteryRoomPlayerDto;
 import com.lottery.orm.dto.ResultAmountDto;
 import com.lottery.orm.dto.RoomAmountDto;
 import com.lottery.orm.dto.RoomHisOrderDto;
@@ -121,6 +123,9 @@ public class LotteryOrderController {
 	@Autowired
 	private LotteryGameRoundMapper lotteryGameRoundMapper;
 	
+	@Autowired
+	private LotteryRoomMapper lotteryRoomMapper;
+	
 	@ApiOperation(value = "新增投注记录", notes = "新增投注记录", httpMethod = "POST")
 	@RequestMapping(value = "/addLotteryOrder", method = RequestMethod.POST)
 	@ResponseBody
@@ -189,6 +194,13 @@ public class LotteryOrderController {
 				if ((!"true".equals(checkInfo))){
 					result.fail(checkInfo);
 					return result;
+				}
+				LotteryRoomPlayerDto lrp = lotteryRoomMapper.selectLotteryRoomCount(order.getSid(), order.getLotteryterm(), order.getRmid());
+				if (null != lrp){
+					if (lrp.getRoomid()<(lrp.getCount()+1)){
+						result.fail("该房间人数已满，请其它游戏房间投注");
+						return result;
+					}
 				}
 				//庄闲转换
 				if (order.getPlayoridle().equals("1")){

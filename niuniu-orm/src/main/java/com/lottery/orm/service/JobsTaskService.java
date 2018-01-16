@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +26,7 @@ import com.lottery.orm.bo.LotteryService;
 @Service
 @Transactional
 public class JobsTaskService {
+	public static final Logger LOG = Logger.getLogger(JobsTaskService.class);
 	
 	@Autowired
 	private LotteryGameRoundMapper lotteryGameRoundMapper;
@@ -72,6 +74,7 @@ public class JobsTaskService {
 	 * @throws Exception 
 	 */
 	public synchronized void taskplayoridle(LotteryGameRound lgr) throws Exception{
+		LOG.info("公司上庄开始："+new Date());
 		java.util.Random random=new java.util.Random();// 定义随机类
 		//List<LotteryGameRound> list =  lotteryGameRoundMapper.selectLotteryPlayoridle();
 		String offtype = "";
@@ -80,6 +83,7 @@ public class JobsTaskService {
 	    int  noid  = 0;
 		overTime = lgr.getOvertime();
 		LotteryService ls = lotteryServiceMapper.selectByPrimaryKey(1000);
+		LOG.info("公司上庄状态："+ls.getAremarksercie());
 		if (ls.getAremarksercie().equals("1")){
 			if ((currentDate.getTime() - overTime.getTime())/1000>=-40&&((currentDate.getTime() - overTime.getTime())<0)){	
 				List<LotteryGameOrder> lists =  lotteryGameOrderMapper.selectGamePlayoridle(lgr.getLotteryterm(), lgr.getSid());
@@ -110,6 +114,7 @@ public class JobsTaskService {
 					}
 				}
 		}
+		LOG.info("公司上庄结束："+new Date());
 	}
 	
 

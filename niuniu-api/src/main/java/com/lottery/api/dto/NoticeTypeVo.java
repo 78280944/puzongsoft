@@ -4,7 +4,7 @@ import com.wordnik.swagger.annotations.ApiModelProperty;
 
 public class NoticeTypeVo {
 	
-	@ApiModelProperty(value = "账户类型，00：玩家账户；1：玩家账户；2：代理账户；3：子账户", required = true)
+	@ApiModelProperty(value = "账户类型，00：试玩账户；1：玩家账户；2：代理账户；3：子账户", required = true)
 	private String offtype;
 
 	public String getOfftype() {

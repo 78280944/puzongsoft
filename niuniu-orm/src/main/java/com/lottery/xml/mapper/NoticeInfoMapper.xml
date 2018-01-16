@@ -24,6 +24,21 @@
     from notice_info
     where Noticeid = #{noticeid,jdbcType=INTEGER}
   </select>
+  
+    <select id="selectByNotice" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from notice_info
+    where offtype = #{offtype,jdbcType=VARCHAR} ORDER BY updatedate DESC LIMIT 1
+  </select>
+  
+  <select id="selectByHisNotice" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from notice_info
+    where offtype = #{offtype,jdbcType=VARCHAR} ORDER BY updatedate DESC
+  </select>
+  
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
     delete from notice_info
     where Noticeid = #{noticeid,jdbcType=INTEGER}

@@ -68,6 +68,7 @@ import com.lottery.orm.result.AccountListResult;
 import com.lottery.orm.result.AccountResult;
 import com.lottery.orm.result.AccountSimResult;
 import com.lottery.orm.result.BankCashResult;
+import com.lottery.orm.result.NoticeResult;
 import com.lottery.orm.result.RemarkResult;
 import com.lottery.orm.result.RestResult;
 import com.lottery.orm.result.UserRechargeResult;
@@ -573,17 +574,49 @@ public class AccountInfoController {
 			      LOG.info(result.getMessage());
 			      return result;
 			}
-			int noticeid = 1;
-			if (stype.equals("0")||stype.equals("00"))
-				noticeid = 1;
-			else if (stype.equals("1")||stype.equals("2")||stype.equals("3"))
-				noticeid = 2;
+			String offtype = "";
+			if (stype.equals("1")||stype.equals("00"))
+				offtype = "1";
+			else if (stype.equals("2")||stype.equals("3"))
+				offtype = "2";
 
-            NoticeInfo noticeInfo = noticeInfoMapper.selectByPrimaryKey(noticeid);
+            NoticeInfo noticeInfo = noticeInfoMapper.selectByNotice(offtype);
 			if(noticeInfo==null){
 			      result.fail(MessageTool.Code_4001);
 			}else{
 				result.success(noticeInfo);
+			}
+			LOG.info(result.getMessage());
+		} catch (Exception e) {
+			result.error();
+			LOG.error(e.getMessage(),e);
+		}
+		return result;
+	}
+	
+	@ApiOperation(value = "获取历史公告", notes = "获取历史公告", httpMethod = "POST")
+	@RequestMapping(value = "/lotteryHisMessage", method = RequestMethod.POST)
+	@ResponseBody
+	public NoticeResult getLotteryHisMessage(@ApiParam(value = "Json参数", required = true) @Validated @RequestBody NoticeTypeVo param) throws Exception {
+		NoticeResult result = new NoticeResult();
+		try {
+			String stype = param.getOfftype();
+			if (stype.equals("")||!(stype.equals("00")||stype.equals("1")||stype.equals("2"))||stype.equals("3")){
+			      result.fail("公告类型",MessageTool.Code_1005);
+			      LOG.info(result.getMessage());
+			      return result;
+			}
+			String offtype = "";
+			if (stype.equals("1")||stype.equals("00"))
+				offtype = "1";
+			else if (stype.equals("2")||stype.equals("3"))
+				offtype = "2";
+
+            List<NoticeInfo> list = noticeInfoMapper.selectByHisNotice(offtype);
+			if(list==null){
+			      result.fail(MessageTool.Code_4001);
+			}else{
+				result.success(list);
 			}
 			LOG.info(result.getMessage());
 		} catch (Exception e) {
@@ -608,7 +641,7 @@ public class AccountInfoController {
 			aInfo.setAccountid(param.getAccountid());
 			aInfo.setPassword(DigestUtils.md5Hex("123456"));
 			System.out.println("123------------"+aInfo.getAccountid());
-			AccountInfo aInfo1 = accountInfoMapper.selectByLoginPlayer(aInfo);
+			AccountInfo aInfo1 = accountInfoMapper.selectByPrimaryKey(param.getAccountid());
 			if (aInfo1.getLevel().equals("99")){
 				tradeInfoMapper.deleteByPlayer(aInfo1.getAccountid());
 				accountInfoMapper.deleteByPrimaryKey(aInfo1.getAccountid());
@@ -958,6 +991,8 @@ public class AccountInfoController {
 		aInfo.setUsermoney(aInfo.getUsermoney().subtract(BigDecimal.valueOf(aRecharge.getTransamt().doubleValue())));
 		accountInfoMapper.updateByPrimaryKey(aInfo);
 		aRecharge.setOrderstate("04");
+		aRecharge.setOpuserid(param.getOpuserid());
+		aRecharge.setOpusertime(new Date());
 		accountRechargeMapper.updateByPrimaryKey(aRecharge);
 		result.success("success");
 		LOG.info(result.getMessage());

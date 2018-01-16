@@ -35,6 +35,15 @@
    WHERE a.sid =#{sid,jdbcType=INTEGER} and length(a.rmid) = #{len,jdbcType=INTEGER}  ORDER BY rmid
   </select>  
   
+  <select id="selectLotteryRoomCount" resultMap="PlayerResultMap" >
+  SELECT IFNULL(b.roomnumber,0) AS roomid,a.sid, a.rmid,COUNT(DISTINCT accountid) AS COUNT FROM lottery_game_order a 
+  RIGHT JOIN 
+  lottery_room b ON a.rmid=b.rmid
+  WHERE 
+  a.sid= #{sid,jdbcType=INTEGER}  AND 
+  a.lotteryterm = #{lotteryterm,jdbcType=VARCHAR} AND a.rmid = #{rmid,jdbcType=INTEGER}
+  </select> 
+  
   <select id="selectDistinctSid"  resultMap="BaseResultMap" >
     SELECT rmid,sid,roomid,roomnumber FROM lottery_room WHERE LENGTH(rmid)=8 and sid = #{sid,jdbcType=INTEGER} LIMIT 0,3
   </select>

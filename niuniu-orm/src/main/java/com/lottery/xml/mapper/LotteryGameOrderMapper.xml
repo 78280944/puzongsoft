@@ -592,5 +592,4 @@ AND rmid NOT LIKE '9%') AND result IS NULL AND lotteryterm = #{lotteryterm,jdbcT
 AND rmid NOT LIKE '9%' AND playoridle = '2' and sid = #{sid,jdbcType=INTEGER}
   </select> 
   
-  
 </mapper>
