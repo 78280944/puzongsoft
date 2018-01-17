@@ -1,6 +1,9 @@
 package com.lottery.orm.dao;
 
+import java.util.Date;
 import java.util.List;
+
+import org.apache.ibatis.annotations.Param;
 
 import com.lottery.orm.bo.NoticeInfo;
 
@@ -19,6 +22,6 @@ public interface NoticeInfoMapper {
     
     NoticeInfo selectByNotice(String offtype);
     
-    List<NoticeInfo> selectByHisNotice(String offtype);
+    List<NoticeInfo> selectByHisNotice(@Param("offtype")String offtype,@Param("beginRow")Integer beginRow,@Param("pageSize")Integer pageSize);
     
 } 

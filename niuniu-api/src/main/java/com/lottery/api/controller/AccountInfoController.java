@@ -25,8 +25,8 @@ import com.lottery.api.dto.AccountRecordVo;
 import com.lottery.api.dto.CashOrderVo;
 import com.lottery.api.dto.DemoInfoVo;
 import com.lottery.api.dto.LoginParamVo;
+import com.lottery.api.dto.NoticeHisTypeVo;
 import com.lottery.api.dto.NoticeTypeVo;
-
 import com.lottery.api.dto.PlayAccountInfoVo;
 import com.lottery.api.dto.UpdateAccountVo;
 import com.lottery.api.dto.UserCashVo;
@@ -569,15 +569,15 @@ public class AccountInfoController {
 		RestResult result = new RestResult();
 		try {
 			String stype = param.getOfftype();
-			if (stype.equals("")||!(stype.equals("00")||stype.equals("1")||stype.equals("2"))||stype.equals("3")){
+			if (stype.equals("")||!(stype.equals("99")||stype.equals("1")||stype.equals("2")||stype.equals("3"))){
 			      result.fail("公告类型",MessageTool.Code_1005);
 			      LOG.info(result.getMessage());
 			      return result;
 			}
 			String offtype = "";
-			if (stype.equals("1")||stype.equals("00"))
+			if (stype.equals("3")||stype.equals("99"))
 				offtype = "1";
-			else if (stype.equals("2")||stype.equals("3"))
+			else if (stype.equals("1")||stype.equals("2"))
 				offtype = "2";
 
             NoticeInfo noticeInfo = noticeInfoMapper.selectByNotice(offtype);
@@ -597,22 +597,22 @@ public class AccountInfoController {
 	@ApiOperation(value = "获取历史公告", notes = "获取历史公告", httpMethod = "POST")
 	@RequestMapping(value = "/lotteryHisMessage", method = RequestMethod.POST)
 	@ResponseBody
-	public NoticeResult getLotteryHisMessage(@ApiParam(value = "Json参数", required = true) @Validated @RequestBody NoticeTypeVo param) throws Exception {
+	public NoticeResult getLotteryHisMessage(@ApiParam(value = "Json参数", required = true) @Validated @RequestBody NoticeHisTypeVo param) throws Exception {
 		NoticeResult result = new NoticeResult();
 		try {
 			String stype = param.getOfftype();
-			if (stype.equals("")||!(stype.equals("00")||stype.equals("1")||stype.equals("2"))||stype.equals("3")){
+			if (stype.equals("")||!(stype.equals("99")||stype.equals("1")||stype.equals("2")||stype.equals("3"))){
 			      result.fail("公告类型",MessageTool.Code_1005);
 			      LOG.info(result.getMessage());
 			      return result;
 			}
 			String offtype = "";
-			if (stype.equals("1")||stype.equals("00"))
+			if (stype.equals("3")||stype.equals("99"))
 				offtype = "1";
-			else if (stype.equals("2")||stype.equals("3"))
+			else if (stype.equals("1")||stype.equals("2"))
 				offtype = "2";
 
-            List<NoticeInfo> list = noticeInfoMapper.selectByHisNotice(offtype);
+            List<NoticeInfo> list = noticeInfoMapper.selectByHisNotice(offtype,param.getBeginRow(), param.getPageSize());
 			if(list==null){
 			      result.fail(MessageTool.Code_4001);
 			}else{

@@ -32,11 +32,14 @@
     where offtype = #{offtype,jdbcType=VARCHAR} ORDER BY updatedate DESC LIMIT 1
   </select>
   
-  <select id="selectByHisNotice" resultMap="BaseResultMap" parameterType="java.lang.String" >
+  <select id="selectByHisNotice" resultMap="BaseResultMap" >
     select 
     <include refid="Base_Column_List" />
     from notice_info
-    where offtype = #{offtype,jdbcType=VARCHAR} ORDER BY updatedate DESC
+    where offtype = #{offtype,jdbcType=VARCHAR} ORDER BY updatedate DESC 
+    <if test="beginRow != null and pageSize !=null">
+	limit #{beginRow,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
+	</if>
   </select>
   
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >

@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.lottery.api.dto.AccountInfoVo;
 import com.lottery.api.dto.LoginParamVo;
 import com.lottery.api.dto.NoticeInfoVo;
-import com.lottery.api.dto.NoticeTypeVo;
+import com.lottery.api.dto.NoticeHisTypeVo;
 import com.lottery.api.dto.OffAccountInfoVo;
 import com.lottery.api.dto.UpdateAccountPerVo;
 import com.lottery.api.dto.UpdateAccountRatioVo;
