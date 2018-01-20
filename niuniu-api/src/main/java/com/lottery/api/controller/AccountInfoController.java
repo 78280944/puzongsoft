@@ -569,7 +569,7 @@ public class AccountInfoController {
 		RestResult result = new RestResult();
 		try {
 			String stype = param.getOfftype();
-			if (stype.equals("")||!(stype.equals("99")||stype.equals("1")||stype.equals("2")||stype.equals("3"))){
+			if (stype.equals("")||!(stype.equals("99")||stype.equals("0")||stype.equals("1")||stype.equals("2")||stype.equals("3"))){
 			      result.fail("公告类型",MessageTool.Code_1005);
 			      LOG.info(result.getMessage());
 			      return result;
@@ -577,7 +577,7 @@ public class AccountInfoController {
 			String offtype = "";
 			if (stype.equals("3")||stype.equals("99"))
 				offtype = "1";
-			else if (stype.equals("1")||stype.equals("2"))
+			else if (stype.equals("0")||stype.equals("1")||stype.equals("2"))
 				offtype = "2";
 
             NoticeInfo noticeInfo = noticeInfoMapper.selectByNotice(offtype);
@@ -601,7 +601,7 @@ public class AccountInfoController {
 		NoticeResult result = new NoticeResult();
 		try {
 			String stype = param.getOfftype();
-			if (stype.equals("")||!(stype.equals("99")||stype.equals("1")||stype.equals("2")||stype.equals("3"))){
+			if (stype.equals("")||!(stype.equals("99")||stype.equals("0")||stype.equals("1")||stype.equals("2")||stype.equals("3"))){
 			      result.fail("公告类型",MessageTool.Code_1005);
 			      LOG.info(result.getMessage());
 			      return result;
@@ -609,7 +609,7 @@ public class AccountInfoController {
 			String offtype = "";
 			if (stype.equals("3")||stype.equals("99"))
 				offtype = "1";
-			else if (stype.equals("1")||stype.equals("2"))
+			else if (stype.equals("0")||stype.equals("1")||stype.equals("2"))
 				offtype = "2";
 
             List<NoticeInfo> list = noticeInfoMapper.selectByHisNotice(offtype,param.getBeginRow(), param.getPageSize());

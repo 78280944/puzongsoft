@@ -111,6 +111,7 @@ public class JobsTaskService {
 			    	order.setOrdertime(new Date());
 			    	order.setOpentime(lgr.getOpentime());
 			        lotteryGameOrderMapper.insertSelective(order);
+			        lotteryGameOrderMapper.updatePlayOridle(order.getSid(), order.getRmid(), order.getNoid(),order.getLotteryterm());
 					}
 				}
 		}

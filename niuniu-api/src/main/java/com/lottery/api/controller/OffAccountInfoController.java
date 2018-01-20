@@ -206,6 +206,30 @@ public class OffAccountInfoController {
 		return result;
 	}
 	
+	@ApiOperation(value = "获取该代理下的会员列表", notes = "获取该代理下的会员列表", httpMethod = "POST")
+	@RequestMapping(value = "/getAllAccountInfo", method = RequestMethod.POST)
+	@ResponseBody
+	public OffAccountListResult getAllAccountInfo(@ApiParam(value = "Json参数", required = true) @Validated @RequestBody AccountInfoVo param) throws Exception {
+	    OffAccountListResult result = new OffAccountListResult();
+		try {
+			
+			AccountInfo offacount = accountInfoMapper.selectByPrimaryKey(param.getAccountid());
+			//OffAccountInfo offacount = offAccountInfoMapper.selectByUseridAndType(param.getUserid(), EnumType.OffType.Agency.ID);
+			if(offacount==null){
+				  result.fail(MessageTool.Code_3001);
+			      LOG.info(result.getMessage());
+			      return result;
+			}
+			List<OffsAccountDto> list = offAccountInfoMapper.selectAccSupuserId(offacount.getAccountid(), EnumType.OffType.Agency.ID,param.getBeginRow(), param.getPageSize());
+		    result.success(list);
+			LOG.info(result.getMessage());
+		} catch (Exception e) {
+			result.error();
+			LOG.error(e.getMessage(),e);
+		}
+		return result;
+	}
+	
 	@ApiOperation(value = "代理用户修改下线密码", notes = "代理用户修改下线密码", httpMethod = "POST")
 	@RequestMapping(value = "/updateOffAccountPass", method = RequestMethod.POST)
 	@ResponseBody

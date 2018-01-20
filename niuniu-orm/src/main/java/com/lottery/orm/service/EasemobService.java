@@ -2,6 +2,13 @@ package com.lottery.orm.service;
 
 import com.lottery.orm.util.ConfigUtils;
 import com.lottery.orm.util.HttpclientTool;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.ArrayList;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
@@ -36,7 +43,7 @@ public class EasemobService {
     @Value("${lottery.easeMob.BaseHttpUrl}")
     private String easeMobBaseHttpUrl;
 
-    private static String easeToken = "";
+    private static String easeToken;
 
 
     @Transactional
@@ -66,10 +73,11 @@ public class EasemobService {
 	  
             HttpResponse ret = httpClient.execute(post);
             String tokenRet = EntityUtils.toString(ret.getEntity(), "UTF-8");
-            System.out.println(ret);
+            System.out.println(tokenRet);
             log.info(ret);
              if (ret != null) {
                 if (ret.getStatusLine().getStatusCode() == 200) {
+                	System.out.println("sucessful");
                     log.info("环信注册用户成功 200 ");
                     return true;
                 } else if (ret.getStatusLine().getStatusCode() == 401) {
@@ -109,6 +117,7 @@ public class EasemobService {
     }
 
     private String getEaseMobToken() {
+    	
         String tokenHttpUrl = easeMobBaseHttpUrl+"token";
         String token = "";
         try {
@@ -140,10 +149,37 @@ public class EasemobService {
         }
         return token;
     }
-    public static void main(String args[]){
+    public static void main(String args[]) throws Exception{
+    	Connection con = null;// 创建一个数据库连接
+	    PreparedStatement pre = null;// 创建预编译语句对象，一般都是用这个而不用Statement
+	    ResultSet result = null;// 创建一个结果集对象
+	    ArrayList arrayList  = new ArrayList();
+	    int i=0,j = 0;
+	        Class.forName("com.mysql.jdbc.Driver");// 加载Oracle驱动程序
+	        System.out.println("开始尝试连接数据库！");
+	        String url = "jdbc:mysql://localhost:3306/world";// 127.0.0.1是本机地址，XE是精简版Oracle的默认数据库名
+	        String user = "root";// 用户名,系统默认的账户名
+	        String password = "amarsoft";// 你安装时选设置的密码
+	        con = DriverManager.getConnection(url, user, password);// 获取连接
+	        System.out.println("连接成功！");
+	        pre = con.prepareStatement("select * from account_info where accountid>=1100 and offtype<>'99'");
+	        //preStatement.setString(1, "Citibank");
+	 
+	        result = pre.executeQuery();
+	        String sql = "select * from account_info";// 预编译语句，“？”代表参数
+	      
+            System.out.println("学号\t姓名");
+         //   while (result.next()) {
+               // System.out.println("12--"+result.getString(2));
+          //  String username = result.getString(2);
+          //  String password1 = result.getString(2);
     	EasemobService es = new EasemobService();
-    	String username = "sys888_qwe_1";
-    	String password = "sys888_qwe_1";
-    	System.out.println(es.registerEaseMobUser(username, password));
+    	
+    	String username1 = "sys888_qwe_125";
+    	String password1 = "sys888_qwe_125";
+    	
+    	Thread.sleep(2000);
+    	System.out.println(es.registerEaseMobUser(username1, password1));
+        //    }
     }
 }

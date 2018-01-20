@@ -139,7 +139,7 @@
 	
 	<bean id="openBJSCCronTrigger" class="com.lottery.api.timer.DataBaseCronTriggerBean">
 		<property name="jobDetail" ref="lotteryBJSCTaskJob" />
-		<property name="cronExpression" value="0/8 * * * * ?" />
+		<property name="cronExpression" value="0/10 * * * * ?" />
 	</bean>
 	
 	<bean id="openXYFTCronTrigger" class="com.lottery.api.timer.DataBaseCronTriggerBean">

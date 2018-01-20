@@ -192,7 +192,7 @@ public class LotteryTaskService {
 	 * @throws Exception 
 	 */
 	@Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor=Exception.class)
-	public void getCQSSCLotteryResult() throws Exception{
+	public synchronized void getCQSSCLotteryResult() throws Exception{
 		//System.out.println("00--------------------"+lotteryApiUrlCQSSC1);
 		//getLotteryOriginResult1(EnumType.LotteryType.CQSSC.ID, lotteryApiUrlCQSSC1);
 		getLotteryOriginResultTotal(EnumType.LotteryType.CQSSC.ID, lotteryApiUrlCQSSC2);
@@ -203,7 +203,7 @@ public class LotteryTaskService {
 	 * @throws Exception 
 	 */
 	@Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor=Exception.class)
-	public void getTJSSCLotteryResult() throws Exception{
+	public synchronized void getTJSSCLotteryResult() throws Exception{
 		//System.out.println("00--------------------"+lotteryApiUrlTJSSC1);
 		//getLotteryOriginResult1(EnumType.LotteryType.TJSSC.ID, lotteryApiUrlTJSSC1);
 		getLotteryOriginResultTotal(EnumType.LotteryType.TJSSC.ID, lotteryApiUrlTJSSC2);
@@ -215,7 +215,7 @@ public class LotteryTaskService {
 	 * @throws Exception 
 	 */
 	@Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor=Exception.class)
-	public void getXJSSCLotteryResult() throws Exception{
+	public synchronized void getXJSSCLotteryResult() throws Exception{
 		//System.out.println("00--------------------"+lotteryApiUrlCQSSC2);
 		//getLotteryOriginResult1(EnumType.LotteryType.XJSSC.ID, lotteryApiUrlXJSSC1);
 		getLotteryOriginResultTotal(EnumType.LotteryType.XJSSC.ID, lotteryApiUrlXJSSC2);
@@ -226,7 +226,7 @@ public class LotteryTaskService {
 	 * @throws Exception 
 	 */
 	@Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor=Exception.class)
-	public void getYNSSCLotteryResult() throws Exception{
+	public synchronized void getYNSSCLotteryResult() throws Exception{
 		//System.out.println("00--------------------"+lotteryApiUrlCQSSC2);
 		//getLotteryOriginResult1(EnumType.LotteryType.YNSSC.ID, lotteryApiUrlYNSSC1);
 		getLotteryOriginResultTotal(EnumType.LotteryType.YNSSC.ID, lotteryApiUrlYNSSC2);
@@ -237,7 +237,7 @@ public class LotteryTaskService {
 	 * @throws Exception 
 	 */
 	@Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor=Exception.class)
-	public void getHLJSSCLotteryResult() throws Exception{
+	public synchronized void getHLJSSCLotteryResult() throws Exception{
 		//System.out.println("00-HLJ-------------------"+lotteryApiUrlHLJSSC1);
 		//getLotteryOriginResult1(EnumType.LotteryType.HLJSSC.ID, lotteryApiUrlHLJSSC1);
 		getLotteryOriginResultTotal(EnumType.LotteryType.HLJSSC.ID, lotteryApiUrlHLJSSC2);
@@ -248,7 +248,7 @@ public class LotteryTaskService {
 	 * @throws Exception 
 	 */
 	@Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor=Exception.class)
-	public void getBJSCLotteryResult() throws Exception{
+	public synchronized void getBJSCLotteryResult() throws Exception{
 		//System.out.println("00--------------------"+lotteryApiUrlCQSSC2);
 		//getLotteryOriginResult1(EnumType.LotteryType.BJSC.ID, lotteryApiUrlBJSC1);
 		getLotteryOriginResultTotal(EnumType.LotteryType.BJSC.ID, lotteryApiUrlBJSC2);
@@ -259,7 +259,7 @@ public class LotteryTaskService {
 	 * @throws Exception 
 	 */
 	@Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor=Exception.class)
-	public void getXYFTLotteryResult() throws Exception{
+	public synchronized void getXYFTLotteryResult() throws Exception{
 		//System.out.println("00--------------------"+lotteryApiUrlCQSSC2);
 		//getLotteryOriginResult1(EnumType.LotteryType.XYFT.ID, lotteryApiUrlXYFT1);
 		getLotteryOriginResultTotal(EnumType.LotteryType.XYFT.ID, lotteryApiUrlXYFT2);
@@ -321,12 +321,12 @@ public class LotteryTaskService {
 	private synchronized void getLotteryOriginResultTotal(String lotteryType, String apiUrl) throws Exception {
 		
 		boolean result = getLotteryOriginResult2(lotteryType,apiUrl);
-	    /*
+	   /*
 		if (!result){
 			String url = getUrl(lotteryType);
 			getLotteryOriginResult1(lotteryType,url);
-		}*/
-		
+		}
+		*/
 	}
 	
 	private synchronized String getUrl(String lotteryType)throws Exception{
@@ -352,8 +352,8 @@ public class LotteryTaskService {
 	 * @throws Exception 
 	 */
 	private synchronized boolean getLotteryOriginResult1(String lotteryType, String apiUrl) throws Exception {
-		String result = HttpclientTool.get(apiUrl);
-		//String result = "";
+		//String result = HttpclientTool.get(apiUrl);
+		String result = "";
 		//System.out.println("8-------------:"+lotteryType+".."+result);
 		/*
 	
@@ -364,13 +364,13 @@ public class LotteryTaskService {
           //result = "{\"sucess\":true,";
 		
 		//10,07,04,03,02,07,02,03,03,01
-	*//*
-		result = "{\"success\":true,\"data\":[{\"preDrawCode\":\"9,1,3,0,8\","
-				+ "\"drawIssue\":\"20180110061\",\"drawTime\":\"2017/11/26 17:00:45\","
-				+ "\"preDrawTime\":\"2017-11-26 16:50:50\",\"preDrawIssue\":\"20180110060\","
+	*/
+		result = "{\"success\":true,\"data\":[{\"preDrawCode\":\"0,4,5,5,3\","
+				+ "\"drawIssue\":\"20180119045\",\"drawTime\":\"2017/11/26 17:00:45\","
+				+ "\"preDrawTime\":\"2017-11-26 16:50:50\",\"preDrawIssue\":\"20180119044\","
 				+ "\"drawCount\":\"39\",\"totalCount\":\"120\"}]}";
          // result = "{\"sucess\":true,";
-		*/
+		
 		log.info("批处理测试中....."+result);
 		//{"success":true,"data":[{"preDrawCode":"26570","drawIssue":"20171018074",
 		//"drawTime":"2017/10/18 18:20:45","preDrawTime":"2017-10-18 18:10:45",
@@ -1340,7 +1340,7 @@ public class LotteryTaskService {
 		 * @throws Exception 
 		 */
 		@Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor=Exception.class)
-		public void getCashResult() throws Exception{
+		public synchronized void getCashResult() throws Exception{
 			DefaultHttpClient httpClient = new DefaultHttpClient();
 	        HttpPost postMethod = new HttpPost(outResultUrl);
 	        HttpResponse resp = httpClient.execute(postMethod);
