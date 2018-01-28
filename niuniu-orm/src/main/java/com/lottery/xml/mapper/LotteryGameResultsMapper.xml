@@ -218,7 +218,7 @@
   <update id="updateOrders" parameterType="com.lottery.orm.bo.LotteryGameResults">
     UPDATE lottery_game_results 
     SET ascc = (@i:=@i+1) WHERE LOTTERYTERM = #{lotteryterm,jdbcType=VARCHAR} AND SID = #{sid,jdbcType=INTEGER}
-    ORDER BY resultno,scount DESC,FIRST DESC,SECOND DESC,third DESC,(SELECT @i=0)
+    ORDER BY resultno,getCompare(results) DESC,scount DESC,FIRST DESC,SECOND DESC,third DESC,(SELECT @i=0)
   </update>
 
   <select id="selectGameResults" parameterType="com.lottery.orm.bo.LotteryGameResults" resultMap="BaseResultMap">
@@ -228,18 +228,17 @@
     where
     a.LOTTERYTERM = #{lotteryterm,jdbcType=VARCHAR}
     and a.SID = #{sid,jdbcType=INTEGER}
-    order by resultno,scount DESC,FIRST DESC,SECOND DESC,third DESC,noid ASC
+    order by resultno,getCompare(results) DESC,scount DESC,FIRST DESC,SECOND DESC,third DESC,noid ASC
   </select>
   
   <select id="selectGameOrder" parameterType="com.lottery.orm.bo.LotteryGameResults" resultMap="BaseResultMap">
-    select /.,mn bvcxz
-    ;lkjhgfdxz
+    select
     <include refid="Base_Column_List" />
     from lottery_game_results a
     where
     a.LOTTERYTERM = #{lotteryterm,jdbcType=VARCHAR}
     and a.SID = #{sid,jdbcType=INTEGER}
-    ORDER BY resultno,scount DESC,FIRST DESC,SECOND DESC,third DESC,
+    ORDER BY resultno,getCompare(results) DESC,scount DESC,FIRST DESC,SECOND DESC,third DESC,
   </select>
   
   <insert id="insertBatch" parameterType="com.lottery.orm.bo.LotteryGame">
@@ -258,7 +257,7 @@
     where
     a.LOTTERYTERM = #{lotteryterm,jdbcType=VARCHAR}
     and a.SID = #{sid,jdbcType=INTEGER}
-    ORDER BY resultno,scount DESC,FIRST DESC,SECOND DESC,third DESC,noid
+    ORDER BY resultno,getCompare(results) DESC,scount DESC,FIRST DESC,SECOND DESC,third DESC,noid
   </select>
   
 </mapper>

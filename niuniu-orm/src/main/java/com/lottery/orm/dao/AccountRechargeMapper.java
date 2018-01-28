@@ -30,7 +30,7 @@ public interface AccountRechargeMapper {
     
     List<AccountRecharge> selectByTime(@Param("orderdate")String orderdate,@Param("relativetype")String relativetype,@Param("accountid")Integer accountid);
     
-    List<AccountRecharge> selectByOutResult(@Param("relativetype")String relativetype);
+    List<AccountRecharge> selectByOutResult();
     
     AccountRecharge selectByOrderNo(@Param("orderno")String orderno,@Param("relativetype")String relativetype,@Param("accountid")Integer accountid);
     

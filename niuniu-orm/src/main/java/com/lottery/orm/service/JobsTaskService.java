@@ -90,10 +90,10 @@ public class JobsTaskService {
 				for (int j = 0;j<lists.size();j++){
 	                if (lgr.getSid()==2001||lgr.getSid()==2002){
 						offtype = "2";
-						noid = 10;
+						noid = 5;
 					}else{
 						offtype = "1";
-						noid = 5;
+						noid = 10;
 					}
 					SysLimit sys = sysLimitMapper.selectByOrderGs("03",offtype);
 					LotteryGameOrder la = new LotteryGameOrder();

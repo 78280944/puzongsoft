@@ -17,7 +17,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.colotnet.util.CodingUtil;
 import com.colotnet.util.ConfigUtils;
+import com.colotnet.util.FileUtil;
+import com.colotnet.util.RSAUtil;
 import com.colotnet.util.SSLClient;
 import com.colotnet.util.SignUtils;
 import com.lottery.orm.bo.AccountRecharge;
@@ -114,6 +117,70 @@ public synchronized  AccountRecharge getPayTrans(AccountRecharge aRecharge) thro
 	
 }
 	
+public synchronized  AccountRecharge getPayWayTrans(AccountRecharge aRecharge) throws Exception{
+	
+	String trans_url = ConfigUtils.getProperty("trans_url");
+	byte[] readFileByte = FileUtil.readFileByte(ConfigUtils.getProperty("private_key_pfx_path"));
+	String secretKey = CodingUtil.base64Encode(readFileByte);
+	String privateKey = RSAUtil.readFile(ConfigUtils.getProperty("private_key_path"), "UTF-8");
+	String privateKeyPwd = ConfigUtils.getProperty("private_key_pwd");
+	String merNo = ConfigUtils.getProperty("merchant_no");
+	String requestNo = new SimpleDateFormat("yyyyMMddHHmmssSSS").format(new Date());
+	String version = "V1.0";
+	String transId = "70";
+	String orderDate = new SimpleDateFormat("yyyyMMdd").format(new Date());
+    String orderNo = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
+    String returnUrl = ConfigUtils.getProperty("returnUrl");
+    String notifyUrl = ConfigUtils.getProperty("notifyUrl");
+    String commodityName = aRecharge.getAccountid()+",充值金额："+ (aRecharge.getTransamt()/100)+",IP:"+aRecharge.getOrderip();
+    String remark  = "充值金额:"+ (aRecharge.getTransamt()/100)+",充值时间:"+new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+    String extendField = "";
+    String cardType = "0";
+    String bankCode = "CMB";
+    String signStr = "";
+	String signatureStr = "";
+	String PRIVATE_KEY_PW_KEY = "1234567890qwertyuiopasdfghjklzxcvbnm";
+	String keyType = "file";
+	aRecharge.setExtendfield(extendField);
+	aRecharge.setMerno(merNo);
+	aRecharge.setRequestno(requestNo);
+	aRecharge.setVersion(version);
+	aRecharge.setTransid(transId);
+	aRecharge.setOrderdate(orderDate);
+	aRecharge.setOrderno(orderNo);
+	aRecharge.setReturnurl(returnUrl);
+	aRecharge.setNotifyurl(notifyUrl);
+	aRecharge.setCommodityname(commodityName);
+	aRecharge.setRemark(remark);
+	aRecharge.setMweburl(trans_url);
+	    try {
+	        StringBuffer signature = new StringBuffer();
+	         signature.append("bankCode="+bankCode+"&")
+	        .append("cardType="+cardType+"&")
+	        .append("commodityName="+commodityName+"&")
+	        .append("keyType="+keyType+"&")
+	        .append("merNo="+merNo+"&")
+	        .append("notifyUrl="+notifyUrl+"&")
+	        .append("orderDate="+orderDate+"&")
+	        .append("orderNo="+orderNo+"&")
+	        .append("productId="+aRecharge.getProductid()+"&")
+	        .append("remark="+remark+"&")
+	        .append("requestNo="+requestNo+"&")
+	        .append("returnUrl="+returnUrl+"&") 
+	        .append("transAmt="+aRecharge.getTransamt()+"&")
+	        .append("transId="+transId+"&")
+	        .append("version="+version+"&");
+       		signatureStr = signature.toString().substring(0, signature.length() - 1);
+       		signStr = RSAUtil.signByPrivate(signatureStr, privateKey, "UTF-8");   
+	      System.out.println("12----"+signatureStr);
+	      System.out.println("12-we---"+signStr);
+    	} catch (Exception e) {
+        e.printStackTrace();
+   	 }
+     aRecharge.setSignature(signStr);
+    return aRecharge;
+}
+
 public static void main(String[] args) throws Exception {
 	TransScanCodePayTest a = new TransScanCodePayTest();
 	AccountRecharge aRecharge = new AccountRecharge();

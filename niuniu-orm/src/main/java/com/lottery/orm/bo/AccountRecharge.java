@@ -85,6 +85,7 @@ public class AccountRecharge {
 	private String upstate;
 
 	private Date inputtime;
+	
 
 	public Integer getArid() {
 		return arid;
@@ -414,6 +415,7 @@ public class AccountRecharge {
 	public void setInputtime(Date inputtime) {
 		this.inputtime = inputtime;
 	}
+
 
 	
 }

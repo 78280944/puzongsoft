@@ -539,52 +539,86 @@ public class CommonUtils {
       */
      public static String[][] doNoBankerHandle(String[][] str){
     		
-    /*
-         str[0][0]="200";
+   
+         str[0][0]="50";
          str[0][1]="0";
          str[0][2]="0";
          str[0][3]="1027";
          str[0][4]="1001";
          str[0][5]="0";  //对于赔付用户，是否需要显示负值
-         str[0][6]="5";
+         str[0][6]="3";
          str[0][7]="0";  //对于赔付用户，倍率是否更新
-         str[0][8]="2";
-         str[0][9]="5";
-         str[0][10]="5";
-         str[1][0]="600";
+         str[0][8]="6点";
+         str[0][9]="1";  //noid
+         str[0][10]="1"; //排名
+         str[1][0]="160";
          str[1][1]="0";
          str[1][2]="0";
          str[1][3]="1020";
-         str[1][4]="1001";
+         str[1][4]="1002";
          str[1][5]="0";
-         str[1][6]="3";
+         str[1][6]="2";
          str[1][7]="0";
-         str[1][8]="2";
-         str[1][9]="4";
-         str[1][10]="4";
-         str[2][0]="300";
+         str[1][8]="3点";
+         str[1][9]="3";
+         str[1][10]="3";
+         str[2][0]="200";
          str[2][1]="0";
          str[2][2]="0";
          str[2][3]="1013";
          str[2][4]="1001";
          str[2][5]="0";
-         str[2][6]="2";
+         str[2][6]="3";
          str[2][7]="0";
-         str[2][8]="3";
+         str[2][8]="3点";
          str[2][9]="3";
          str[2][10]="3";
-         str[3][0]="5000";
+         str[3][0]="400";
          str[3][1]="0";
          str[3][2]="0";
          str[3][3]="1019";
          str[3][4]="1001";
          str[3][5]="0";
-         str[3][6]="3";
+         str[3][6]="1";
          str[3][7]="0";
-         str[3][8]="3";
-         str[3][9]="2";
-         str[3][10]="2";
-       */
+         str[3][8]="3点";
+         str[3][9]="3";
+         str[3][10]="3";
+         str[4][0]="180";
+         str[4][1]="0";
+         str[4][2]="0";
+         str[4][3]="1019";
+         str[4][4]="1001";
+         str[4][5]="0";
+         str[4][6]="1";
+         str[4][7]="0";
+         str[4][8]="3点";
+         str[4][9]="2";
+         str[4][10]="4";
+         str[5][0]="50";
+         str[5][1]="0";
+         str[5][2]="0";
+         str[5][3]="1019";
+         str[5][4]="1001";
+         str[5][5]="0";
+         str[5][6]="1";
+         str[5][7]="0";
+         str[5][8]="3点";
+         str[5][9]="2";
+         str[6][10]="4";
+         str[6][0]="50";
+         str[6][1]="0";
+         str[6][2]="0";
+         str[6][3]="1019";
+         str[6][4]="1001";
+         str[6][5]="0";
+         str[6][6]="1";
+         str[6][7]="0";
+         str[6][8]="3点";
+         str[6][9]="2";
+         str[6][10]="4";
+         
+      
          int i = 0;
          int j=str.length-1;
         // System.out.println("j--------------"+j);
@@ -602,25 +636,6 @@ public class CommonUtils {
         	 if (tmp>=Integer.valueOf(str[j][1])){
         		 tmp = tmp - Integer.valueOf(str[j][1]);
         		 System.out.println("j1--------------"+i+"..扣除。"+str[j][3]+"..-"+str[j][1]+"..."+j+".."+str[i][3]+".."+str[j][1]+".."+tmp);
-        		 LotteryGameDetail record = new LotteryGameDetail();
-        		 record.setLgmid(Integer.valueOf(str[j][4]));
-        		 record.setAccountid(Integer.valueOf(str[j][3]));
-        		 record.setTrademoney(BigDecimal.valueOf(-Integer.valueOf(str[j][1])));
-        		 record.setNoid(Integer.valueOf(str[j][9]));
-        		 record.setRaccountid(Integer.valueOf(str[i][3]));
-        		 record.setRnoid(Integer.valueOf(str[i][9]));
-        		 record.setRresult(str[i][8]);
-        		 //LotteryTaskService n = new LotteryTaskService();
-        		// n.insetLotteryGameDetail(record);
-        		 
-        		 record.setLgmid(Integer.valueOf(str[j][4]));
-        		 record.setAccountid(Integer.valueOf(str[j][3]));
-        		 record.setTrademoney(BigDecimal.valueOf(Integer.valueOf(str[j][1])));
-        		 record.setNoid(Integer.valueOf(str[j][9]));
-        		 record.setRaccountid(Integer.valueOf(str[i][3]));
-        		 record.setRnoid(Integer.valueOf(str[i][9]));
-        		 record.setRresult(str[i][8]);
-        		 //lotteryTaskService.insetLotteryGameDetail(record);
         		 
         		 str[j][1] = "0";
         		 str[j][5] = "1";
@@ -650,25 +665,7 @@ public class CommonUtils {
         	 }else{
         		 str[j][1] = String.valueOf((Integer.valueOf(str[j][1]) - tmp));
         		 System.out.println("i12--------------"+i+".."+str[j][1]+".."+str[j][3]+"..-"+tmp+".."+str[i][3]+"..+"+tmp);
-        		 LotteryGameDetail record = new LotteryGameDetail();
-        		 record.setLgmid(Integer.valueOf(str[j][4]));
-        		 record.setAccountid(Integer.valueOf(str[j][3]));
-        		 record.setTrademoney(BigDecimal.valueOf(-tmp));
-        		 record.setNoid(Integer.valueOf(str[j][9]));
-        		 record.setRaccountid(Integer.valueOf(str[i][3]));
-        		 record.setRnoid(Integer.valueOf(str[i][9]));
-        		 record.setRresult(str[i][8]);
-        		 //lotteryTaskService.insetLotteryGameDetail(record);
-        		 //lotteryGameDetailMapper.insert(record);
-        		 
-        		 record.setLgmid(Integer.valueOf(str[i][4]));
-        		 record.setAccountid(Integer.valueOf(str[i][3]));
-        		 record.setTrademoney(BigDecimal.valueOf(tmp));
-        		 record.setNoid(Integer.valueOf(str[i][9]));
-        		 record.setRaccountid(Integer.valueOf(str[j][3]));
-        		 record.setRnoid(Integer.valueOf(str[j][9]));
-        		 record.setRresult(str[j][8]);
-        		// lotteryTaskService.insetLotteryGameDetail(record);
+        		
         		// System.out.println("strj1--------------"+str[j][1]);
         		 str[j][5] = "1";
         		 if (Integer.valueOf(str[j][7]) == 0){
@@ -1050,9 +1047,9 @@ public class CommonUtils {
       */
      public static String[][] doNoBankerHandle1_BF(String[][] str){
     	/*
-         str[0][0]="1200";
-         str[0][1]="1200";
-         str[0][2]="1200";
+         str[0][0]="50";
+         str[0][1]="50";
+         str[0][2]="50";
          str[0][3]="1019";
          str[0][4]="1001";
          str[0][5]="0";
@@ -1331,9 +1328,25 @@ public class CommonUtils {
 		//Date[] param1 = CommonUtils.getDateTime(param.getStartDate(), param.getEndDate());
 		//Date currentTime = AppUtils.getCurrentDate();
 		  //获取昨天时间
+		Date s = CommonUtils.getStringToMillon(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()),1*60);
+	 System.out.println("ik--"+new Date()+".."+s);
+		String s1="bankCode=CMB&cardType=0&commodityName=1009,充值金额：2,IP:&keyType=file&merNo=850610050942302&notifyUrl=http://api.niuniu668.com/swagger/wx_wap_notify.jsp&orderDate=20180126&orderNo=20180126133128&productId=1053&remark=充值金额:2,充值时间:2018-01-26 13:31:28&requestNo=20180126133128211&returnUrl=http://api.niuniu668.com/swagger/wx_wap_result.jsp&transAmt=200&transId=70&version=V1.0";
+        String s2="keyType=file&merNo=850610050942302&requestNo=20180126133128211&version=V1.0&productId=1053&transId=70&orderDate=20180126&orderNo=20180126133128&returnUrl=http://api.niuniu668.com/swagger/wx_wap_result.jsp&notifyUrl=http://api.niuniu668.com/swagger/wx_wap_notify.jsp&commodityName=1009,充值金额：2,IP:&remark=充值金额:2,充值时间:2018-01-26 13:31:28&transAmt=200&cardType=0&bankCode=CMB";
+		String[] r1 = s1.split("&");
+        String[] r2 = s2.split("&");
+        System.out.println("m---sd.."+r1.length);
+        for (int m = 0;m<r2.length;m++){
+        	String temp = r2[m];
+        	for (int n = 0;n<r1.length;n++){
+        		if (temp.equals(r1[n]))
+        			System.out.println("m---"+m+".."+temp+"..通过");
+        	}
+        }
+			System.out.println(new SimpleDateFormat("yyyyMMddHHmmss123").format(new Date()));
+			
 		System.out.println(new DecimalFormat("#.00").format(223.678));
 		  Date backupTime=DateUtils.addDays(new Date(), -1);
-		System.out.println("12----"+dateAddMin(1));
+		System.out.println("12----"+(185-(185%10)));
 		Date[] param1 = getDateTime(new Date(),new Date());
 		String str = "20171119096";
 		String str1 = "92001001";
@@ -1346,8 +1359,9 @@ public class CommonUtils {
 		int gains=200;
 		int count=20000;
 		int values=40000;
-		String[][] d =new String[3][11];
-		System.out.println(doBankerHandleLess(gains, count, values,4,d));
+		String[][] d =new String[7][11];
+		//System.out.println(doBankerHandleLess(gains, count, values,4,d));
+		doNoBankerHandle(d);
 		/*
 		//System.out.println(doCompareCount(gains, count, values));
 		
@@ -1361,7 +1375,7 @@ public class CommonUtils {
 		int times =5;
 		System.out.println(doBankerHandleMore(gains,count,values,times,d));
 		//System.out.println(doBankerHandleLess(gains,count,values,times,d));
-		//System.out.println(doNoBankerHandle(d));
+		System.out.println(doNoBankerHandle(d));
 		//System.out.println(doBankerHandleEqual(18000,d));
 		String[] a = "2,9,2,2,7".split(",");
 		String[] c =CommonUtils.getOrdeNum("2,10","02");

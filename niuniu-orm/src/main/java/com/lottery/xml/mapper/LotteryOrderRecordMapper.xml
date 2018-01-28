@@ -38,6 +38,13 @@
     where firstvalue ='0' order by opentime desc
   </select>
   
+   <select id="selectValueByLottery" resultMap="BaseResultMap" >
+    select 
+    <include refid="Base_Column_List" />
+    from lottery_order_record
+    where firstvalue ='0' and sid= #{sid,jdbcType=INTEGER} and LOTTERYTERM = #{lotteryterm,jdbcType=VARCHAR}
+  </select>
+  
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
     delete from lottery_order_record
     where LORID = #{lorid,jdbcType=INTEGER}

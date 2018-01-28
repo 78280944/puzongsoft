@@ -66,12 +66,6 @@
 		<property name="concurrent" value="false" />
 	</bean>
 	
-   <bean id="lotteryValueTaskJob"
-		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
-		<property name="targetObject" ref="lotteryTaskService" />
-		<property name="targetMethod" value="getFirstValueLotteryResult" />
-		<property name="concurrent" value="false" />
-	</bean>
 	
 	<bean id="outResultTaskJob"
 		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
@@ -147,10 +141,6 @@
 		<property name="cronExpression" value="0/8 * * * * ?" />
 	</bean>
 	
-    <bean id="openValueCronTrigger" class="com.lottery.api.timer.DataBaseCronTriggerBean">
-		<property name="jobDetail" ref="lotteryValueTaskJob" />
-		<property name="cronExpression" value="0/10 * * * * ?" />
-	</bean>
 	
      <bean id="deletePlayerCronTrigger" class="com.lottery.api.timer.DataBaseCronTriggerBean">
 		<property name="jobDetail" ref="deletePlayerTaskJob" />

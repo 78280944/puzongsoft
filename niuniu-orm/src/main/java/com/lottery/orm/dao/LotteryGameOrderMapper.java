@@ -7,6 +7,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
 import com.lottery.orm.bo.LotteryGameOrder;
+import com.lottery.orm.dto.AddLotteryAmountDto;
 import com.lottery.orm.dto.LotteryAmountDto;
 import com.lottery.orm.dto.LotteryNoidDto;
 import com.lottery.orm.dto.ResultAmountDto;
@@ -74,11 +75,13 @@ public interface LotteryGameOrderMapper {
     
     List<LotteryGameOrder> selectGameRmid(@Param("sid")Integer sid,@Param("lotteryterm")String lotteryterm);
     
-    List<LotteryGameOrder> selectByResultValue(@Param("sid")Integer sid,@Param("lotteryterm")String lotteryterm,@Param("accountids")String accountids);
+    List<AddLotteryAmountDto> selectByResultValue(@Param("sid")Integer sid,@Param("lotteryterm")String lotteryterm,@Param("rmid")Integer rmid);
     
     List<LotteryGameOrder> selectByNoResultValue(@Param("sid")Integer sid,@Param("lotteryterm")String lotteryterm);
     
     List<LotteryGameOrder> checkPlayOridle(@Param("sid")Integer sid,@Param("rmid")Integer rmid,@Param("lotteryterm")String lotteryterm);
     
     List<RoomOrderDetailDto> selectGameAmountDetail(@Param("rmid")Integer rmid,@Param("lotteryterm")String lotteryterm);
+    
+    List<LotteryGameOrder> selectAddAccountIds(@Param("sid")Integer sid,@Param("rmid")Integer rmid,@Param("noid")Integer noid,@Param("lotteryterm")String lotteryterm,@Param("accountids")String accountids);
 }

@@ -23,4 +23,6 @@ public interface LotteryOrderRecordMapper {
     
     List<LotteryOrderRecord> selectValueList();
     
+    LotteryOrderRecord selectValueByLottery(@Param("sid")Integer sid,@Param("lotteryterm")String lotteryterm);
+    
 }

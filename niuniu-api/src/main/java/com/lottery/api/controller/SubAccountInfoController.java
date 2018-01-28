@@ -117,7 +117,6 @@ public class SubAccountInfoController {
                     result.fail("环信注册",MessageTool.Code_3002);
                 }
 			   
-			    result.success();
 		    }
 
 			LOG.info(result.getMessage());

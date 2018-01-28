@@ -14,6 +14,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
+import org.apache.log4j.Logger;
 import org.dozer.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,6 +28,7 @@ import com.lottery.orm.bo.AccountInfo;
 import com.lottery.orm.bo.AccountRecharge;
 import com.lottery.orm.dao.AccountInfoMapper;
 import com.lottery.orm.dao.AccountRechargeMapper;
+import com.lottery.orm.service.AccountInfoService;
 /**
  * 类QueryTransStatusTest.java的实现描述：交易状态查询
  * @author pay 2016年4月27日 下午3:16:27
@@ -34,7 +36,10 @@ import com.lottery.orm.dao.AccountRechargeMapper;
 @Service
 @Transactional
 public class QueryTransStatusTest {
+	public static final Logger LOG = Logger.getLogger(QueryTransStatusTest.class);
 	
+	private static final String aRecharge = null;
+
 	@Autowired
 	private Mapper mapper;
 	
@@ -43,6 +48,9 @@ public class QueryTransStatusTest {
 	
 	@Autowired
     private AccountInfoMapper accountInfoMapper;
+	
+	@Autowired
+    private AccountInfoService accountInfoService;
 	
 	public synchronized  String getPayResults(AccountRecharge aRecharge) throws Exception{
     
@@ -80,23 +88,33 @@ public class QueryTransStatusTest {
                    		 aRecharge.setRespcode(mapTypes.get(obj).toString());
                    	 }else if (obj.toString().equals("respDesc")){
                    		 aRecharge.setRespdesc(mapTypes.get(obj).toString());
+                   	 }else if (obj.toString().equals("payNo")){
+                   		 aRecharge.setPayno(mapTypes.get(obj).toString());
                    	 }
                     }
                 }
-                if (aRecharge.getRespcode().equals("0000"))
+                if (aRecharge.getRespcode().equals("0000")){
                 	aRecharge.setOrderstate("01");
-                else if (aRecharge.getRespcode().equals("P000")){
-                	
+                    if (aRecharge.getRelativetype().equals("In")){
+                    	String messages = accountInfoService.checkResult(aRecharge.getOrderno(), aRecharge.getPayno(), String.valueOf(aRecharge.getTransamt()), aRecharge.getOrderdate(), aRecharge.getRespcode(), aRecharge.getRespdesc());
+                    	System.out.println(messages+",arid="+aRecharge.getArid());
+                    	LOG.info(messages+",arid="+aRecharge.getArid());
+                    }
+                }else if (aRecharge.getRespcode().equals("P000")){
+                    
                 }else{
                 	aRecharge.setOrderstate("02");
-                	AccountInfo aInfo = accountInfoMapper.selectByPrimaryKey(aRecharge.getAccountid());
-                	aInfo.setUsermoney(aInfo.getUsermoney().add(BigDecimal.valueOf((double)(aRecharge.getTransamt()))));
-            		aRecharge.setAccountamount(aInfo.getUsermoney().add(BigDecimal.valueOf((double)(aRecharge.getTransamt()))));
-            		accountInfoMapper.updateByPrimaryKey(aInfo);
-            		accountRechargeMapper.updateByPrimaryKey(aRecharge);
+                	if (aRecharge.getRelativetype().equals("Out")){
+	                	AccountInfo aInfo = accountInfoMapper.selectByPrimaryKey(aRecharge.getAccountid());
+	                	aInfo.setUsermoney(aInfo.getUsermoney().add(BigDecimal.valueOf((double)(aRecharge.getTransamt()))));
+	            		aRecharge.setAccountamount(aInfo.getUsermoney());
+	            		accountInfoMapper.updateByPrimaryKey(aInfo);
+	            		accountRechargeMapper.updateByPrimaryKey(aRecharge);
+                	}
                 }
                 accountRechargeMapper.updateByRechargeCashResult(aRecharge);
-                System.out.println("验签成功");
+                System.out.println("验签成功,arid = "+aRecharge.getArid());
+                LOG.info("验签成功,arid="+aRecharge.getArid());
                 return "true";
             }
             System.out.println("返回错误码:" + statusCode);
@@ -110,6 +128,9 @@ public class QueryTransStatusTest {
 		aRecharge.setAccountid(1000);
 		aRecharge.setTransamt(1000);
 		aRecharge.setProductid("1205");
+		aRecharge.setOrderdate("20180128");
+		aRecharge.setOrderno("20180128112340");
+		aRecharge.setRelativetype("In");
 	  QueryTransStatusTest t = new QueryTransStatusTest();
 	  t.getPayResults(aRecharge);
   }

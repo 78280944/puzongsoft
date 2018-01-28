@@ -20,7 +20,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSON;
+import com.colotnet.util.CodingUtil;
 import com.colotnet.util.ConfigUtils;
+import com.colotnet.util.FileUtil;
+import com.colotnet.util.RSAUtil;
 import com.colotnet.util.SSLClient;
 import com.colotnet.util.SignUtils;
 import com.lottery.orm.bo.AccountRecharge;
@@ -97,7 +100,10 @@ public class TransProxyPayTest {
                     	aRecharge.setMerno(mapTypes.get("merNo").toString());
                     	aRecharge.setOrderdate(mapTypes.get("orderDate").toString());
                     	aRecharge.setOrderno(mapTypes.get("orderNo").toString());
-                    	aRecharge.setPayno(mapTypes.get("payNo").toString());
+                    	if (null == mapTypes.get("payNo"))
+                    		aRecharge.setPayno("");
+                    	else
+                    	    aRecharge.setPayno(mapTypes.get("payNo").toString());
                     	aRecharge.setProductid(mapTypes.get("productId").toString());
                     	aRecharge.setRequestno(mapTypes.get("requestNo").toString());
                     	aRecharge.setRespcode(mapTypes.get("respCode").toString());

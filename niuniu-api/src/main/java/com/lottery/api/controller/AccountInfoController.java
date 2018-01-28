@@ -291,7 +291,7 @@ public class AccountInfoController {
 			AccountInfo info = new AccountInfo();
 			info.setUsername("Test"+CommonUtils.produceString(4)+CommonUtils.RamdomNum());
 			info.setAusername(info.getUsername());
-			info.setPassword(DigestUtils.md5Hex("123456"));
+			info.setPassword(DigestUtils.md5Hex("123456XYV"));
 			info.setOfftype("99");
 			info.setLevel("99");
 			info.setInputdate(new Date());
@@ -679,7 +679,10 @@ public class AccountInfoController {
 			      LOG.info(result.getMessage());
 			      return result;
 	    	}
-	    	aRecharge = transScanCodePayTest.getPayTrans(aRecharge);
+	    	if (param.getProductId().equals("1053"))
+	    		aRecharge = transScanCodePayTest.getPayWayTrans(aRecharge);
+	    	else
+	    	    aRecharge = transScanCodePayTest.getPayTrans(aRecharge);
 	    	if (null == aRecharge){
 	    	      result.fail("该用户充值出现异常！");
 			      LOG.info(result.getMessage());
@@ -694,6 +697,9 @@ public class AccountInfoController {
 	    	UserRechargeResDto urDto = mapper.map(aRecharge, UserRechargeResDto.class);	 
 	    	urDto.setUsername(param.getUsername());
 	    	urDto.setTransAmt(param.getTransAmt());
+	    	urDto.setKeyType("file");
+	    	urDto.setBankCode("CMB");
+	    	urDto.setCardType("0");
 			result.success(urDto);
 			LOG.info(result.getMessage());
 		} catch (Exception e) {
@@ -840,7 +846,7 @@ public class AccountInfoController {
 		}
 		LOG.info(aInfo.getUsername()+",账户金额:"+aInfo.getUsermoney()+",取现金额:"+(aRecharge.getTransamt()/100)+",账户取现后余额："+aInfo.getUsermoney().subtract(BigDecimal.valueOf((double)(aRecharge.getTransamt()/100))));
 		aInfo.setUsermoney(aInfo.getUsermoney().subtract(BigDecimal.valueOf((double)(aRecharge.getTransamt()/100))));
-		aRecharge.setAccountamount(aInfo.getUsermoney().subtract(BigDecimal.valueOf((double)(aRecharge.getTransamt()/100))));
+		aRecharge.setAccountamount(aInfo.getUsermoney());
 		accountInfoMapper.updateByPrimaryKey(aInfo);
 		if((aRecharge.getTransamt()/100) % (sf.getRatio().doubleValue()) != 0){
 			result.fail("取现必须为"+sf.getRatio().doubleValue()+"的倍数");
@@ -857,7 +863,7 @@ public class AccountInfoController {
 	    	accountInfoMapper.updateByPrimaryKey(aInfo);
     	}
 		aRecharge.setTransamt(aRecharge.getTransamt()/100);
-		aRecharge.setRemark("取现金额:"+aRecharge.getTransamt()/100+",取现时间:"+new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+		aRecharge.setRemark("取现金额:"+aRecharge.getTransamt()+",取现时间:"+new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
 		accountRechargeMapper.insert(aRecharge);
 		result.success();
 		LOG.info(result.getMessage());
@@ -915,8 +921,19 @@ public class AccountInfoController {
 		      LOG.info(result.getMessage());
 		      return result;
 		}
-		if (null!=aRecharge.getRespcode()&&aRecharge.getRespcode().equals("P000")){
-		      result.fail("该订单已取现！");
+		if (null == aRecharge.getRespcode()){
+			if (aRecharge.getOrderstate().equals("04")){
+			      result.fail("该订单已取现或人工已处理！");
+			      LOG.info(result.getMessage());
+			      return result;
+			}
+		}
+		else if ((aRecharge.getRespcode().equals("P000"))||aRecharge.getOrderdate().equals("04")){
+		      result.fail("该订单已取现或者人工已处理！");
+		      LOG.info(result.getMessage());
+		      return result;
+		}else {
+		      result.fail("该订单已处理，无法取消！");
 		      LOG.info(result.getMessage());
 		      return result;
 		}
@@ -979,13 +996,25 @@ public class AccountInfoController {
 		      return result;
 		}
 
-		if (null!=aRecharge.getRespcode()&&aRecharge.getRespcode().equals("P000")){
+		if (null == aRecharge.getRespcode()){
+			if (aRecharge.getOrderstate().equals("04")){
+			      result.fail("该订单已取现或已人工处理，无法取消！");
+			      LOG.info(result.getMessage());
+			      return result;
+			}
+		}
+		else if ((aRecharge.getRespcode().equals("P000"))||aRecharge.getOrderdate().equals("04")){
 		      result.fail("该订单已取现或已人工处理，无法取消！");
 		      LOG.info(result.getMessage());
 		      return result;
+		}else {
+		      result.fail("该订单已处理，无法取消！");
+		      LOG.info(result.getMessage());
+		      return result;
 		}
+		
 		aInfo.setUsermoney(aInfo.getUsermoney().add(BigDecimal.valueOf(aRecharge.getTransamt().doubleValue())));
-		aRecharge.setAccountamount(aInfo.getUsermoney().add(BigDecimal.valueOf(aRecharge.getTransamt().doubleValue())));
+		aRecharge.setAccountamount(aInfo.getUsermoney());
 		accountInfoMapper.updateByPrimaryKey(aInfo);
 		aInfo = accountInfoMapper.selectByPrimaryKey(1000);
 		aInfo.setUsermoney(aInfo.getUsermoney().subtract(BigDecimal.valueOf(aRecharge.getTransamt().doubleValue())));
@@ -1016,7 +1045,7 @@ public class AccountInfoController {
 	@ResponseBody
 	public synchronized RestResult userOutResult() throws Exception {
 		RestResult result = new RestResult();
-		List<AccountRecharge> list = accountRechargeMapper.selectByOutResult(EnumType.RalativeType.Out.ID);
+		List<AccountRecharge> list = accountRechargeMapper.selectByOutResult();
 		if (null != list){
 			  for (int i = 0;i<list.size();i++){
 				  AccountRecharge aRecharge = new AccountRecharge();

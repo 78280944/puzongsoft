@@ -16,7 +16,7 @@ public class UserRechargeVo {
     @NotNull(message = "用户名不能为空")
     private String username;
 	
-	@ApiModelProperty(value = "产品编号，微信1205", required = true)
+	@ApiModelProperty(value = "产品编号，微信1205;QQ1208,网银1053", required = true)
     @NotNull(message = "产品编号不能为空")
 	private String productId;
 	

@@ -71,11 +71,11 @@
 	limit #{beginRow,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
 	</if>
   </select>
-  <select id="selectByOutResult" parameterType="java.lang.String" resultMap="BaseResultMap">
+  <select id="selectByOutResult" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />
     from account_recharge
-    where relativetype = #{relativetype,jdbcType=VARCHAR} and respcode = 'P000' order by inputtime asc;
+    where (respcode IS NULL OR respcode = '' OR  respcode = 'P000' ) and  orderstate ='03' order by inputtime asc;
   </select>
   
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">

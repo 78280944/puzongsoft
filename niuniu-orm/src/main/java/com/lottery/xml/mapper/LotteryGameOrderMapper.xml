@@ -32,6 +32,17 @@
     <result column="NOID" jdbcType="INTEGER" property="noid" />
   </resultMap>
   
+   <resultMap id="AddGameResultMap" type="com.lottery.orm.dto.AddLotteryAmountDto">
+    <id column="LGMID" jdbcType="INTEGER" property="lgmid" />
+    <result column="SID" jdbcType="INTEGER" property="sid" />
+    <result column="RMID" jdbcType="INTEGER" property="rmid" />
+    <result column="NOID" jdbcType="INTEGER" property="noid" />
+    <result column="PLAYORIDLE" jdbcType="VARCHAR" property="playoridle" />
+    <result column="LOTTERYTERM" jdbcType="VARCHAR" property="lotteryterm" />
+    <result column="OPENTIME" jdbcType="TIMESTAMP" property="opentime" />
+  </resultMap> 
+  
+  
   <sql id="Base_Column_List">
     LGMID, SID, ACCOUNTID, RMID, LTDID, NOID, PLAYORIDLE, LOTTERYTERM, ORDERAMOUNT, ORDERTIME, 
     OPENTIME, RESULT, LASTAMOUNT
@@ -43,19 +54,44 @@
     where LGMID = #{lgmid,jdbcType=INTEGER}
   </select>
   
-  <select id="selectByResultValue"  resultMap="BaseResultMap">
-    select 
-    <include refid="Base_Column_List" />
-    from lottery_game_order
-    where lastamount >0 AND sid = #{sid,jdbcType=INTEGER} and lotteryterm = #{lotteryterm,jdbcType=VARCHAR} and rmid NOT LIKE '9%'
+  <select id="selectByResultValue"  resultMap="AddGameResultMap">
+    SELECT * FROM (
+    SELECT @orderno:=CASE WHEN
+	@noid=t1.noid THEN
+	@orderno+1 ELSE 1 END AS orderno,t1.lgmid,t1.sid,t1.rmid,@noid := t1.noid AS noid,t1.playoridle,t1.lotteryterm,t1.opentime,t1.orderamount FROM (
+    SELECT a.lgmid,a.sid,a.rmid,a.noid,a.playoridle,a.lotteryterm,a.opentime,a.orderamount FROM lottery_Game_order a RIGHT JOIN 
+    (SELECT c.sid,c.rmid,c.noid,c.playoridle,c.lotteryterm,c.counts FROM  
+    (SELECT sid,rmid,noid,playoridle,lotteryterm,COUNT(*) AS counts FROM lottery_game_order
+    WHERE sid = #{sid,jdbcType=INTEGER} and lotteryterm = #{lotteryterm,jdbcType=VARCHAR} and rmid = #{rmid,jdbcType=INTEGER}
+    AND rmid not like '9%' 
+    AND lastamount >=0  GROUP BY rmid,noid,playoridle) c WHERE c.counts>=3) d
+    ON a.sid=d.sid AND a.rmid=d.rmid AND a.noid=d.noid
+    WHERE a.sid = #{sid,jdbcType=INTEGER} AND a.lotteryterm = #{lotteryterm,jdbcType=VARCHAR} and a.rmid = #{rmid,jdbcType=INTEGER} ORDER BY a.rmid,a.noid,a.playoridle,a.orderamount DESC) t1,(SELECT @orderno:=1,@noid:='') AS t2) t3 
+    WHERE t3.orderno =2 OR t3.orderno=3
   </select>
   
-  <select id="selectByNoResultValue"  resultMap="BaseResultMap">
+  <select id="selectAddAccountIds"  resultMap="BaseResultMap">
     select 
-    rmid,noid,playoridle 
+    DISTINCT accountid
     from lottery_game_order
-    where sid = #{sid,jdbcType=INTEGER}  and lotteryterm = #{lotteryterm,jdbcType=VARCHAR} and result is null
-    AND rmid NOT LIKE '9%' GROUP BY noid,rmid
+    where rmid =#{rmid,jdbcType=INTEGER} and sid = #{sid,jdbcType=INTEGER} 
+    and noid = #{noid,jdbcType=INTEGER} and lotteryterm = #{lotteryterm,jdbcType=VARCHAR}
+    and accountid in(#{accountid,jdbcType=VARCHAR})
+  </select>
+  
+  <select id="selectByNoResultValue"  resultMap="BaseResultMap">    
+    SELECT 
+    c.rmid,c.noid,c.playoridle
+    FROM lottery_game_order a RIGHT JOIN 
+    (SELECT b.rmid,b.sid,b.playoridle,b.noid,SUM(b.counts)  AS counts FROM (
+    SELECT rmid,sid,playoridle,noid,COUNT(rmid) AS counts FROM lottery_game_order 
+    WHERE  sid = #{sid,jdbcType=INTEGER}  and lotteryterm = #{lotteryterm,jdbcType=VARCHAR} and rmid not like '9%' and result is null
+    GROUP BY rmid,playoridle order by playoridle asc) b GROUP BY b.rmid) c
+    ON c.sid = a.sid AND c.rmid = a.rmid AND c.noid=a.noid 
+    WHERE a.sid = #{sid,jdbcType=INTEGER}  and a.lotteryterm = #{lotteryterm,jdbcType=VARCHAR} and a.rmid not like '9%' and a.result is null 
+    and c.counts>4
+    GROUP BY a.noid,a.rmid
+    
   </select> 
   
   <select id="selectGameRmid" resultMap="BaseResultMap">
@@ -499,12 +535,12 @@
   FROM lottery_game_order a
   LEFT JOIN (SELECT a.accountid, a.noid,a.lgmid,SUM(a.orderamount) AS asum
   FROM lottery_game_order a WHERE a.sid=#{sid,jdbcType=INTEGER} AND a.rmid = #{rmid,jdbcType=INTEGER} AND a.lotteryterm=#{lotteryterm,jdbcType=VARCHAR}
-  GROUP BY a.accountid) a1 ON (a.accountid = a1.accountid and a.noid=a1.noid)
+  GROUP BY a.accountid,a.noid) a1 ON (a.accountid = a1.accountid and a.noid=a1.noid)
   LEFT JOIN account_info b ON  a.accountid = b.accountid   
   LEFT JOIN lottery_game_results c ON a.lotteryterm = c.lotteryterm AND a.sid=c.sid AND a.noid=c.noid
   LEFT JOIN lottery_game d ON a.sid = d.sid
   WHERE a.sid=#{sid,jdbcType=INTEGER} AND a.rmid = #{rmid,jdbcType=INTEGER} AND a.lotteryterm=#{lotteryterm,jdbcType=VARCHAR}     
-  ORDER BY  c.ascc,a.noid desc,a1.asum desc,a1.lgmid,a.orderamount desc,a.ordertime desc for update
+  ORDER BY  c.ascc,a.noid desc,a1.asum desc,a.orderamount desc,a.ordertime desc,a1.lgmid desc for update
   </select>
   
   <select id="selectGameAmountResult1" resultMap="AmountGameResultMap">
@@ -512,12 +548,12 @@
   FROM lottery_game_order a
   LEFT JOIN (SELECT a.accountid, a.noid,a.lgmid,SUM(a.orderamount) AS asum
   FROM lottery_game_order a WHERE a.sid=#{sid,jdbcType=INTEGER} AND a.rmid = #{rmid,jdbcType=INTEGER} AND a.lotteryterm=#{lotteryterm,jdbcType=VARCHAR}
-  GROUP BY a.accountid) a1 ON (a.accountid = a1.accountid and a.noid=a1.noid)
+  GROUP BY a.accountid,a.noid) a1 ON (a.accountid = a1.accountid and a.noid=a1.noid)
   LEFT JOIN account_info b ON  a.accountid = b.accountid   
   LEFT JOIN lottery_game_results c ON a.lotteryterm = c.lotteryterm AND a.sid=c.sid AND a.noid=c.noid
   LEFT JOIN lottery_game d ON a.sid = d.sid
   WHERE a.sid=#{sid,jdbcType=INTEGER} AND a.rmid = #{rmid,jdbcType=INTEGER} AND a.lotteryterm=#{lotteryterm,jdbcType=VARCHAR}     
-  ORDER BY  c.ascc,a.noid asc,a1.asum ASC,a1.lgmid,a.orderamount asc,a.ordertime ASC for update
+  ORDER BY  c.ascc,a.noid asc,a1.asum ASC,a.orderamount asc,a.ordertime ASC,a1.lgmid asc for update
   </select>
   
   <select id="selectGameAmountLessResult" resultMap="AmountGameResultMap">
