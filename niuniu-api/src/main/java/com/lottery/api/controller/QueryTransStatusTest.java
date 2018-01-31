@@ -84,9 +84,9 @@ public class QueryTransStatusTest {
                 Map<String, Object> data = new HashMap<String, Object>();
                 for (Object obj : mapTypes.keySet()){  
                     if((!obj.toString().equals("signature"))){
-                    	if (obj.toString().equals("respCode")){
+                    	if (obj.toString().equals("origRespCode")){
                    		 aRecharge.setRespcode(mapTypes.get(obj).toString());
-                   	 }else if (obj.toString().equals("respDesc")){
+                   	 }else if (obj.toString().equals("origRespDesc")){
                    		 aRecharge.setRespdesc(mapTypes.get(obj).toString());
                    	 }else if (obj.toString().equals("payNo")){
                    		 aRecharge.setPayno(mapTypes.get(obj).toString());
@@ -94,25 +94,35 @@ public class QueryTransStatusTest {
                     }
                 }
                 if (aRecharge.getRespcode().equals("0000")){
-                	aRecharge.setOrderstate("01");
+                	
                     if (aRecharge.getRelativetype().equals("In")){
                     	String messages = accountInfoService.checkResult(aRecharge.getOrderno(), aRecharge.getPayno(), String.valueOf(aRecharge.getTransamt()), aRecharge.getOrderdate(), aRecharge.getRespcode(), aRecharge.getRespdesc());
-                    	System.out.println(messages+",arid="+aRecharge.getArid());
-                    	LOG.info(messages+",arid="+aRecharge.getArid());
+                    	System.out.println(messages+",充值,arid="+aRecharge.getArid());
+                    	LOG.info(messages+",充值,arid="+aRecharge.getArid());
+                    }else if (aRecharge.getRelativetype().equals("Out")){
+                    	System.out.println("取现,arid="+aRecharge.getArid());
+                    	LOG.info("取现,arid="+aRecharge.getArid());
                     }
+                    aRecharge.setOrderstate("01");
                 }else if (aRecharge.getRespcode().equals("P000")){
                     
                 }else{
-                	aRecharge.setOrderstate("02");
-                	if (aRecharge.getRelativetype().equals("Out")){
+                    if (aRecharge.getRelativetype().equals("Out")){
 	                	AccountInfo aInfo = accountInfoMapper.selectByPrimaryKey(aRecharge.getAccountid());
 	                	aInfo.setUsermoney(aInfo.getUsermoney().add(BigDecimal.valueOf((double)(aRecharge.getTransamt()))));
 	            		aRecharge.setAccountamount(aInfo.getUsermoney());
 	            		accountInfoMapper.updateByPrimaryKey(aInfo);
-	            		accountRechargeMapper.updateByPrimaryKey(aRecharge);
+	        	    	if (aRecharge.getFee()>0){
+	        	    		aInfo = accountInfoMapper.selectByPrimaryKey(1000);
+	        	    		aInfo.setUsermoney(aInfo.getUsermoney().subtract(BigDecimal.valueOf(aRecharge.getFee())));
+	        		    	accountInfoMapper.updateByPrimaryKey(aInfo);
+	        	    	}
+	            		
                 	}
+                	aRecharge.setOrderstate("02");
                 }
-                accountRechargeMapper.updateByRechargeCashResult(aRecharge);
+               // accountRechargeMapper.updateByRechargeCashResult(aRecharge);
+                accountRechargeMapper.updateByPrimaryKey(aRecharge);
                 System.out.println("验签成功,arid = "+aRecharge.getArid());
                 LOG.info("验签成功,arid="+aRecharge.getArid());
                 return "true";
@@ -128,9 +138,9 @@ public class QueryTransStatusTest {
 		aRecharge.setAccountid(1000);
 		aRecharge.setTransamt(1000);
 		aRecharge.setProductid("1205");
-		aRecharge.setOrderdate("20180128");
-		aRecharge.setOrderno("20180128112340");
-		aRecharge.setRelativetype("In");
+		aRecharge.setOrderdate("20180129");
+		aRecharge.setOrderno("20180129211208");
+		aRecharge.setRelativetype("Out");
 	  QueryTransStatusTest t = new QueryTransStatusTest();
 	  t.getPayResults(aRecharge);
   }

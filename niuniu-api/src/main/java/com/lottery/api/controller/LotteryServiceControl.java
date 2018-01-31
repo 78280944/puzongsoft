@@ -19,10 +19,12 @@ import com.lottery.api.dto.AccountInfoVo;
 import com.lottery.api.dto.PasswordInfoVo;
 import com.lottery.orm.bo.AccountInfo;
 import com.lottery.orm.bo.LotteryService;
+import com.lottery.orm.bo.SysFee;
 import com.lottery.orm.bo.SysLimit;
 import com.lottery.orm.bo.SysRoom;
 import com.lottery.orm.dao.AccountInfoMapper;
 import com.lottery.orm.dao.LotteryServiceMapper;
+import com.lottery.orm.dao.SysFeeMapper;
 import com.lottery.orm.dao.SysLimitMapper;
 import com.lottery.orm.dao.SysRoomMapper;
 import com.lottery.orm.dto.LotteryServiceDto;
@@ -58,6 +60,9 @@ import com.wordnik.swagger.annotations.ApiParam;
 		@Autowired
 	    private SysLimitMapper sysLimitMapper;
 		
+		@Autowired
+		private SysFeeMapper sysFeeMapper;
+		
 		@ApiOperation(value = "初始化信息", notes = "初始化信息", httpMethod = "POST")
 		@RequestMapping(value = "/initData", method = RequestMethod.POST)
 		@ResponseBody
@@ -68,6 +73,7 @@ import com.wordnik.swagger.annotations.ApiParam;
 				LotteryServiceDto  lotteryServiceDto = mapper.map(lotteryService, LotteryServiceDto.class); 
 				List<SysRoom> listsys = sysRoomMapper.selectByRoom();
 				List<SysLimit> listlimit = sysLimitMapper.selectByLimit();
+				SysFee sf = sysFeeMapper.selectByPrimaryKey(1001);
 				for (int i = 0;i<listsys.size();i++){
 					SysRoom sr = new SysRoom();
 					sr = listsys.get(i);
@@ -92,7 +98,7 @@ import com.wordnik.swagger.annotations.ApiParam;
 						lotteryServiceDto.setLotterybjbet(sl.getLimited());
 					}
 				}
-				
+				lotteryServiceDto.setRatio(sf.getRatio());
 			    result.success(lotteryServiceDto);  
 				return result;
 			   

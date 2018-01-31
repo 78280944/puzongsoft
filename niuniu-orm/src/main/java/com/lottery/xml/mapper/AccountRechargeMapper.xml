@@ -75,7 +75,7 @@
     select 
     <include refid="Base_Column_List" />
     from account_recharge
-    where (respcode IS NULL OR respcode = '' OR  respcode = 'P000' ) and  orderstate ='03' order by inputtime asc;
+    where (requestno!=null or requestno!='') and orderstate ='03' order by inputtime asc;
   </select>
   
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">

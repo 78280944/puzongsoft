@@ -693,6 +693,7 @@ public class AccountInfoController {
 			aRecharge.setOpuserid(String.valueOf(param.getAccountId()));
 			aRecharge.setOpusertime(new Date());
 			aRecharge.setOrderstate("03");//处理中
+			aRecharge.setInputtime(new Date());
 	    	accountRechargeMapper.insert(aRecharge);
 	    	UserRechargeResDto urDto = mapper.map(aRecharge, UserRechargeResDto.class);	 
 	    	urDto.setUsername(param.getUsername());
@@ -932,8 +933,8 @@ public class AccountInfoController {
 		      result.fail("该订单已取现或者人工已处理！");
 		      LOG.info(result.getMessage());
 		      return result;
-		}else {
-		      result.fail("该订单已处理，无法取消！");
+		}else if (aRecharge.getOrderstate().equals("01")||aRecharge.getOrderstate().equals("02")){
+		      result.fail("该订单已处理，无法打款！");
 		      LOG.info(result.getMessage());
 		      return result;
 		}
@@ -1007,7 +1008,7 @@ public class AccountInfoController {
 		      result.fail("该订单已取现或已人工处理，无法取消！");
 		      LOG.info(result.getMessage());
 		      return result;
-		}else {
+		}else if (aRecharge.getOrderstate().equals("01")||aRecharge.getOrderstate().equals("02")){
 		      result.fail("该订单已处理，无法取消！");
 		      LOG.info(result.getMessage());
 		      return result;

@@ -115,7 +115,7 @@ public class AccountInfoService {
     	}
     	if (ar.getOrderstate().equals("01"))
     		return "success";
-    	if (null!=payNo){
+    	if (null!=payNo&&(aRecharge.getRespcode().equals("0000"))){
     		SysBene sb = sysBeneMapper.selectByAmount(BigDecimal.valueOf(aRecharge.getTransamt()));
 			Double bene = 0.0;
 			Double amount = 0.0;
@@ -150,8 +150,13 @@ public class AccountInfoService {
 	    	ar.setOrderstate("01");//成功
 	    	accountRechargeMapper.updateByRechargeMessage(ar);
 		    return "success";
+	   }else if (aRecharge.getRespcode().equals("P000")){
+		   
+	   }else {
+		   ar.setOrderstate("02");
+		   accountRechargeMapper.updateByRechargeMessage(ar);
 	   }
-    	return "";
+    	return "success";
 	}
 	
 }

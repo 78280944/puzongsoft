@@ -1,5 +1,6 @@
 package com.lottery.api.controller;
 
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -26,7 +27,9 @@ import com.colotnet.util.FileUtil;
 import com.colotnet.util.RSAUtil;
 import com.colotnet.util.SSLClient;
 import com.colotnet.util.SignUtils;
+import com.lottery.orm.bo.AccountInfo;
 import com.lottery.orm.bo.AccountRecharge;
+import com.lottery.orm.dao.AccountInfoMapper;
 import com.lottery.orm.dao.AccountRechargeMapper;
 import com.lottery.orm.service.AccountInfoService;
 /**
@@ -43,6 +46,9 @@ public class TransProxyPayTest {
 	
 	@Autowired
     private AccountRechargeMapper accountRechargeMapper;
+	
+	@Autowired
+    private AccountInfoMapper accountInfoMapper;
 	
 	
 	public synchronized  String getPayTrans(AccountRecharge aRecharge) throws Exception{
@@ -113,7 +119,22 @@ public class TransProxyPayTest {
                     	aRecharge.setVersion(mapTypes.get("version").toString());
                     }
                 }  
-           
+                if (aRecharge.getRespcode().equals("0000")){
+                	aRecharge.setOrderstate("01");
+                }else if (aRecharge.getRespcode().equals("P000")){
+         		   
+         	    }else {
+ 	                	AccountInfo aInfo = accountInfoMapper.selectByPrimaryKey(aRecharge.getAccountid());
+ 	                	aInfo.setUsermoney(aInfo.getUsermoney().add(BigDecimal.valueOf((double)(aRecharge.getTransamt()/100))));
+ 	            		aRecharge.setAccountamount(aInfo.getUsermoney());
+ 	            		accountInfoMapper.updateByPrimaryKey(aInfo);
+ 	        	    	if (aRecharge.getFee()>0){
+ 	        	    		aInfo = accountInfoMapper.selectByPrimaryKey(1000);
+ 	        	    		aInfo.setUsermoney(aInfo.getUsermoney().subtract(BigDecimal.valueOf(aRecharge.getFee())));
+ 	        		    	accountInfoMapper.updateByPrimaryKey(aInfo);
+ 	        	    	}
+ 	        	    	aRecharge.setOrderstate("02");
+         	    }
                 accountRechargeMapper.updateByRechargeCashReady(aRecharge);
                 LOG.info("验签成功结果:arid = "+aRecharge.getArid());
                 System.out.println("验签成功");

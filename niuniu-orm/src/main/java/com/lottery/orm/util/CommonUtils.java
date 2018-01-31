@@ -540,51 +540,51 @@ public class CommonUtils {
      public static String[][] doNoBankerHandle(String[][] str){
     		
    
-         str[0][0]="50";
+         str[0][0]="1000";
          str[0][1]="0";
          str[0][2]="0";
          str[0][3]="1027";
          str[0][4]="1001";
          str[0][5]="0";  //对于赔付用户，是否需要显示负值
-         str[0][6]="3";
+         str[0][6]="3";  //倍数
          str[0][7]="0";  //对于赔付用户，倍率是否更新
          str[0][8]="6点";
-         str[0][9]="1";  //noid
-         str[0][10]="1"; //排名
-         str[1][0]="160";
+         str[0][9]="5";  //noid
+         str[0][10]="3"; //排名
+         str[1][0]="1000";
          str[1][1]="0";
          str[1][2]="0";
          str[1][3]="1020";
          str[1][4]="1002";
          str[1][5]="0";
-         str[1][6]="2";
+         str[1][6]="3";
          str[1][7]="0";
          str[1][8]="3点";
-         str[1][9]="3";
+         str[1][9]="5";
          str[1][10]="3";
-         str[2][0]="200";
+         str[2][0]="1000";
          str[2][1]="0";
          str[2][2]="0";
          str[2][3]="1013";
          str[2][4]="1001";
          str[2][5]="0";
-         str[2][6]="3";
+         str[2][6]="2";
          str[2][7]="0";
          str[2][8]="3点";
-         str[2][9]="3";
-         str[2][10]="3";
-         str[3][0]="400";
+         str[2][9]="8";
+         str[2][10]="4";
+         str[3][0]="1000";
          str[3][1]="0";
          str[3][2]="0";
          str[3][3]="1019";
          str[3][4]="1001";
          str[3][5]="0";
-         str[3][6]="1";
+         str[3][6]="2";
          str[3][7]="0";
          str[3][8]="3点";
-         str[3][9]="3";
-         str[3][10]="3";
-         str[4][0]="180";
+         str[3][9]="8";
+         str[3][10]="4";
+         str[4][0]="1000";
          str[4][1]="0";
          str[4][2]="0";
          str[4][3]="1019";
@@ -593,9 +593,9 @@ public class CommonUtils {
          str[4][6]="1";
          str[4][7]="0";
          str[4][8]="3点";
-         str[4][9]="2";
-         str[4][10]="4";
-         str[5][0]="50";
+         str[4][9]="7";
+         str[4][10]="5";
+         str[5][0]="1000";
          str[5][1]="0";
          str[5][2]="0";
          str[5][3]="1019";
@@ -604,9 +604,9 @@ public class CommonUtils {
          str[5][6]="1";
          str[5][7]="0";
          str[5][8]="3点";
-         str[5][9]="2";
-         str[6][10]="4";
-         str[6][0]="50";
+         str[5][9]="7";
+         str[5][10]="5";
+         str[6][0]="1000";
          str[6][1]="0";
          str[6][2]="0";
          str[6][3]="1019";
@@ -615,9 +615,19 @@ public class CommonUtils {
          str[6][6]="1";
          str[6][7]="0";
          str[6][8]="3点";
-         str[6][9]="2";
-         str[6][10]="4";
-         
+         str[6][9]="6";
+         str[6][10]="7";
+         str[7][0]="1000";
+         str[7][1]="0";
+         str[7][2]="0";
+         str[7][3]="1019";
+         str[7][4]="1001";
+         str[7][5]="0";
+         str[7][6]="1";
+         str[7][7]="0";
+         str[7][8]="3点";
+         str[7][9]="6";
+         str[7][10]="7";
       
          int i = 0;
          int j=str.length-1;
@@ -1045,7 +1055,7 @@ public class CommonUtils {
      /**
       * 判断比较,无庄逻辑处理,备份
       */
-     public static String[][] doNoBankerHandle1_BF(String[][] str){
+     public static String[][] doNoBankerHandle1_BF1(String[][] str){
     	/*
          str[0][0]="50";
          str[0][1]="50";
@@ -1320,6 +1330,212 @@ public class CommonUtils {
     	 return sTime;
      }
      
+     /**
+      * 判断比较,无庄逻辑处理,备份
+      */
+     public static String[][] doNoBankerHandle1_BFYNL(String[][] str){
+
+         str[0][0]="1000";
+         str[0][1]="0";
+         str[0][2]="0";
+         str[0][3]="1027";
+         str[0][4]="1001";
+         str[0][5]="0";  //对于赔付用户，是否需要显示负值
+         str[0][6]="3";  //倍数
+         str[0][7]="0";  //对于赔付用户，倍率是否更新
+         str[0][8]="6点";
+         str[0][9]="5";  //noid桌号
+         str[0][10]="1"; //排名
+         str[1][0]="1000";
+         str[1][1]="0";
+         str[1][2]="0";
+         str[1][3]="1020";
+         str[1][4]="1002";
+         str[1][5]="0";
+         str[1][6]="3";
+         str[1][7]="0";
+         str[1][8]="3点";
+         str[1][9]="5";
+         str[1][10]="1";
+         str[2][0]="1000";
+         str[2][1]="0";
+         str[2][2]="0";
+         str[2][3]="1013";
+         str[2][4]="1001";
+         str[2][5]="0";
+         str[2][6]="2";
+         str[2][7]="0";
+         str[2][8]="3点";
+         str[2][9]="5";
+         str[2][10]="3";
+         str[3][0]="1000";
+         str[3][1]="0";
+         str[3][2]="0";
+         str[3][3]="1019";
+         str[3][4]="1001";
+         str[3][5]="0";
+         str[3][6]="2";
+         str[3][7]="0";
+         str[3][8]="3点";
+         str[3][9]="8";
+         str[3][10]="4";
+         str[4][0]="2000";
+         str[4][1]="0";
+         str[4][2]="0";
+         str[4][3]="1019";
+         str[4][4]="1001";
+         str[4][5]="0";
+         str[4][6]="2";
+         str[4][7]="0";
+         str[4][8]="3点";
+         str[4][9]="7";
+         str[4][10]="5";
+         str[5][0]="1000";
+         str[5][1]="0";
+         str[5][2]="0";
+         str[5][3]="1019";
+         str[5][4]="1001";
+         str[5][5]="0";
+         str[5][6]="1";
+         str[5][7]="0";
+         str[5][8]="3点";
+         str[5][9]="7";
+         str[5][10]="5";
+         str[6][0]="1000";
+         str[6][1]="0";
+         str[6][2]="0";
+         str[6][3]="1019";
+         str[6][4]="1001";
+         str[6][5]="0";
+         str[6][6]="1";
+         str[6][7]="0";
+         str[6][8]="3点";
+         str[6][9]="6";
+         str[6][10]="7";
+         str[7][0]="1000";
+         str[7][1]="0";
+         str[7][2]="0";
+         str[7][3]="1019";
+         str[7][4]="1001";
+         str[7][5]="0";
+         str[7][6]="1";
+         str[7][7]="0";
+         str[7][8]="3点";
+         str[7][9]="6";
+         str[7][10]="7";
+         /*
+         str[8][0]="1000";
+         str[8][1]="0";
+         str[8][2]="0";
+         str[8][3]="1019";
+         str[8][4]="1001";
+         str[8][5]="0";
+         str[8][6]="3";
+         str[8][7]="0";
+         str[8][8]="3点";
+         str[8][9]="5";
+         str[8][10]="5";
+         */
+         int i = 0;
+         int j=str.length-1;
+        // System.out.println("7---"+j);
+         str[0][1] = String.valueOf(Integer.valueOf(str[0][0])*Integer.valueOf(str[0][6]));
+         str[j][1] = String.valueOf(Integer.valueOf(str[j][0])*Integer.valueOf(str[0][6]));
+         str[j][6] = str[0][6];
+         str[j][7] = String.valueOf(1);
+         int tmp = Integer.valueOf(str[0][1]);
+         //System.out.println("7ddd---"+i+".."+j);
+         while (i<j){
+  		    if(str[i][9].equals(str[j][9])||str[i][10].equals(str[j][10])){
+ 			    break;
+ 			}
+
+        	 if (tmp==Integer.valueOf(str[j][1])){
+        		 tmp = 0;
+        		 str[j][1] = "0";
+        		 str[j][5] = "1";
+        		 if (Integer.valueOf(str[j][7]) == 0){
+        			 str[j][6] = str[i][6];
+        			 str[j][7] = String.valueOf(1);
+        		 }
+        		 
+        		 str[i][1] = String.valueOf(Integer.valueOf(str[i][0])*Integer.valueOf(str[i][6])); 
+                 
+        		 j--;
+                 i++;
+                       		 
+        		 if(i < j){
+        			 if(!(str[i][9].equals(str[j][9])||str[i][10].equals(str[j][10]))){
+        				 str[i][1] = String.valueOf(Integer.valueOf(str[i][0])*Integer.valueOf(str[i][6])); 
+    	        		 tmp = Integer.valueOf(str[i][1]);
+            			 str[j][1] = String.valueOf(Integer.valueOf(str[j][0])*Integer.valueOf(str[i][6]));
+        			 }       			
+        		 }else if(i == j){
+        			 str[i][1] = "0"; 		
+        		 }else{ 
+        			 j = i;
+        		 }
+        	 }
+        	 else if (tmp>Integer.valueOf(str[j][1])){
+        		 tmp = tmp - Integer.valueOf(str[j][1]);
+        		 str[j][1] = "0";
+        		 str[j][5] = "1";
+        		 if (Integer.valueOf(str[j][7]) == 0){
+        			 str[j][6] = str[i][6];
+        			 str[j][7] = String.valueOf(1);
+        		 }
+        		 j--;
+        		 
+        		 if(i==j){
+        			 str[i][1] = String.valueOf(Integer.valueOf(str[i][0])*Integer.valueOf(str[i][6]) - tmp);
+        			 str[i][2] = str[i][1];
+        		 }else if(i < j){
+        			 if(!(str[i][9].equals(str[j][9])||str[i][10].equals(str[j][10]))){
+        			     str[j][1] = String.valueOf(Integer.valueOf(str[j][0])*Integer.valueOf(str[i][6]));
+        			 }
+        			 else{
+        				 str[i][1] = String.valueOf(Integer.valueOf(str[i][0])*Integer.valueOf(str[i][6]) - tmp);
+            			 str[i][2] = str[i][1];
+        			 }
+        		 }
+        	 }else{
+        		 System.out.println("9---"+tmp);
+        		 str[j][1] = String.valueOf((Integer.valueOf(str[j][1]) - tmp));
+        		 str[j][5] = "1";
+        		 if (Integer.valueOf(str[j][7]) == 0){
+        			 str[j][6] = str[i][6];
+        			 str[j][7] = String.valueOf(1);
+        			//System.out.println("9---"+j);
+        		 }
+        		 i++;
+        		 if(i < j){
+        			 if(!(str[i][9].equals(str[j][9])||str[i][10].equals(str[j][10]))){
+		        		 str[i][1] = String.valueOf(Integer.valueOf(str[i][0])*Integer.valueOf(str[i][6])); 		
+		        		 tmp = Integer.valueOf(str[i][1]);
+	        		 }
+        		 }
+        		//System.out.println("9---"+tmp);
+        	 }
+         }
+        // System.out.println("7ddd-sdsd--"+i+".."+j);
+         for (i=str.length-1;i>=j;i--){
+        	 if(str[i][5].equals("1")){
+        		 str[i][2] = String.valueOf(Integer.valueOf(str[i][1])  - Integer.valueOf(str[i][0])*Integer.valueOf(str[i][6]));
+        		  System.out.println("0----0-"+i+".."+str[i][1]);
+        	 }
+         }
+        for (i=0;i<j;i++){
+        	 str[i][2] =  str[i][1] ;
+        	System.out.println("0----"+i+".."+str[i][1]);
+        }
+
+       for (int w = 0;w<str.length;w++)
+       System.out.println("90------------"+str[w][0]+"..."+str[w][1]+".."+str[w][2]);
+   
+       return str;
+        
+     }
+     
 	/**
 	 * @param args
 	 * @throws Exception
@@ -1359,9 +1575,9 @@ public class CommonUtils {
 		int gains=200;
 		int count=20000;
 		int values=40000;
-		String[][] d =new String[7][11];
+		String[][] d =new String[8][11];
 		//System.out.println(doBankerHandleLess(gains, count, values,4,d));
-		doNoBankerHandle(d);
+		doNoBankerHandle1_BFYNL(d);
 		/*
 		//System.out.println(doCompareCount(gains, count, values));
 		

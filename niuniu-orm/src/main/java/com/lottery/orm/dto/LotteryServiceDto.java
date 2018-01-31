@@ -41,6 +41,9 @@ public class LotteryServiceDto {
     
     @ApiModelProperty(value = "板九投注金额设置")
     private BigDecimal lotterybjbet;
+    
+    @ApiModelProperty(value = "板九投注金额设置")
+    private BigDecimal ratio;
 
 	public String getLoginservice() {
 		return loginservice;
@@ -137,8 +140,14 @@ public class LotteryServiceDto {
 	public void setLotterybjbet(BigDecimal lotterybjbet) {
 		this.lotterybjbet = lotterybjbet;
 	}
+
+	public BigDecimal getRatio() {
+		return ratio;
+	}
+
+	public void setRatio(BigDecimal ratio) {
+		this.ratio = ratio;
+	}
      
-    
-   
     
 }
