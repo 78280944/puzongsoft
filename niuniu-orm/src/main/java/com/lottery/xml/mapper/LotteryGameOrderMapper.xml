@@ -516,7 +516,9 @@
  <select id="selectNoIdOrder" resultMap="GameOrderMap">
     SELECT SUM(orderamount) as ORDERAMOUNT
     FROM lottery_game_order 
-    WHERE sid = #{sid,jdbcType=INTEGER} AND lotteryterm = #{lotteryterm,jdbcType=VARCHAR} AND noid = #{noid,jdbcType=INTEGER} AND result IS NULL 
+    WHERE accountid =#{accountid,jdbcType=INTEGER} 
+    and rmid = #{rmid,jdbcType=INTEGER} 
+    and sid = #{sid,jdbcType=INTEGER} AND lotteryterm = #{lotteryterm,jdbcType=VARCHAR} AND noid = #{noid,jdbcType=INTEGER} AND result IS NULL 
   </select>
   
   <select id="checkPlayOridle" resultMap="BaseResultMap">

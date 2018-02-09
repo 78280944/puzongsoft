@@ -157,9 +157,21 @@ public class ToolsUtil {
 		}
 	}
 	
+	public static boolean checkTime() {
+		Calendar c = Calendar.getInstance();
+		c.setTime(new Date());
+		int dayOfWeek = c.get(Calendar.DAY_OF_WEEK);
+		int hourOfDay = c.get(Calendar.HOUR_OF_DAY);
+		if (hourOfDay >= 6 && hourOfDay <= 22) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
 	
 	public static void main(String args[]){
-		System.out.println(checkUpdatePeriod());
+		System.out.println(checkTime());
 		/* System.out.println(DigestUtils.md5Hex("123"));
 		  
 		AccountInfo ai = new AccountInfo();

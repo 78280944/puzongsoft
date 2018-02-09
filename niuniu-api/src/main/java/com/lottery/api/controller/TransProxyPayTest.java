@@ -52,7 +52,6 @@ public class TransProxyPayTest {
 	
 	
 	public synchronized  String getPayTrans(AccountRecharge aRecharge) throws Exception{
-    //public static void main(String[] args) throws Exception {
     	
         DefaultHttpClient httpClient = new SSLClient();
         HttpPost postMethod = new HttpPost(ConfigUtils.getProperty("trans_url"));
@@ -81,14 +80,7 @@ public class TransProxyPayTest {
         try {
             postMethod.setEntity(new UrlEncodedFormEntity(nvps, "UTF-8"));
             HttpResponse resp = httpClient.execute(postMethod);
-            String str = EntityUtils.toString(resp.getEntity(), "UTF-8");
-            /*String str = "{\"acctNo\":\"6222600520004096421\",\"bankLocalCityName\":\"柳州市\",\"bankLocalName\":\"交通银行柳州"
-            		+ "分行\",\"bankLocalProvinceName\":\"广西壮族自治区\",\"bankName\":\"交通银行\",\"bankNo\":\"\",\"customerName\":\"李政\",\"extendField\":\"\",\"is"
-            		+ "Company\":\"0\",\"merNo\":\"850610050942302\",\"orderDate\":\"20180101\",\"orderNo\":\"20180101213744\",\"orderTime\":\"20180101213643\",\"payNo\":\"250000000494\",\"phoneNo\":\"1397726"
-            		+ "5182\",\"productId\":\"1043\",\"remark\":\"取现金额:5000,取现时间：2018-01-01 21:37:44\",\"requestNo\":\"20180101213744044\",\"respCode\":\"P000\",\"respDesc\":\"交易处理中\",\"signature\":\"IhM2JsAriOD7Oi"
-            		+ "DffffWTMKqD1VnAD9LpuHH6baRghsCntCDJjOm0xR0lslQklc2yPHiY9zzUcg/dVSCrFV+s8wqNKrmssia5BugsGPMSMLzVcDgPzfQEBixEq1k3hpI4T5tFDqbqFclKDQc3wdWyPVxzEBwe37QOeeHLCVFjvtJ3nZlTz1JswPOxv48E0kut/SHM2MlA9D1Ker0khQKHByQIs5JT6HYaBreUvbvusjZgXBmuonGhV6NlnhF5EQB0r1WuSgO/rd+H1BH7zYhUn7TOmP/1mqESI/KHbtVJ7CJ/tYXR2GEyfTHigt2LiO7zTSYBd9IN8ZHKZG9MM"
-            		+ "Mj+A==\",\"transAmt\":\"4900\",\"transId\":\"67\",\"version\":\"V1.0\"}";
-            */		
+            String str = EntityUtils.toString(resp.getEntity(), "UTF-8");		
             System.out.println("返回结果："+str+",arid="+aRecharge.getArid());
             LOG.info("取现结果:"+str+",arid = "+aRecharge.getArid());
             int statusCode = resp.getStatusLine().getStatusCode();

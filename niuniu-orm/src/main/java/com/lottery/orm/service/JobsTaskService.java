@@ -13,6 +13,7 @@ import com.lottery.orm.bo.LotteryGameOrder;
 import com.lottery.orm.bo.LotteryGameRound;
 import com.lottery.orm.bo.SysLimit;
 import com.lottery.orm.dao.AccountAmountMapper;
+import com.lottery.orm.dao.LotteryGameDetailMapper;
 import com.lottery.orm.dao.LotteryGameOrderMapper;
 import com.lottery.orm.dao.LotteryGameRoundMapper;
 import com.lottery.orm.dao.LotteryServiceMapper;
@@ -47,23 +48,28 @@ public class JobsTaskService {
 	@Autowired
 	private LotteryServiceMapper lotteryServiceMapper;
 	
+	@Autowired
+	private LotteryGameDetailMapper lotteryGameDetailMapper;
+	
 	/**
 	 *试玩账户删除
 	 * @throws Exception 
 	 */
 	public synchronized void LotteryPlayerDelete() throws Exception{
-		List<LotteryGameRound> list =  lotteryGameRoundMapper.selectLotteryOrderPlayer();
+		Date[] param1 = CommonUtils.getDateTime(new Date(), new Date());
+		List<LotteryGameRound> list =  lotteryGameRoundMapper.selectLotteryOrderPlayer(param1[0],param1[1]);
 		Date openTime = null;
 		int[] accoundis = {888,987,988,989,990,991,992,993,994,995,996,997,998,999};
 		for (int i = 0;i<list.size();i++){
 			LotteryGameRound lr = new LotteryGameRound();
 			lr = list.get(i);	
 			openTime = lr.getOpentime();
-			if (new Date().getTime() - openTime.getTime()/1000>700){
+			if (new Date().getTime() - openTime.getTime()>200){
 			    lotteryGameOrderMapper.deleteByPlayerBatch(lr.getSid(),openTime);
 			    for (int j = 0;j<accoundis.length;j++){
 			    	tradeInfoMapper.deleteByPlayer(accoundis[j]);
 			    	accountAmountMapper.deleteByPlayer(accoundis[j]);
+			    	lotteryGameDetailMapper.deletePlayer(accoundis[j]);
 			    }
 			}
 		}
@@ -83,19 +89,22 @@ public class JobsTaskService {
 	    int  noid  = 0;
 		overTime = lgr.getOvertime();
 		LotteryService ls = lotteryServiceMapper.selectByPrimaryKey(1000);
+		String gametype = "";
 		LOG.info("公司上庄状态："+ls.getAremarksercie());
 		if (ls.getAremarksercie().equals("1")){
 			if ((currentDate.getTime() - overTime.getTime())/1000>=-40&&((currentDate.getTime() - overTime.getTime())<0)){	
 				List<LotteryGameOrder> lists =  lotteryGameOrderMapper.selectGamePlayoridle(lgr.getLotteryterm(), lgr.getSid());
 				for (int j = 0;j<lists.size();j++){
 	                if (lgr.getSid()==2001||lgr.getSid()==2002){
-						offtype = "2";
-						noid = 5;
-					}else{
 						offtype = "1";
+						noid = 5;
+						gametype = "03";
+					}else{
+						offtype = "2";
 						noid = 10;
+						gametype = "04";
 					}
-					SysLimit sys = sysLimitMapper.selectByOrderGs("03",offtype);
+					SysLimit sys = sysLimitMapper.selectByOrderGs(gametype,offtype);
 					LotteryGameOrder la = new LotteryGameOrder();
 					la = lists.get(j);
 					int result = random.nextInt(noid);
@@ -118,8 +127,4 @@ public class JobsTaskService {
 		LOG.info("公司上庄结束："+new Date());
 	}
 	
-
-	public static void main(String[] args) {
-		
-	}
 }

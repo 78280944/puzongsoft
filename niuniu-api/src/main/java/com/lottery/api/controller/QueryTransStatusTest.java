@@ -107,6 +107,13 @@ public class QueryTransStatusTest {
                 }else if (aRecharge.getRespcode().equals("P000")){
                     
                 }else{
+                	AccountRecharge ar = accountRechargeMapper.selectByOrderNoReturn(aRecharge.getOrderno(), "Out");
+                	if (null == ar){
+          		      LOG.info("该订单信息有误！");
+          		      return "false";
+              	     }
+                	if (ar.getOrderstate().equals("01")||ar.getOrderstate().equals("02"))
+                		return "true";
                     if (aRecharge.getRelativetype().equals("Out")){
 	                	AccountInfo aInfo = accountInfoMapper.selectByPrimaryKey(aRecharge.getAccountid());
 	                	aInfo.setUsermoney(aInfo.getUsermoney().add(BigDecimal.valueOf((double)(aRecharge.getTransamt()))));
@@ -117,7 +124,6 @@ public class QueryTransStatusTest {
 	        	    		aInfo.setUsermoney(aInfo.getUsermoney().subtract(BigDecimal.valueOf(aRecharge.getFee())));
 	        		    	accountInfoMapper.updateByPrimaryKey(aInfo);
 	        	    	}
-	            		
                 	}
                 	aRecharge.setOrderstate("02");
                 }
@@ -138,8 +144,8 @@ public class QueryTransStatusTest {
 		aRecharge.setAccountid(1000);
 		aRecharge.setTransamt(1000);
 		aRecharge.setProductid("1205");
-		aRecharge.setOrderdate("20180129");
-		aRecharge.setOrderno("20180129211208");
+		aRecharge.setOrderdate("20180205");
+		aRecharge.setOrderno("20180205121153");
 		aRecharge.setRelativetype("Out");
 	  QueryTransStatusTest t = new QueryTransStatusTest();
 	  t.getPayResults(aRecharge);

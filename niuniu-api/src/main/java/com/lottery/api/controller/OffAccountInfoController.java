@@ -96,7 +96,6 @@ public class OffAccountInfoController {
 			String username = param.getUsername();
 			String ausername = param.getAusername();
 			String password = param.getPassword();
-			//String supusername = param.getSupusername();
 			Double percentage = param.getPercentage();
 			
 				
@@ -162,7 +161,7 @@ public class OffAccountInfoController {
 			    paraInfo.setUsermoney(BigDecimal.valueOf(0.0));
 			    paraInfo.setSupuserid(param.getAccountid());
 			    //注册环信帐号
-                Boolean easeRegisterResult = easemobService.registerEaseMobUser(paraInfo.getUsername(), paraInfo.getUsername());
+                Boolean easeRegisterResult = easemobService.registerEaseMobUser(paraInfo.getUsername().toLowerCase(), paraInfo.getUsername().toLowerCase());
                 if (easeRegisterResult) {
                     //环信帐号注册成功
                     accountInfoService.addAccountInfo(paraInfo);
@@ -256,213 +255,6 @@ public class OffAccountInfoController {
 		return result;
 	}
 	
-    /*
-	@ApiOperation(value = "代理用户修改玩家密码", notes = "代理用户修改玩家密码", httpMethod = "POST")
-	@RequestMapping(value = "/updatePlayPass", method = RequestMethod.POST)
-	@ResponseBody
-	public RestResult updateAccountInfo(@ApiParam(value = "Json参数", required = true) @Validated @RequestBody UpdatePlayPassVo param) throws Exception {
-		RestResult result = new RestResult();
-		try {
-			int userid = param.getUserid();
-			String password = param.getPassword();
-            String supusername = param.getSupusername();
-            int offtype = param.getOfftype();
-			String ip = param.getIp();
-			
-			if (0==userid){
-			      result.fail("用户ID",MessageTool.Code_2002);
-			      LOG.info(result.getMessage());
-			      return result;
-			}
-			
-			AccountInfo accountInfo = accountInfoMapper.selectByPrimaryKey(param.getUserid());
-			if(accountInfo==null){
-			      result.fail(MessageTool.Code_3001);
-			}else{
-				accountInfo.setPassword(DigestUtils.md5Hex(password));
-				accountInfo.setIp(ip);
-			    accountInfoService.updateAccountInfo(accountInfo);
-			    LOG.info("修改密码记录详情为："+" 管理员："+supusername+" 账户类型："+offtype+" IP："+ip+" 修改玩家ID"+userid+" 密码修改为"+accountInfo.getPassword());
-			    result.success();
-			}
-			LOG.info(result.getMessage());
-		} catch (Exception e) {
-			result.error();
-			LOG.error(e.getMessage(),e);
-		}
-		return result;
-	}
-	
-	@ApiOperation(value = "代理用户修改玩家洗码比", notes = "代理用户修改玩家洗码比", httpMethod = "POST")
-	@RequestMapping(value = "/updatePlayRatio", method = RequestMethod.POST)
-	@ResponseBody
-	public RestResult updatePlayRatio(@ApiParam(value = "Json参数", required = true) @Validated @RequestBody UpdatePlayRatioVo param) throws Exception {
-		RestResult result = new RestResult();
-		try {
-			int userid = param.getUserid();
-			double ratio = param.getRatio();
-            String supusername = param.getSupusername();
-            int offtype = param.getOfftype();
-			String ip = param.getIp();
-			
-			if (0==userid){
-			      result.fail("用户ID",MessageTool.Code_2002);
-			      LOG.info(result.getMessage());
-			      return result;
-			}
-			
-			AccountInfo accountInfo = accountInfoMapper.selectByPrimaryKey(param.getUserid());
-			if(accountInfo==null){
-			      result.fail(MessageTool.Code_3001);
-			}else{
-				//洗码比逻辑 
-				OffAccountInfo supAccount = offAccountInfoMapper.selectByUsername(accountInfo.getUsername());
-		    	if (supAccount==null){
-		    		result.fail(accountInfo.getUsername(),MessageTool.Code_2005);
-		    		return result;
-		    	}
-		    	if (ratio>supAccount.getRatio()){
-				      result.fail("洗码比",MessageTool.Code_1008);
-				      LOG.info(result.getMessage());
-				      return result;	
-				}
-				accountInfo.setRatio(ratio);
-				accountInfo.setIp(ip);
-			    accountInfoService.updateAccountInfo(accountInfo);
-			    LOG.info("修改玩家洗码比记录详情为："+" 管理员："+supusername+" 账户类型："+offtype+" IP："+ip+" 修改玩家ID"+userid+" 玩家洗码比修改为"+accountInfo.getRatio());
-			    result.success();
-			}
-			LOG.info(result.getMessage());
-		} catch (Exception e) {
-			result.error();
-			LOG.error(e.getMessage(),e);
-		}
-		return result;
-	}
-	
-	
-	@ApiOperation(value = "代理用户修改玩家状态", notes = "代理用户修改玩家状态", httpMethod = "POST")
-	@RequestMapping(value = "/updatePlayState", method = RequestMethod.POST)
-	@ResponseBody
-	public RestResult updatePlayState(@ApiParam(value = "Json参数", required = true) @Validated @RequestBody UpdatePlayStateVo param) throws Exception {
-		RestResult result = new RestResult();
-		try {
-			int userid = param.getUserid();
-			String state = param.getState();
-            String supusername = param.getSupusername();
-            int offtype = param.getOfftype();
-			String ip = param.getIp();
-			
-			if (0==userid){
-			      result.fail("用户ID",MessageTool.Code_2002);
-			      LOG.info(result.getMessage());
-			      return result;
-			}
-			if (!(state.equals("0")||state.equals("1"))){
-			      result.fail("状态",MessageTool.Code_1005);
-			      LOG.info(result.getMessage());
-			      return result;
-			}
-			AccountInfo accountInfo = accountInfoMapper.selectByPrimaryKey(param.getUserid());
-			if(accountInfo==null){
-			      result.fail(MessageTool.Code_3001);
-			}else{
-				accountInfo.setState(state);
-				accountInfo.setIp(ip);
-				//修改用户状态
-			    accountInfoService.updateAccountInfo(accountInfo);
-			    
-			    //修改账户状态
-			    AccountDetail accountDetail = accountDetailMapper.selectByUserId(accountInfo.getAccountid(), "3");
-			    accountDetail.setState(state);
-			    accountDetailMapper.updateByPrimaryKey(accountDetail);
-			   
-			    LOG.info("修改玩家状态记录详情为："+" 管理员："+supusername+" 账户类型："+offtype+" IP："+ip+" 修改玩家ID"+userid+" 状态修改为"+accountInfo.getState());
-			    result.success();
-			}
-			LOG.info(result.getMessage());
-		} catch (Exception e) {
-			result.error();
-			LOG.error(e.getMessage(),e);
-		}
-		return result;
-	}
-	
-	
-	@ApiOperation(value = "代理用户修改下线密码", notes = "代理用户修改下线密码", httpMethod = "POST")
-	@RequestMapping(value = "/updateAccountPass", method = RequestMethod.POST)
-	@ResponseBody
-	public RestResult updateAccountPass(@ApiParam(value = "Json参数", required = true) @Validated @RequestBody UpdatePlayPassVo param) throws Exception {
-		RestResult result = new RestResult();
-		try {
-			int userid = param.getUserid();
-			String password = param.getPassword();
-            String supusername = param.getSupusername();
-            int offtype = param.getOfftype();
-			String ip = param.getIp();
-			
-			if (0==userid){
-			      result.fail("用户ID",MessageTool.Code_2002);
-			      LOG.info(result.getMessage());
-			      return result;
-			}
-			
-			OffAccountInfo offAccountInfo = offAccountInfoMapper.selectByPrimaryKey(param.getUserid());
-			if(offAccountInfo==null){
-			      result.fail(MessageTool.Code_3001);
-			}else{
-				offAccountInfo.setPassword(DigestUtils.md5Hex(password));
-				offAccountInfo.setIp(ip);
-				offAccountInfoMapper.updateByPrimaryKey(offAccountInfo);
-			    LOG.info("修改密码记录详情为："+" 管理员："+supusername+" 账户类型："+offtype+" IP："+ip+" 修改下家ID"+userid+" 密码修改为"+offAccountInfo.getPassword());
-			    result.success();
-			}
-			LOG.info(result.getMessage());
-		} catch (Exception e) {
-			result.error();
-			LOG.error(e.getMessage(),e);
-		}
-		return result;
-	}
-	
-	
-	@ApiOperation(value = "代理用户修改下线风险限额", notes = "代理用户修改下线风险限额", httpMethod = "POST")
-	@RequestMapping(value = "/updateAccountRisk", method = RequestMethod.POST)
-	@ResponseBody
-	public RestResult updateAccountRisk(@ApiParam(value = "Json参数", required = true) @Validated @RequestBody UpdateAccountRiskVo param) throws Exception {
-		RestResult result = new RestResult();
-		try {
-			int userid = param.getUserid();
-			String riskamount = param.getRiskamount();
-            String supusername = param.getSupusername();
-            int offtype = param.getOfftype();
-			String ip = param.getIp();
-			
-			if (0==userid){
-			      result.fail("用户ID",MessageTool.Code_2002);
-			      LOG.info(result.getMessage());
-			      return result;
-			}
-			
-			OffAccountInfo offAccountInfo = offAccountInfoMapper.selectByPrimaryKey(param.getUserid());
-			if(offAccountInfo==null){
-			      result.fail(MessageTool.Code_3001);
-			}else{
-				offAccountInfo.setRiskamount(riskamount);
-				offAccountInfo.setIp(ip);
-				offAccountInfoService.updateOffAccountInfo(offAccountInfo);
-				//offAccountInfoMapper.updateByPrimaryKey(offAccountInfo);
-			    LOG.info("修改风险限额记录详情为："+" 管理员："+supusername+" 账户类型："+offtype+" IP："+ip+" 修改下家ID"+userid+" 风险限额修改为"+offAccountInfo.getRiskamount());
-			    result.success();
-			}
-			LOG.info(result.getMessage());
-		} catch (Exception e) {
-			result.error();
-			LOG.error(e.getMessage(),e);
-		}
-		return result;
-	}
-	*/
 	
 	@ApiOperation(value = "代理用户修改下线代理占成", notes = "代理用户修改下线代理占成", httpMethod = "POST")
 	@RequestMapping(value = "/updateAccountPercent", method = RequestMethod.POST)
@@ -503,7 +295,6 @@ public class OffAccountInfoController {
 				accountInfo.setIp(ip);
 				accountInfoMapper.updateByPrimaryKey(accountInfo);
 				
-				System.out.println("ces----------------"+accountId+".."+ratio);
 				accountInfoMapper.updateOffPercentage(ratio, accountId);
 			    LOG.info("修改代理占成记录详情为："+" 管理员："+supaccountId+" IP："+ip+" 修改下家ID"+accountId+" 代理占成修改为"+percentage);
 			    result.success();
@@ -515,70 +306,7 @@ public class OffAccountInfoController {
 		}
 		return result;
 	}
-	/*
-	@ApiOperation(value = "代理用户修改下线洗码比", notes = "代理用户修改下线代洗码比", httpMethod = "POST")
-	@RequestMapping(value = "/updateAccountRatio", method = RequestMethod.POST)
-	@ResponseBody
-	public RestResult updateAccountRatio(@ApiParam(value = "Json参数", required = true) @Validated @RequestBody UpdateAccountRatioVo param) throws Exception {
-		RestResult result = new RestResult();
-		try {
-			int userid = param.getUserid();
-			double ratio = param.getRatio();
-            String supusername = param.getSupusername();
-            int offtype = param.getOfftype();
-			String ip = param.getIp();
-			
-			if (0==userid){
-			      result.fail("用户ID",MessageTool.Code_2002);
-			      LOG.info(result.getMessage());
-			      return result;
-			}
-			
-			if(!ToolsUtil.checkUpdatePeriod()){
-				result.fail("修改失败，请于结算时间段重新操作!");
-				LOG.info(result.getMessage());
-			    return result;
-			}
-			
-			OffAccountInfo offAccountInfo = offAccountInfoMapper.selectByPrimaryKey(param.getUserid());
-			if(offAccountInfo==null){
-			      result.fail(MessageTool.Code_3001);
-			}else{
-				//洗码比逻辑 
-				OffAccountInfo supAccount = offAccountInfoMapper.selectByUsername(offAccountInfo.getSupusername());
-		    	if (supAccount==null){
-		    		result.fail(offAccountInfo.getSupusername(),MessageTool.Code_2005);
-		    		return result;
-		    	}
-		    	if (ratio>supAccount.getRatio()){
-				      result.fail("洗码比",MessageTool.Code_1008);
-				      LOG.info(result.getMessage());
-				      return result;	
-				}
-				//下线的洗码比对比
-				List<OffAccountInfo> offAccountInfos = offAccountInfoMapper.selectBySupuserAndRatio(offAccountInfo.getUsername(),offAccountInfo.getOfftype());
-                if (offAccountInfos.size()>=1){
-                	if (ratio<offAccountInfos.get(0).getRatio()){
-      			        result.fail("下级代理洗码比为"+offAccountInfos.get(0).getRatio()+",",MessageTool.Code_2007);
-    			        LOG.info(result.getMessage());
-    			        return result;
-                	}
-                }
-				offAccountInfo.setRatio(ratio);
-				offAccountInfo.setIp(ip);
-				offAccountInfoService.updateOffAccountInfo(offAccountInfo);
-				//offAccountInfoMapper.updateByPrimaryKey(offAccountInfo);
-			    LOG.info("修改洗码比记录详情为："+" 管理员："+supusername+" 账户类型："+offtype+" IP："+ip+" 修改下家ID"+userid+" 代理洗码比修改为"+offAccountInfo.getRatio());
-			    result.success();
-			}
-			LOG.info(result.getMessage());
-		} catch (Exception e) {
-			result.error();
-			LOG.error(e.getMessage(),e);
-		}
-		return result;
-	}
-	*/
+
 	@ApiOperation(value = "代理用户修改下线状态", notes = "代理用户修改下线状态", httpMethod = "POST")
 	@RequestMapping(value = "/updateAccountState", method = RequestMethod.POST)
 	@ResponseBody
@@ -617,56 +345,5 @@ public class OffAccountInfoController {
 		}
 		return result;
 	}
-	/*
-	@ApiOperation(value = "超级用户修改公告", notes = "超级用户修改公告", httpMethod = "POST")
-	@RequestMapping(value = "/updateNotice", method = RequestMethod.POST)
-	@ResponseBody
-	public RestResult updateAccountRemark(@ApiParam(value = "Json参数", required = true) @Validated @RequestBody NoticeInfoVo param) throws Exception {
-		RestResult result = new RestResult();
-		try {
-			int noticeid = 1; //默认
-			String title = param.getTitle();
-			String notice = param.getNotice();
-			String stype = param.getStype();
-            String supusername = param.getSupusername();
-            int offtype = param.getOfftype();
-			String ip = param.getIp();
-	
-			if (stype.equals("")||!(stype.equals("0")||stype.equals("1"))){
-			      result.fail("公告类型",MessageTool.Code_1005);
-			      LOG.info(result.getMessage());
-			      return result;
-			}
-			if (stype.equals("0"))
-				noticeid = 1;
-			else if (stype.equals("1"))
-				noticeid = 2;
-			//NoticeInfo noticeInfo  = mapper.map(param, NoticeInfo.class);
 
-            NoticeInfo noticeInfo = noticeInfoMapper.selectByPrimaryKey(noticeid);
-			if(noticeInfo==null){
-			      result.fail(MessageTool.Code_4001);
-			}else{
-				noticeInfo.setTitle(title);
-				noticeInfo.setNotice(notice);
-				noticeInfo.setStype(stype);
-				noticeInfo.setSupusername(supusername);
-				noticeInfo.setOfftype(String.valueOf(offtype));
-				noticeInfo.setUpdateip(ip);
-				noticeInfo.setState("1");
-				noticeInfo.setUpdatedate(new Date());
-				noticeInfoMapper.updateByPrimaryKey(noticeInfo);
-			    LOG.info("修改公告记录详情为："+" 管理员："+supusername+" 账户类型："+offtype+" IP："+ip+" 修改公告ID"+noticeid+" 状态修改为"+noticeInfo.getNoticeid());
-			    result.success();
-			}
-			LOG.info(result.getMessage());
-		} catch (Exception e) {
-			result.error();
-			LOG.error(e.getMessage(),e);
-		}
-		return result;
-	}
-	
-*/
-	
 }

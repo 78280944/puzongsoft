@@ -52,7 +52,7 @@ public interface LotteryGameOrderMapper {
      
     RoomOrderDto selectAccountIdOrder(@Param("accountid")Integer accountid);
 
-    RoomOrderDto selectNoIdOrder(@Param("sid")Integer sid,@Param("lotteryterm")String lotteryterm,@Param("noid")Integer noid);
+    RoomOrderDto selectNoIdOrder(@Param("accountid")Integer accountid,@Param("rmid")Integer rmid,@Param("sid")Integer sid,@Param("lotteryterm")String lotteryterm,@Param("noid")Integer noid);
     
     List<LotteryNoidDto> selectGameNoid(@Param("sid")Integer sid,@Param("rmid")Integer rmid,@Param("lotteryterm")String lotteryterm);
 	

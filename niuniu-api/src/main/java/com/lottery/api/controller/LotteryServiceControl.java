@@ -45,9 +45,6 @@ import com.wordnik.swagger.annotations.ApiParam;
 		@Autowired
 		private Mapper mapper;
 		
-		//@Autowired
-	   // private LotteryServiceService lotteryServiceService;
-		
 		@Autowired
 	    private LotteryServiceMapper lotteryServiceMapper;
 		

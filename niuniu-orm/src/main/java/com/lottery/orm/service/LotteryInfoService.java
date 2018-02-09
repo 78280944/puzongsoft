@@ -29,19 +29,12 @@ public class LotteryInfoService {
    		
         int i = 0;
         int j=str.length-1;
-       // System.out.println("j--------------"+j);
-       // System.out.println("7---"+j);
         if (str[0][9].equals(str[j][9])||str[0][10].equals(str[j][10]))
        	 return str;
          
-         if (!(str[i][0].equals(str1[i][0]))){
-        	 for (int m=0;m<11;m++)
-			     str[i][m]=str1[i][m];	
-			 if (!(str[i+1][0].equals(str1[i+1][0]))){
-				 for (int m=0;m<11;m++)
-				     str[i+1][m]=str1[i+1][m];
-			 }
-         }
+	    // if (!(str[i][4].equals(str1[i][4]))&&!(str[i+1][5].equals("1"))){
+   	        	 for (int m=0;m<11;m++)
+   				     str[i][m]=str1[i][m];	
 		 
         str[0][1] = String.valueOf(Integer.valueOf(str[0][0])*Integer.valueOf(str[0][6]));
         str[j][1] = String.valueOf(Integer.valueOf(str[j][0])*Integer.valueOf(str[0][6]));
@@ -93,14 +86,17 @@ public class LotteryInfoService {
                    		 
     		 if(i < j){
     			 if(!(str[i][9].equals(str[j][9])||str[i][10].equals(str[j][10]))){
-    		         if (!(str[i][0].equals(str1[i][0]))){
-    		        	 for (int m=0;m<11;m++)
-    					     str[i][m]=str1[i][m];	
-    					 if (!(str[i+1][0].equals(str1[i+1][0]))){
-    						 for (int m=0;m<11;m++)
-    						     str[i+1][m]=str1[i+1][m];
-    					 }
-    		         }
+    				 for (int m=0;m<11;m++)
+       				     str[i][m]=str1[i][m];	
+    				 /*
+    			     if (!(str[i][4].equals(str1[i][4]))&&!(str[i+1][5].equals("1"))){
+    	   	        	 for (int m=0;m<11;m++)
+    	   				     str[i][m]=str1[i][m];	
+    	   				 if (!(str[i+1][4].equals(str1[i+1][4]))){
+    	   					 for (int m=0;m<11;m++)
+    	   					     str[i+1][m]=str1[i+1][m];
+    	   				 }
+    	   	         }*/
     				 str[i][1] = String.valueOf(Integer.valueOf(str[i][0])*Integer.valueOf(str[i][6])); 
 	        		 tmp = Integer.valueOf(str[i][1]);
         			 str[j][1] = String.valueOf(Integer.valueOf(str[j][0])*Integer.valueOf(str[i][6]));
@@ -196,22 +192,27 @@ public class LotteryInfoService {
        			// System.out.println("indexj--------------"+j);
        			// System.out.println("tablei--------------"+str[i][9]);
        			 //System.out.println("tablej--------------"+str[i][0]+"..."+str1[j][0]+".."+str[j][4]);
-       	         if (!(str[i][0].equals(str1[i][0]))){
-       	        	 for (int m=0;m<11;m++)
-       				     str[i][m]=str1[i][m];	
-       				 if (!(str[i+1][0].equals(str1[i+1][0]))){
+
+       		     //if (!(str[i][4].equals(str1[i][4]))&&!(str[i+1][5].equals("1"))){
+       	        	
+       	        	 /*
+       				 if (!(str[i+1][4].equals(str1[i+1][4]))){
        					 for (int m=0;m<11;m++)
        					     str[i+1][m]=str1[i+1][m];
        				 }
-       	         }
-      			 System.out.println("tablej-----update---------"+str[i][0]+"..."+str[i][3]+".."+str[i][4]);
+       	         }*/
+      			// System.out.println("tablej-----update---------"+str[i][0]+"..."+str[i][3]+".."+str[i][4]);
        			 if (!(str[i][9].equals(str[j][9])||str[i][10].equals(str[j][10]))){
-       	      		 System.out.println("89dssdsds-sdsd--"+str[i][8]+".."+i+"..."+j);
+       				 for (int m=0;m<11;m++)
+       				     str[i][m]=str1[i][m];	
+
+       				 
+       				// System.out.println("89dssdsds-sdsd--"+str[i][8]+".."+i+"..."+j);
 		        		 str[i][1] = String.valueOf(Integer.valueOf(str[i][0])*Integer.valueOf(str[i][6])); 
 		        		// System.out.println("89dssdsds-sdsd--"+str[i][1]+".."+i+"..."+j);
 		        		 tmp = Integer.valueOf(str[i][1]);
 
-		        		 System.out.println("i21--233------------"+i+".."+j+".."+tmp+".."+str[i][1]+".."+str[i][4]);
+		        		// System.out.println("i21--233------------"+i+".."+j+".."+tmp+".."+str[i][1]+".."+str[i][4]);
 		        		// System.out.println("stri1--------------"+str[i][1]);
            			// System.out.println("tmp2--------------"+tmp);
        			 }
@@ -219,32 +220,63 @@ public class LotteryInfoService {
        		//System.out.println("9---"+tmp);
        	 }
         }
+        /*
        // System.out.println("7ddd-sdsd--"+i+".."+j);
+        for (int s = 0;s<str.length;s++){
+            for (int t = 0;t<str.length;t++){
+            	if (str[s][4].equals(str1[t][4])){
+            		str1[t][5] = str[s][5];
+            		str1[t][1] = str[s][1];
+            		break;
+            	}
+            }
+        }
+        */
         for (i=str.length-1;i>=j;i--){
        	 if(str[i][5].equals("1")){
        		 str[i][2] = String.valueOf(Integer.valueOf(str[i][1])  - Integer.valueOf(str[i][0])*Integer.valueOf(str[i][6]));
        		 
        		//  System.out.println("0----0-"+i+".."+str[i][2]);
+       	 }else{
+       		/*
+       		if (str[i][1].equals("0")){
+       		    for (int m=0;m<11;m++)
+				    str[i][m]=str1[i][m];	
+       		}*/
        	 }
         }
       //  System.out.println("12----------"+j);
         
        for (i=0;i<j;i++){
+    	   /*
+    	   if (str[i][1].equals("0")&&!str1[i][5].equals("1")&&str1[i][1].equals("0"))
+    		   for (int m=0;m<11;m++)
+				 str[i][m]=str1[i][m];*/
        	 str[i][2] =  str[i][1];
        	 //System.out.println("12----------"+str[i][2]);
        }
        
+       
        for (i=0;i<str.length;i++){
        	    str[i][1] =  str[i][0]; 
       	   // System.out.println("98-----"+str[i][1]);
-      	   // 
-      	    
+      	   //   
       }
-     /*
-      for (int w = 0;w<str.length;w++)
+       
+       for (int s = 0;s<str1.length;s++){
+           for (int t = 0;t<str1.length;t++){
+           	if (str1[s][4].equals(str[t][4])){
+           	 for (int m=0;m<11;m++)
+				 str1[s][m]=str[s][m];
+           		break;
+           	}
+           }
+       }
+      /*
+      for (int w = 0;w<str1.length;w++)
       System.out.println("90------------"+str[w][0]+"..."+str[w][1]+".."+str[w][2]+".."+str[w][3]+".."+str[w][4]+".."+str[w][8]);
   */
-        return str;
+        return str1;
        
     }
     

@@ -47,55 +47,6 @@ public class TradeInfoController {
 	
 	@Autowired
 	AccountRechargeMapper accountRechargeMapper;
-	/*
-	@ApiOperation(value = "新增入金交易记录", notes = "新增资金交易记录", httpMethod = "POST")
-	@RequestMapping(value = "/addInTradeInfo", method = RequestMethod.POST)
-	@ResponseBody
-	public RestResult addInTradeInfo(
-			@ApiParam(value = "Json参数", required = true) @Validated @RequestBody TradeParamVo param) throws Exception {
-		RestResult result = new RestResult();
-		try {
-			TradeInfo tradeInfo = mapper.map(param, TradeInfo.class);
-			tradeInfo.setRelativeid(param.getSupAccountId());
-			tradeInfo.setRelativetype(EnumType.RalativeType.In.ID);
-			String returnInfo = tradeInfoService.addInoutTradeInfo(tradeInfo);
-			if (StringUtils.isBlank(returnInfo)) {
-				result.success(tradeInfo);
-			} else {
-				result.fail(returnInfo);
-			}
-			LOG.info(result.getMessage());
-		} catch (Exception e) {
-			result.fail(MessageTool.ErrorCode);
-			LOG.error(e.getMessage(), e);
-		}
-		return result;
-	}
-
-	@ApiOperation(value = "新增出金交易记录", notes = "新增资金交易记录", httpMethod = "POST")
-	@RequestMapping(value = "/addOutTradeInfo", method = RequestMethod.POST)
-	@ResponseBody
-	public RestResult addOutTradeInfo(
-			@ApiParam(value = "Json参数", required = true) @Validated @RequestBody TradeParamVo param) throws Exception {
-		RestResult result = new RestResult();
-		try {
-			TradeInfo tradeInfo = mapper.map(param, TradeInfo.class);
-			tradeInfo.setRelativeid(param.getSupAccountId());
-			tradeInfo.setRelativetype(EnumType.RalativeType.Out.ID);
-			String returnInfo = tradeInfoService.addInoutTradeInfo(tradeInfo);
-			if (StringUtils.isBlank(returnInfo)) {
-				result.success(tradeInfo);
-			} else {
-				result.fail(returnInfo);
-			}
-			LOG.info(result.getMessage());
-		} catch (Exception e) {
-			result.fail(MessageTool.ErrorCode);
-			LOG.error(e.getMessage(), e);
-		}
-		return result;
-	}
-	*/
 	
 	@ApiOperation(value = "查询交易记录", notes = "查询交易记录", httpMethod = "POST")
 	@RequestMapping(value = "/getTradeInfo", method = RequestMethod.POST)

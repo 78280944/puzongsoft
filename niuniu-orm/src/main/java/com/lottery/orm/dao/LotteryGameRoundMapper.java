@@ -29,7 +29,7 @@ public interface LotteryGameRoundMapper {
 
     List<LotteryGameRound> selectLotteryOrderResult(@Param("sid")Integer sid);
     
-    List<LotteryGameRound> selectLotteryOrderPlayer();
+    List<LotteryGameRound> selectLotteryOrderPlayer(@Param("startTime")Date startTime,@Param("endTime")Date endTime);
     
     List<LotteryGameRound> selectLotteryPlayoridle();
 }

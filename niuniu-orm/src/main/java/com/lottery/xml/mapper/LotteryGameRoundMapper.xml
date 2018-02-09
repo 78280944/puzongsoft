@@ -201,9 +201,7 @@
   </select>
   
   <select id="selectLotteryOrderPlayer" resultMap="BaseResultMap">
-    SELECT DISTINCT sid,opentime FROM 
-    (SELECT sid,opentime FROM lottery_game_round where lotteryresult is not null GROUP BY sid,opentime DESC) b 
-    GROUP BY sid ASC   
+    SELECT sid,opentime FROM lottery_game_round a WHERE (a.opentime BETWEEN #{startTime,jdbcType=TIMESTAMP} and #{endTime,jdbcType=TIMESTAMP})  
   </select>
   
  <select id="selectLotteryPlayoridle" resultMap="BaseResultMap">

@@ -380,7 +380,7 @@ public class AccountInfoController {
 			    	accountInfo.setInputdate(new Date());
 			    	accountInfo.setUsermoney(BigDecimal.valueOf(0.0));
 			    	//注册环信帐号
-	                Boolean easeRegisterResult = easemobService.registerEaseMobUser(accountInfo.getUsername(), accountInfo.getUsername());
+	                Boolean easeRegisterResult = easemobService.registerEaseMobUser(accountInfo.getUsername().toLowerCase(), accountInfo.getUsername().toLowerCase());
 	                if (easeRegisterResult) {
 	                    //环信帐号注册成功
 	                    accountInfoService.addAccountInfo(accountInfo);
@@ -424,123 +424,7 @@ public class AccountInfoController {
 	        }
 	     return result;
     }
-	/*
-	@ApiOperation(value = "修改玩家", notes = "修改玩家", httpMethod = "POST")
-	@RequestMapping(value = "/updateAccountInfo", method = RequestMethod.POST)
-	@ResponseBody
-	public RestResult updatePlayAccountInfo(@ApiParam(value = "Json参数", required = true) @Validated @RequestBody UpdateAccountVo param) throws Exception {
-		RestResult result = new RestResult();
-		try {
-			int userid = param.getUserid();
-			String username = param.getUsername();
-			String password = param.getPassword();
-			String state = param.getState();
-			String phone =  param.getPhone();
-			String webchat = param.getWebchat();			
-			
-			//参数合规性校验，必要参数不能为空
-			if (ToolsUtil.isEmptyTrim(username)){
-			      result.fail("用户名",MessageTool.Code_2002);
-			      LOG.info(result.getMessage());
-			      return result;
-			}
-			
-		
-			if (0==userid){
-			      result.fail("用户ID",MessageTool.Code_2002);
-			      LOG.info(result.getMessage());
-			      return result;
-			}
-			
-			AccountInfo accountInfo = accountInfoMapper.selectByPrimaryKey(param.getUserid());
-			if(accountInfo==null){
-			      result.fail(MessageTool.Code_3001);
-			}else{
-				password = DigestUtils.md5Hex(password);	
-			    AccountInfo paraInfo = mapper.map(param, AccountInfo.class);
-			    AccountInfo accountInfocheck = accountInfoMapper.selectByUserAndId(paraInfo);
-			    if (accountInfocheck!=null){
-				      result.fail(username,MessageTool.Code_2005);
-				      LOG.info(result.getMessage());
-				      return result;	
-			    }
-			    paraInfo.setUsername(null==param.getUsername()||"".equals(param.getUsername()) ? accountInfo.getUsername():param.getUsername());
-			    paraInfo.setAusername(accountInfo.getAusername());
-			    paraInfo.setPassword(null==param.getPassword()||"".equals(param.getPassword()) ? accountInfo.getPassword():password);
-			    paraInfo.setState(null==param.getState()||"".equals(param.getState()) ?  accountInfo.getState():param.getState());
-			    paraInfo.setPhone(null==param.getPhone()||"".equals(param.getPhone()) ?  accountInfo.getPhone():param.getPhone());
-			    paraInfo.setWebchat(null==param.getWebchat()||"".equals(param.getWebchat()) ?  accountInfo.getWebchat():param.getWebchat());
-			    paraInfo.setUpdateip(null==param.getIp()||"".equals(param.getIp()) ? accountInfo.getIp():param.getIp());
-			    paraInfo.setUpdatedate(new Date());
-			    //paraInfo.getSupuserid(accountInfo.getSupuserid());
-			    paraInfo.setLevel(accountInfo.getLevel());
-			    paraInfo.setLimited(Double.parseDouble("0.0"));
-			    accountInfoService.updateAccountInfo(paraInfo);
-			    result.success();
-			}
-			LOG.info(result.getMessage());
-		} catch (Exception e) {
-			result.error();
-			LOG.error(e.getMessage(),e);
-		}
-		return result;
-	}
 	
-	
-	@ApiOperation(value = "获取玩家列表", notes = "获取该代理下的玩家列表", httpMethod = "POST")
-	@RequestMapping(value = "/getAllAccountInfo", method = RequestMethod.POST)
-	@ResponseBody
-	public AccountListResult getAllAccountInfo(@ApiParam(value = "Json参数", required = true) @Validated @RequestBody AccountInfoVo param) throws Exception {
-	    AccountListResult result = new AccountListResult();
-		try {
-			OffAccountInfo offacount = offAccountInfoMapper.selectByPrimaryKey(param.getUserid());
-			if (offacount==null){
-				result.fail(MessageTool.Code_3001);
-			}else{
-				List<AccountInfo> accountInfos = accountInfoMapper.selectBySupusername(offacount.getUsername(), param.getBeginRow(), param.getPageSize());
-	
-				List<AccountInfoDto> list = new ArrayList<AccountInfoDto>();
-				for (int i = 0;i<accountInfos.size();i++){
-					AccountDetail accountDetail =  accountDetailMapper.selectByUserId(accountInfos.get(i).getAccountid(),"3");
-			    	//获取上级的限额等信息
-				    OffAccountInfo leOffAccountInfo = offAccountInfoMapper.selectByUsername(accountInfos.get(i).getUsername());
-					if(leOffAccountInfo==null){ 	
-					      result.fail("管理员",MessageTool.Code_3002);
-					      LOG.info(result.getMessage());
-					      return result;
-					  }
-					    
-					AccountInfoDto rAcDto = new AccountInfoDto();
-			        //rAcDto.setUserid(null==accountInfos.get(i).getUserid()||"".equals(accountInfos.get(i).getUserid())||0==accountInfos.get(i).getUserid() ?0:accountInfos.get(i).getUserid());
-			        rAcDto.setUsername(null==accountInfos.get(i).getUsername()||"".equals(accountInfos.get(i).getUsername()) ?"":accountInfos.get(i).getUsername());
-			        rAcDto.setAusername(null==accountInfos.get(i).getAusername()||"".equals(accountInfos.get(i).getAusername()) ?"":accountInfos.get(i).getAusername());
-			        rAcDto.setPassword(null==accountInfos.get(i).getPassword()||"".equals(accountInfos.get(i).getPassword()) ?"":accountInfos.get(i).getPassword());
-			        //rAcDto.setLimited(null==accountInfos.get(i).getLimited()||"".equals(accountInfos.get(i).getLimited())||0.0==accountInfos.get(i).getLimited() ?0.0:accountInfos.get(i).getLimited());
-			        //rAcDto.setRatio(null==accountInfos.get(i).getRatio()||"".equals(accountInfos.get(i).getRatio())||0.0==accountInfos.get(i).getRatio() ?0.0:accountInfos.get(i).getRatio());
-			        rAcDto.setLevel(null==accountInfos.get(i).getLevel()||"".equals(accountInfos.get(i).getLevel()) ?"":accountInfos.get(i).getLevel());
-			        rAcDto.setState(null==accountInfos.get(i).getState()||"".equals(accountInfos.get(i).getState()) ?"":accountInfos.get(i).getState());
-			        //rAcDto.setSupusername(null==accountInfos.get(i).getSupuserid()||"".equals(accountInfos.get(i).getSupuserid()) ?"":accountInfos.get(i).getSupuserid());
-			        rAcDto.setOfftype("3");
-			        //rAcDto.setAccountID(accountDetail.getAccountid());
-			      //rAcDto.setAccountAmount(accountDetail.getMoney());
-				    //rAcDto.setLelimited(leOffAccountInfo.getLimited());
-				   /// rAcDto.setLepercentage(leOffAccountInfo.getPercentage());
-				   // rAcDto.setLeratio(leOffAccountInfo.getRatio());
-				   // rAcDto.setLeriskamount(leOffAccountInfo.getRiskamount());
-			        list.add(rAcDto);
-				}
-				result.success(list);
-			}
-		    
-			LOG.info(result.getMessage());
-		} catch (Exception e) {
-			result.error();
-			LOG.error(e.getMessage(),e);
-		}
-		return result;
-	}
-	
-	*/
 	
 	@ApiOperation(value = "获取在线客服、分享链接、规则说明", notes = "获取在线客服、分享链接、规则说明", httpMethod = "POST")
 	@RequestMapping(value = "/getRemarkInfo", method = RequestMethod.POST)
@@ -639,7 +523,7 @@ public class AccountInfoController {
 			accountRecordMapper.updateByPrimaryKeySelective(aRecord);
 			AccountInfo aInfo = new AccountInfo();
 			aInfo.setAccountid(param.getAccountid());
-			aInfo.setPassword(DigestUtils.md5Hex("123456"));
+			//aInfo.setPassword(DigestUtils.md5Hex("123456"));
 			System.out.println("123------------"+aInfo.getAccountid());
 			AccountInfo aInfo1 = accountInfoMapper.selectByPrimaryKey(param.getAccountid());
 			if (aInfo1.getLevel().equals("99")){
@@ -710,93 +594,7 @@ public class AccountInfoController {
 		return result;
 	}
 	
-	/*
-	@ApiOperation(value = "用户充值结果", notes = "用户充值结果", httpMethod = "POST")
-	@RequestMapping(value = "/userRechargeResult", method = RequestMethod.POST)
-	@ResponseBody
-	public RestResult userRechargeResult(@ApiParam(value = "Json参数", required = true) @Validated @RequestBody UserRechargeResVo param) throws Exception {
-		RestResult result = new RestResult();
-		try {
-			AccountRecharge aRecharge = new AccountRecharge();
-			aRecharge = mapper.map(param, AccountRecharge.class);	
-			AccountInfo aInfo = accountInfoMapper.selectByPrimaryKey(aRecharge.getAccountid());
-	    	if (null == aInfo){
-			      result.fail("该用户不存在！");
-			      LOG.info(result.getMessage());
-			      return result;
-	    	}
-	    	if (!(param.getUsername().equals(aInfo.getUsername()))){
-	    	      result.fail("该用户名与ID不匹配！");
-			      LOG.info(result.getMessage());
-			      return result;
-	    	}
-	    	if (null == aRecharge.getPayno()||"".equals(aRecharge.getPayno())||null==aRecharge.getRespcode()||"".equals(aRecharge.getRespcode())){
-	    	      result.fail("平台支付订单信息不能为空!");
-			      LOG.info(result.getMessage());
-			      return result;
-	    	}
-	    	AccountRecharge ar = accountRechargeMapper.selectByOrderNo(aRecharge.getOrderno(), "In", aRecharge.getAccountid());
-	    	if (null == ar){
-	    	      result.fail("该订单信息有误！");
-			      LOG.info(result.getMessage());
-			      return result;
-	    	}else{
-	    		if (!(aRecharge.getRequestno().equals(ar.getRequestno()))||!(aRecharge.getTransamt().equals(ar.getTransamt()))){
-		    	      result.fail("平台支付订单信息或者金额不匹配有误！");
-				      LOG.info(result.getMessage());
-				      return result;
-	    		}
-	    	}
-	    	if (param.getOrderState().equals("01")){
-	    		SysBene sb = sysBeneMapper.selectByAmount(BigDecimal.valueOf(param.getTransAmt()/100));
-				Double bene = 0.0;
-				Double amount = 0.0;
-				if (null == sb||sb.getBenefit() == null||sb.getBenefit() == BigDecimal.valueOf(0.0)){
-					bene = 0.0;
-				}else{
-					bene = sb.getBenefit().doubleValue();
-				}
-				SysFee sf = sysFeeMapper.selectByPrimaryKey(1001);
-				ar.setDonatamt(bene);//赠送金额
-				ar.setFee(ar.getTransamt()/100*sf.getRefee().doubleValue());//充值费用
-				ar.setPayamt(ar.getTransamt()/100-ar.getFee());//实际金额
-				ar.setInputtime(new Date());
-		    	
-				amount = ar.getPayamt()+ar.getDonatamt();
-				ar.setAccountamount(aInfo.getUsermoney().add(BigDecimal.valueOf(amount)));
-		    	aInfo.setUsermoney(aInfo.getUsermoney().add(BigDecimal.valueOf(amount)));
-		    	accountInfoMapper.updateByPrimaryKey(aInfo);
-		    	if (ar.getFee()>0){
-		    		aInfo = accountInfoMapper.selectByPrimaryKey(1000);
-		    		aInfo.setUsermoney(aInfo.getUsermoney().add(BigDecimal.valueOf(ar.getFee())));
-			    	accountInfoMapper.updateByPrimaryKey(aInfo);
-		    	}
-
-	    	}else if (param.getOrderState().equals("02")){
-
-	    	}else{
-	    	      result.fail("订单状态无效！");
-			      LOG.info(result.getMessage());
-			      return result;
-	    	}
-    		ar.setPayno(aRecharge.getPayno());
-	    	ar.setOrderstate(aRecharge.getOrderstate());
-	    	ar.setOrderip(aRecharge.getOrderip());
-	    	ar.setOrderip(aRecharge.getOrderip());
-	    	ar.setUpuserid(String.valueOf(param.getAccountId()));
-	    	ar.setUpusertime(new Date());
-	    	ar.setRespcode(param.getRespCode());
-	    	ar.setRespdesc(param.getRespDesc());
-			accountRechargeMapper.updateByPrimaryKey(ar);
-			result.success();
-			LOG.info(result.getMessage());
-		} catch (Exception e) {
-			result.error();
-			LOG.error(e.getMessage(),e);
-		}
-		return result;
-	}
-	*/
+	
 	
 	@ApiOperation(value = "用户充值结果", notes = "用户充值结果", httpMethod = "POST")
 	@RequestMapping(value = "/userRechargeResult", method = RequestMethod.POST)
@@ -968,7 +766,7 @@ public class AccountInfoController {
 		}
 		String results = transProxyPayTest.getPayTrans(aRecharge);
     	if (null == results||results.equals("")||results.equals("false")){
-    	      result.fail("该用户充值出现异常！");
+    	      result.fail("该用户打款出现异常！");
 		      LOG.info(result.getMessage());
 		      return result;
     	}
@@ -1060,21 +858,5 @@ public class AccountInfoController {
 		LOG.info(result.getMessage());
 		return result;
       }
-/*
-	@ApiOperation(value = "用户取现结果通知", notes = "用户取现结果通知", httpMethod = "POST")
-	@RequestMapping(value = "/userCashResultNotice", method = RequestMethod.POST)
-	@ResponseBody
-	public RestResult userCashResultNotice(@ApiParam(value = "Json参数", required = true) @Validated @RequestBody UserOrderNoticeVo param) throws Exception {
-		RestResult result = new RestResult();
-		AccountRecharge aRecharge = new AccountRecharge();
-		System.out.println("ces-12---"+param.getOrderNo());
-		aRecharge = accountRechargeMapper.selectByOrderNo(param.getOrderNo(), EnumType.RalativeType.Out.ID,param.getAccountId());
-		aRecharge.setOrderstate(param.getOrderState());
-		System.out.println("ces------------"+aRecharge.getAccountid()+".."+aRecharge.getArid()+".."+aRecharge.getOrderdate()+".."+aRecharge.getRelativetype());
-		accountRechargeMapper.updateByPrimaryKey(aRecharge);
-		result.success();
-		LOG.info(result.getMessage());
-		return result;
-      }
-	*/
+
 }

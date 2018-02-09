@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -83,7 +84,7 @@ import com.wordnik.swagger.annotations.ApiModelProperty;
 @Transactional
 public class LotteryTaskService {
 	public final Logger log = Logger.getLogger(this.getClass());
-	//private final String LOTTERY_API_URL = "http://c.apiplus.net/newly.do?token=ed91e13bc38ac8d1&code=cqklsf&format=json&extend=true";
+
 	private final DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	private final Integer ROUND_INTERVAL_MINUTES = 10;//游戏间隔时间
 	
@@ -205,8 +206,6 @@ public class LotteryTaskService {
 	 */
 	@Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor=Exception.class)
 	public synchronized void getCQSSCLotteryResult() throws Exception{
-		//System.out.println("00--------------------"+lotteryApiUrlCQSSC1);
-		//getLotteryOriginResult1(EnumType.LotteryType.CQSSC.ID, lotteryApiUrlCQSSC1);
 		getLotteryOriginResultTotal(EnumType.LotteryType.CQSSC.ID, lotteryApiUrlCQSSC2);
 	}
 	
@@ -216,8 +215,6 @@ public class LotteryTaskService {
 	 */
 	@Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor=Exception.class)
 	public synchronized void getTJSSCLotteryResult() throws Exception{
-		//System.out.println("00--------------------"+lotteryApiUrlTJSSC1);
-		//getLotteryOriginResult1(EnumType.LotteryType.TJSSC.ID, lotteryApiUrlTJSSC1);
 		getLotteryOriginResultTotal(EnumType.LotteryType.TJSSC.ID, lotteryApiUrlTJSSC2);
 		
 	}
@@ -228,8 +225,6 @@ public class LotteryTaskService {
 	 */
 	@Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor=Exception.class)
 	public synchronized void getXJSSCLotteryResult() throws Exception{
-		//System.out.println("00--------------------"+lotteryApiUrlCQSSC2);
-		//getLotteryOriginResult1(EnumType.LotteryType.XJSSC.ID, lotteryApiUrlXJSSC1);
 		getLotteryOriginResultTotal(EnumType.LotteryType.XJSSC.ID, lotteryApiUrlXJSSC2);
 	}
 	
@@ -239,8 +234,6 @@ public class LotteryTaskService {
 	 */
 	@Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor=Exception.class)
 	public synchronized void getYNSSCLotteryResult() throws Exception{
-		//System.out.println("00--------------------"+lotteryApiUrlCQSSC2);
-		//getLotteryOriginResult1(EnumType.LotteryType.YNSSC.ID, lotteryApiUrlYNSSC1);
 		getLotteryOriginResultTotal(EnumType.LotteryType.YNSSC.ID, lotteryApiUrlYNSSC2);
 	}
 	
@@ -250,8 +243,6 @@ public class LotteryTaskService {
 	 */
 	@Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor=Exception.class)
 	public synchronized void getHLJSSCLotteryResult() throws Exception{
-		//System.out.println("00-HLJ-------------------"+lotteryApiUrlHLJSSC1);
-		//getLotteryOriginResult1(EnumType.LotteryType.HLJSSC.ID, lotteryApiUrlHLJSSC1);
 		getLotteryOriginResultTotal(EnumType.LotteryType.HLJSSC.ID, lotteryApiUrlHLJSSC2);
 	}
 	
@@ -261,8 +252,6 @@ public class LotteryTaskService {
 	 */
 	@Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor=Exception.class)
 	public synchronized void getBJSCLotteryResult() throws Exception{
-		//System.out.println("00--------------------"+lotteryApiUrlCQSSC2);
-		//getLotteryOriginResult1(EnumType.LotteryType.BJSC.ID, lotteryApiUrlBJSC1);
 		getLotteryOriginResultTotal(EnumType.LotteryType.BJSC.ID, lotteryApiUrlBJSC2);
 	}
 	
@@ -272,8 +261,6 @@ public class LotteryTaskService {
 	 */
 	@Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor=Exception.class)
 	public synchronized void getXYFTLotteryResult() throws Exception{
-		//System.out.println("00--------------------"+lotteryApiUrlCQSSC2);
-		//getLotteryOriginResult1(EnumType.LotteryType.XYFT.ID, lotteryApiUrlXYFT1);
 		getLotteryOriginResultTotal(EnumType.LotteryType.XYFT.ID, lotteryApiUrlXYFT2);
 	}
 	
@@ -351,7 +338,7 @@ public class LotteryTaskService {
 	private synchronized void getLotteryOriginResultTotal(String lotteryType, String apiUrl) throws Exception {
 		
 		boolean result = getLotteryOriginResult2(lotteryType,apiUrl);
-	   /*
+	    /*
 		//if (!result){
 			String url = getUrl(lotteryType);
 			getLotteryOriginResult1(lotteryType,url);
@@ -384,7 +371,7 @@ public class LotteryTaskService {
 	private synchronized boolean getLotteryOriginResult1(String lotteryType, String apiUrl) throws Exception {
 		//String result = HttpclientTool.get(apiUrl);
 		String result = "";
-		//System.out.println("8-------------:"+lotteryType+".."+result);
+		System.out.println("8-------------:"+lotteryType+".."+result);
 		/*
 	
 		result = "{\"success\":true,\"data\":[{\"preDrawCode\":\"88131\","
@@ -396,9 +383,9 @@ public class LotteryTaskService {
 		//10,07,04,03,02,07,02,03,03,01
 	*/
 		
-		result = "{\"success\":true,\"data\":[{\"preDrawCode\":\"1,5,3,0,3\","
-				+ "\"drawIssue\":\"20180130020\",\"drawTime\":\"2018/1/24 16:00:45\","
-				+ "\"preDrawTime\":\"2017-11-26 16:50:50\",\"preDrawIssue\":\"20180130019\","
+		result = "{\"success\":true,\"data\":[{\"preDrawCode\":\"4,9,4,7,9\","
+				+ "\"drawIssue\":\"20180202063\",\"drawTime\":\"2018/1/24 16:00:45\","
+				+ "\"preDrawTime\":\"2017-11-26 16:50:50\",\"preDrawIssue\":\"20180202062\","
 				+ "\"drawCount\":\"39\",\"totalCount\":\"120\"}]}";
 				
          // result = "{\"sucess\":true,";
@@ -544,6 +531,7 @@ public class LotteryTaskService {
 		return false;
 	}
 	public synchronized void LotteryPlayerDelete() throws Exception{
+		jobsTaskService.LotteryPlayerDelete();
 	}
 	
 	/**
@@ -1100,7 +1088,7 @@ public class LotteryTaskService {
 		    
 			SysCom sc = sysComMapper.selectByGameType(type);
 			//System.out.println("123---------------"+str[1][10]);
-			lotteryInfoService.doNoBankerHandle(str,str1,addstate,time);
+			str = lotteryInfoService.doNoBankerHandle(str,str1,addstate,time);
 			//str = CommonUtils.doNoBankerHandle(str);
 			doTradeHandle(lotteryterm,sid,rmid,str,sc.getCommission(),addstate,time);
 			
@@ -1404,34 +1392,6 @@ public class LotteryTaskService {
 			}
 		}
 	
-	    /*
-	     * 
-		for (OrderDetailVo orderDetailVo : param.getOrderDetails()) {
-			order.setOrdertime(new Date());
-			order.setNoid(orderDetailVo.getNoId());
-			order.setLtdid(orderDetailVo.getNoId());
-			order.setOrderamount(orderDetailVo.getOrderAmount());
-			order.setPlayoridle(orderDetailVo.getPlayOridle());
-			
-		List<LotteryGameResults> list = lotteryGameResultsMapper.selectGameResults(lottery.getSid(),lottery.getLotteryterm());
-	    String[] com = new String[5];
-	    
-	    	    @ApiModelProperty(value = "账户ID", required = true)
-	    @NotNull(message = "账户ID不能为空")
-	    @Min(value=0, message = "账户ID格式不正确")
-	    private Integer accountId;
-
-	    @ApiModelProperty(value = "游戏ID", required = true)
-	    private Integer sid;
-
-	    @ApiModelProperty(value = "房间ID", required = true)
-	    private Integer rmid;
-	    
-		@ApiModelProperty(value = "游戏期次", required = true)
-	    private String lotteryTerm;
-	    
-	    @ApiModelProperty(value = "投注详情", required = true)
-	*/
 	
 		/**
 		 * 获取取现结果
@@ -1439,16 +1399,22 @@ public class LotteryTaskService {
 		 */
 		@Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor=Exception.class)
 		public synchronized void getCashResult() throws Exception{
-			DefaultHttpClient httpClient = new DefaultHttpClient();
-	        HttpPost postMethod = new HttpPost(outResultUrl);
-	        HttpResponse resp = httpClient.execute(postMethod);
-	        String str = EntityUtils.toString(resp.getEntity(), "UTF-8");
-	        System.out.println("返回取现结果："+str);
-	        com.alibaba.fastjson.JSONObject respJSONObject = JSON.parseObject(str);
-	        String returnStr = respJSONObject.getString("data");
-	        if (returnStr.equals("success")){
-	        	System.out.println("取现状态查询：success");
-	        }
+			Calendar c = Calendar.getInstance();
+			c.setTime(new Date());
+			int hourOfDay = c.get(Calendar.HOUR_OF_DAY);
+			if (hourOfDay >= 6 && hourOfDay <= 22) {
+				DefaultHttpClient httpClient = new DefaultHttpClient();
+				
+		        HttpPost postMethod = new HttpPost(outResultUrl);
+		        HttpResponse resp = httpClient.execute(postMethod);
+		        String str = EntityUtils.toString(resp.getEntity(), "UTF-8");
+		        System.out.println("返回取现结果："+str);
+		        com.alibaba.fastjson.JSONObject respJSONObject = JSON.parseObject(str);
+		        String returnStr = respJSONObject.getString("data");
+		        if (returnStr.equals("success")){
+		        	System.out.println("取现状态查询：success");
+		        }
+			}
 		}
 		@Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor=Exception.class)
 		public void closeCQLottery() {

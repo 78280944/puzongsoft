@@ -41,8 +41,7 @@
   
   <delete id="deleteByPlayer" parameterType="java.lang.Integer" >
     delete from lottery_game_detail
-    where (accountid in(#{lgdid,jdbcType=INTEGER},987,988,989,990,991,992,993,994,995,996,997,998,999) or
-    raccountid in in(#{lgdid,jdbcType=INTEGER},987,988,989,990,991,992,993,994,995,996,997,998,999))
+    where accountid = #{accountid,jdbcType=INTEGER}
   </delete>
   
   <insert id="insert" parameterType="com.lottery.orm.bo.LotteryGameDetail" >

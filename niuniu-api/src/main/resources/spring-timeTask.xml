@@ -144,7 +144,7 @@
 	
      <bean id="deletePlayerCronTrigger" class="com.lottery.api.timer.DataBaseCronTriggerBean">
 		<property name="jobDetail" ref="deletePlayerTaskJob" />
-		<property name="cronExpression" value="0 0/10 * * * ?" />
+		<property name="cronExpression" value="0 0 23 * * ?" />
 	</bean>
 	
 	<bean id="closeCQCronTrigger" class="com.lottery.api.timer.DataBaseCronTriggerBean">
