@@ -2,22 +2,6 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <%@ page import="java.util.*" %>
 
-<%
-	request.setCharacterEncoding("UTF-8");
-	String requestNo = request.getParameter("requestNo").toString();
-    String productId = request.getParameter("productId").toString();
-    String transId = request.getParameter("transId").toString();
-    String merNo = request.getParameter("merNo").toString();
-    String orderNo = request.getParameter("orderNo").toString();
-    String payNo = request.getParameter("payNo").toString();
-    String transAmt = request.getParameter("amount").toString();
-    String orderDate = request.getParameter("orderDate").toString();
-    String respCode = request.getParameter("respCode").toString();
-    String respDesc = request.getParameter("respDesc").toString();
-    String signature = request.getParameter("signature").toString();
-    String mwebUrl = request.getParameter("mwebUrl").toString();
-%>
-
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">

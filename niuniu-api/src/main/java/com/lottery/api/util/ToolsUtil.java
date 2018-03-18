@@ -150,7 +150,8 @@ public class ToolsUtil {
 		c.setTime(new Date());
 		int dayOfWeek = c.get(Calendar.DAY_OF_WEEK);
 		int hourOfDay = c.get(Calendar.HOUR_OF_DAY);
-		if (dayOfWeek == 2 && hourOfDay >= 3 && hourOfDay <= 9) {
+		//if (dayOfWeek == 2 && hourOfDay >= 3 && hourOfDay <= 9) {
+		if (hourOfDay >= 3 && hourOfDay <= 9) {
 			return true;
 		} else {
 			return false;
@@ -172,6 +173,14 @@ public class ToolsUtil {
 	
 	public static void main(String args[]){
 		System.out.println(checkTime());
+		
+		Calendar c = Calendar.getInstance();
+		c.setTime(new Date());
+		int hourOfDay = c.get(Calendar.HOUR_OF_DAY);
+		int minOfDay = c.get(Calendar.MINUTE);
+		System.out.println(hourOfDay+".."+minOfDay);
+		if (hourOfDay == 9 && (minOfDay >=12 && minOfDay<50)) 
+			System.out.println("2,"+checkTime());
 		/* System.out.println(DigestUtils.md5Hex("123"));
 		  
 		AccountInfo ai = new AccountInfo();

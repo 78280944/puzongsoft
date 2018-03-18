@@ -25,7 +25,7 @@ public class LotteryInfoService {
 	  /**
      * 判断比较,无庄逻辑处理
      */
-    public synchronized String[][] doNoBankerHandle(String[][] str,String[][] str1,String addstate,Integer time){
+    public  String[][] doNoBankerHandle(String[][] str,String[][] str1,String addstate,Integer time){
    		
         int i = 0;
         int j=str.length-1;
@@ -283,7 +283,7 @@ public class LotteryInfoService {
     /**
      * 庄判断比较,输庄
      */
-    public synchronized Map<Integer, Object> doBankerHandleLess(int gains,int count,int values,int times,String[][] str,String[][] strEqual,String addstate,Integer time){
+    public  Map<Integer, Object> doBankerHandleLess(int gains,int count,int values,int times,String[][] str,String[][] strEqual,String addstate,Integer time){
       
         int i = 0;
         int j=str.length-1;
@@ -363,7 +363,7 @@ public class LotteryInfoService {
     /**
      * 庄判断比较,赢庄
      */
-    public  synchronized Map<Integer, Object> doBankerHandleMore(int gains,int count,int values,int times,String[][] str,String[][] strEqual,String addstate,Integer time){
+    public  Map<Integer, Object> doBankerHandleMore(int gains,int count,int values,int times,String[][] str,String[][] strEqual,String addstate,Integer time){
         
  
         int i = 0;
@@ -412,7 +412,7 @@ public class LotteryInfoService {
         
     }
     
-    public synchronized void doCompareHandle1(String[][] strEqual,String[][] str,int j,int comMoney1,int comMoney2){
+    public  void doCompareHandle1(String[][] strEqual,String[][] str,int j,int comMoney1,int comMoney2){
     	for (int t = 0;t<strEqual.length;t++){
       		 LotteryGameDetail record = new LotteryGameDetail();
       		 record.setLgmid(Integer.valueOf(str[j][4]));

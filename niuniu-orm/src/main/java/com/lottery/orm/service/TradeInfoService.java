@@ -98,7 +98,6 @@ public class TradeInfoService {
     // 添加出入金款项并更新账户
     public String addInoutTradeInfo(TradeInfo tradeInfo) {
     	AccountInfo aInfo = accountInfoMapper.selectByPrimaryKey(tradeInfo.getAccountid());
-    	//System.out.println("345---------------"+aInfo.getUsermoney()+".."+tradeInfo.getTradeamount());
     	tradeInfo.setAccountamount(aInfo.getUsermoney().add(BigDecimal.valueOf(tradeInfo.getTradeamount())));
     	if (String.valueOf(tradeInfo.getAccountid()).length()>=4)
     	    tradeInfoMapper.insertSelective(tradeInfo);

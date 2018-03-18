@@ -93,12 +93,30 @@ public class AccountInfoService {
 	}
 	
 	
+	//打款金额检查
+	public String checkDoMoneyInfo(AccountInfo accountInfo,Double transAmt) {
+		//下注金额checkDoMoneyInfo最大值
+		RoomOrderDto  rd  = new RoomOrderDto();
+		rd = lotteryGameOrderMapper.selectAccountIdOrder(accountInfo.getAccountid());
+		int count = 0;
+		if (rd == null){
+			count = 0;
+		}else{
+		    count = ((null==rd.getOrderamount())?0:rd.getOrderamount().intValue());
+			}
+			
+		//System.out.println("90-----------------"+accountInfo.getUsermoney()+".."+rd.getOrderamount()+"..."+count);
+		if (((accountInfo.getUsermoney().subtract(BigDecimal.valueOf(count)))).doubleValue()<0)
+			return "账户金额不足，请重新输入取现金额";
+		return "true";
+	}
+	
 	public synchronized String checkResult(String orderNo,String payNo,String transAmt,String orderDate,String respCode,String respDesc){
 		LOG.info("返回时间："+new Date()+"，订单编号："+orderNo+",支付订单号："+payNo+",交易金额："+transAmt+",返回消息代码："+respCode+",消息描述："+respDesc);
 		AccountRecharge aRecharge = new AccountRecharge();
     	aRecharge.setOrderno(orderNo);
 		aRecharge.setPayno(payNo);
-		aRecharge.setTransamt(Integer.valueOf(transAmt)/100);
+		aRecharge.setTransamt((Double.valueOf(transAmt).intValue())/100);
 		aRecharge.setOrderdate(orderDate);
 		aRecharge.setRespcode(respCode);
 		aRecharge.setRespdesc(respDesc);
@@ -107,11 +125,6 @@ public class AccountInfoService {
     	if (null == ar){
 		      LOG.info("该订单信息有误！");
 		      return "false";
-    	}else{
-    		if (!(aRecharge.getTransamt().equals(ar.getTransamt()))){
-			      LOG.info("平台支付订单信息或者金额不匹配有误！");
-			      return "false";
-    		}
     	}
     	if (ar.getOrderstate().equals("01"))
     		return "success";
@@ -143,7 +156,7 @@ public class AccountInfoService {
 		    	accountInfoMapper.updateByPrimaryKey(aInfo);
 	    	}
 			ar.setPayno(aRecharge.getPayno());
-	    	ar.setOrderstate(aRecharge.getOrderstate());
+	    	//ar.setOrderstate(aRecharge.getOrderstate());
 	    	ar.setUpusertime(new Date());
 	    	ar.setRespcode(aRecharge.getRespcode());
 	    	ar.setRespdesc(aRecharge.getRespdesc());

@@ -57,6 +57,7 @@ public class JobsTaskService {
 	 */
 	public synchronized void LotteryPlayerDelete() throws Exception{
 		Date[] param1 = CommonUtils.getDateTime(new Date(), new Date());
+		System.out.println("Time-----------"+param1[0]+"..."+param1[1]);
 		List<LotteryGameRound> list =  lotteryGameRoundMapper.selectLotteryOrderPlayer(param1[0],param1[1]);
 		Date openTime = null;
 		int[] accoundis = {888,987,988,989,990,991,992,993,994,995,996,997,998,999};
@@ -64,7 +65,8 @@ public class JobsTaskService {
 			LotteryGameRound lr = new LotteryGameRound();
 			lr = list.get(i);	
 			openTime = lr.getOpentime();
-			if (new Date().getTime() - openTime.getTime()>200){
+			System.out.println("time---"+new Date()+".."+openTime);
+			if ((new Date().getTime() - openTime.getTime())>200){
 			    lotteryGameOrderMapper.deleteByPlayerBatch(lr.getSid(),openTime);
 			    for (int j = 0;j<accoundis.length;j++){
 			    	tradeInfoMapper.deleteByPlayer(accoundis[j]);
@@ -79,8 +81,8 @@ public class JobsTaskService {
 	 *公司上庄
 	 * @throws Exception 
 	 */
-	public synchronized void taskplayoridle(LotteryGameRound lgr) throws Exception{
-		LOG.info("公司上庄开始："+new Date());
+	public  void taskplayoridle(LotteryGameRound lgr) throws Exception{
+		//LOG.info("公司上庄开始："+new Date());
 		java.util.Random random=new java.util.Random();// 定义随机类
 		//List<LotteryGameRound> list =  lotteryGameRoundMapper.selectLotteryPlayoridle();
 		String offtype = "";
@@ -90,7 +92,7 @@ public class JobsTaskService {
 		overTime = lgr.getOvertime();
 		LotteryService ls = lotteryServiceMapper.selectByPrimaryKey(1000);
 		String gametype = "";
-		LOG.info("公司上庄状态："+ls.getAremarksercie());
+		//LOG.info("公司上庄状态："+ls.getAremarksercie());
 		if (ls.getAremarksercie().equals("1")){
 			if ((currentDate.getTime() - overTime.getTime())/1000>=-40&&((currentDate.getTime() - overTime.getTime())<0)){	
 				List<LotteryGameOrder> lists =  lotteryGameOrderMapper.selectGamePlayoridle(lgr.getLotteryterm(), lgr.getSid());
@@ -124,7 +126,7 @@ public class JobsTaskService {
 					}
 				}
 		}
-		LOG.info("公司上庄结束："+new Date());
+		//LOG.info("公司上庄结束："+new Date());
 	}
 	
 }

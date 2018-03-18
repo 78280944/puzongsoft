@@ -24,7 +24,7 @@ public class PlayAccountInfoVo extends BaseAccountInfoVo{
 	    @ApiModelProperty(value = "银行账号")
 	    private String bankaccount;
 	    
-		@ApiModelProperty(value = "银行联行号", required = true)
+		@ApiModelProperty(value = "银行编码，例如工商银行，1", required = true)
 	    private String bankno;
 		
 		@ApiModelProperty(value = "银行开户省份", required = true)

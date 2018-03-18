@@ -37,8 +37,8 @@ public class UserCashVo {
     @NotNull(message = "开户行/地址不能为空")
     private String bankAddress;
 	
-	@ApiModelProperty(value = "银行联行号,人行规定的12位联行号,可默认空")
-    @NotNull(message = "银行联行号能为空")
+	@ApiModelProperty(value = "银行编码,例如工商银行，1",required = true)
+    @NotNull(message = "银行编码不能为空")
 	private String bankNo;
 
 	@ApiModelProperty(value = "银行卡开户省份,福建省，上海市", required = true)

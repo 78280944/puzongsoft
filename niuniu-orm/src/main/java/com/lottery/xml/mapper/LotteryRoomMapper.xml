@@ -45,7 +45,11 @@
   </select> 
   
   <select id="selectDistinctSid"  resultMap="BaseResultMap" >
-    SELECT rmid,sid,roomid,roomnumber FROM lottery_room WHERE LENGTH(rmid)=8 and sid = #{sid,jdbcType=INTEGER} LIMIT 0,3
+    SELECT rmid,sid,roomid,roomnumber FROM lottery_room WHERE LENGTH(rmid)=8 and sid = #{sid,jdbcType=INTEGER} LIMIT 0,2
+  </select>
+  
+  <select id="selectDistinctSysSid"  resultMap="BaseResultMap" >
+    SELECT rmid,sid,roomid,roomnumber FROM lottery_room WHERE LENGTH(rmid)=7 and sid = #{sid,jdbcType=INTEGER} and roomid between (#{first,jdbcType=INTEGER}) and (#{second,jdbcType=INTEGER})
   </select>
   
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >

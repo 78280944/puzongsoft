@@ -16,11 +16,11 @@ public class UserRechargeVo {
     @NotNull(message = "用户名不能为空")
     private String username;
 	
-	@ApiModelProperty(value = "产品编号，微信1205;QQ1208,网银1053", required = true)
+	@ApiModelProperty(value = "产品编号，QQ92,网银32", required = true)
     @NotNull(message = "产品编号不能为空")
 	private String productId;
 	
-	@ApiModelProperty(value = "交易金额，单位为分，1元传100", required = true)
+	@ApiModelProperty(value = "交易金额，单位为分，1元传1", required = true)
     @NotNull(message = "交易金额不能为空")
 	private Double transAmt;
 	

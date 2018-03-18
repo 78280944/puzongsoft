@@ -39,7 +39,7 @@
     where lgdid = #{lgdid,jdbcType=INTEGER}
   </delete>
   
-  <delete id="deleteByPlayer" parameterType="java.lang.Integer" >
+  <delete id="deletePlayer" parameterType="java.lang.Integer" >
     delete from lottery_game_detail
     where accountid = #{accountid,jdbcType=INTEGER}
   </delete>

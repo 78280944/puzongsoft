@@ -18,7 +18,7 @@
   <select id="selectBankCash" resultMap="BaseResultMap" >
     select 
     <include refid="Base_Column_List" />
-    from bank_cash
+    from bank_cash where length(bcid)=5
  
   </select>
   

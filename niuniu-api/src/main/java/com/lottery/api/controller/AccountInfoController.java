@@ -136,6 +136,12 @@ public class AccountInfoController {
 	private QueryTransStatusTest queryTransStatusTest;
 	
 	@Autowired
+	private TransCashTest transCashTest;
+	
+	@Autowired
+	private TransPayTest transPayTest;
+	
+	@Autowired
 	private BankCashMapper bankCashMapper;
 	
 	@Autowired
@@ -412,7 +418,9 @@ public class AccountInfoController {
 			if(accountInfo==null){
 			      result.fail(MessageTool.Code_3001);
 			}else{
-				param.setPassword(DigestUtils.md5Hex(param.getPassword()));
+				if (null==param.getPassword()||param.getPassword().equals("")){}
+				else
+				    param.setPassword(DigestUtils.md5Hex(param.getPassword()));
 			    AccountInfo paraInfo = mapper.map(param, AccountInfo.class);
 			    accountInfoService.updateAccountInfo(paraInfo);
 			    result.success();
@@ -563,6 +571,16 @@ public class AccountInfoController {
 			      LOG.info(result.getMessage());
 			      return result;
 	    	}
+   	
+	    	if (param.getAccountId().toString().length()==3){
+			      result.fail("该用户不允许充值！");
+			      LOG.info(result.getMessage());
+			      return result;
+	    	}
+	    	aRecharge.setTransamt(param.getTransAmt().intValue());
+	    	aRecharge = transPayTest.getPayUrl(aRecharge);
+	    	
+	    	/*
 	    	if (param.getProductId().equals("1053"))
 	    		aRecharge = transScanCodePayTest.getPayWayTrans(aRecharge);
 	    	else
@@ -571,8 +589,8 @@ public class AccountInfoController {
 	    	      result.fail("该用户充值出现异常！");
 			      LOG.info(result.getMessage());
 			      return result;
-	    	}
-	    	aRecharge.setTransamt((int)(param.getTransAmt()/100));
+	    	}*/
+	    	
 			aRecharge.setRelativetype(EnumType.RalativeType.In.ID);
 			aRecharge.setOpuserid(String.valueOf(param.getAccountId()));
 			aRecharge.setOpusertime(new Date());
@@ -618,12 +636,17 @@ public class AccountInfoController {
 	@ResponseBody
 	public synchronized RestResult userCashApply(@ApiParam(value = "Json参数", required = true) @Validated @RequestBody UserCashVo param) throws Exception {
 		RestResult result = new RestResult();
+    	if (param.getAccountId().toString().length()==3){
+		      result.fail("该用户不允许取现！");
+		      LOG.info(result.getMessage());
+		      return result;
+      	}
 		AccountRecharge aRecharge = new AccountRecharge();
 		aRecharge = mapper.map(param, AccountRecharge.class);	
 		aRecharge.setRelativetype(EnumType.RalativeType.Out.ID);
 		SysFee sf = sysFeeMapper.selectByPrimaryKey(1001);
-		aRecharge.setFee(aRecharge.getTransamt()/100*sf.getCafee().doubleValue());
-		aRecharge.setPayamt(aRecharge.getTransamt()/100-aRecharge.getFee());
+		aRecharge.setFee(aRecharge.getTransamt()*sf.getCafee().doubleValue());
+		aRecharge.setPayamt(aRecharge.getTransamt()-aRecharge.getFee());
 		aRecharge.setOrderstate("03");//未处理,审核中
 		aRecharge.setUpstate("03");//未处理，审核中
 		aRecharge.setInputtime(new Date());
@@ -634,20 +657,20 @@ public class AccountInfoController {
 		      return result;
 		}
 		
-		if(aInfo.getUsermoney().subtract(BigDecimal.valueOf((double)(aRecharge.getTransamt()/100))).doubleValue()<0){
+		if(aInfo.getUsermoney().subtract(BigDecimal.valueOf((double)(aRecharge.getTransamt()))).doubleValue()<0){
 			result.fail("取现金额不能大于账户金额");
 			return result;
 		}
-		String checkInfo = accountInfoService.checkCashMoneyInfo(aInfo, Double.valueOf(aRecharge.getTransamt()/100));
+		String checkInfo = accountInfoService.checkCashMoneyInfo(aInfo, Double.valueOf(aRecharge.getTransamt()));
 		if ((!"true".equals(checkInfo))){
 			result.fail(checkInfo);
 			return result;
 		}
-		LOG.info(aInfo.getUsername()+",账户金额:"+aInfo.getUsermoney()+",取现金额:"+(aRecharge.getTransamt()/100)+",账户取现后余额："+aInfo.getUsermoney().subtract(BigDecimal.valueOf((double)(aRecharge.getTransamt()/100))));
-		aInfo.setUsermoney(aInfo.getUsermoney().subtract(BigDecimal.valueOf((double)(aRecharge.getTransamt()/100))));
+		LOG.info(aInfo.getUsername()+",账户金额:"+aInfo.getUsermoney()+",取现金额:"+(aRecharge.getTransamt())+",账户取现后余额："+aInfo.getUsermoney().subtract(BigDecimal.valueOf((double)(aRecharge.getTransamt()))));
+		aInfo.setUsermoney(aInfo.getUsermoney().subtract(BigDecimal.valueOf((double)(aRecharge.getTransamt()))));
 		aRecharge.setAccountamount(aInfo.getUsermoney());
 		accountInfoMapper.updateByPrimaryKey(aInfo);
-		if((aRecharge.getTransamt()/100) % (sf.getRatio().doubleValue()) != 0){
+		if((aRecharge.getTransamt()) % (sf.getRatio().doubleValue()) != 0){
 			result.fail("取现必须为"+sf.getRatio().doubleValue()+"的倍数");
 			return result;
 	    }
@@ -661,7 +684,7 @@ public class AccountInfoController {
     		aInfo.setUsermoney(aInfo.getUsermoney().add(BigDecimal.valueOf(aRecharge.getFee())));
 	    	accountInfoMapper.updateByPrimaryKey(aInfo);
     	}
-		aRecharge.setTransamt(aRecharge.getTransamt()/100);
+		aRecharge.setTransamt(aRecharge.getTransamt());
 		aRecharge.setRemark("取现金额:"+aRecharge.getTransamt()+",取现时间:"+new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
 		accountRechargeMapper.insert(aRecharge);
 		result.success();
@@ -726,8 +749,12 @@ public class AccountInfoController {
 			      LOG.info(result.getMessage());
 			      return result;
 			}
-		}
-		else if ((aRecharge.getRespcode().equals("P000"))||aRecharge.getOrderdate().equals("04")){
+			if (aRecharge.getOrderstate().equals("01")||aRecharge.getOrderstate().equals("02")){
+			      result.fail("该订单已处理，无法打款！");
+			      LOG.info(result.getMessage());
+			      return result;
+			}
+		}else if ((aRecharge.getRespcode().equals("P000"))||aRecharge.getOrderdate().equals("04")){
 		      result.fail("该订单已取现或者人工已处理！");
 		      LOG.info(result.getMessage());
 		      return result;
@@ -736,12 +763,13 @@ public class AccountInfoController {
 		      LOG.info(result.getMessage());
 		      return result;
 		}
+		aRecharge.setRequestno(new SimpleDateFormat("yyyyMMddHHmmssSSS").format(new Date()));
 		aRecharge.setOrderno(new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()));
 		aRecharge.setOrderdate(new SimpleDateFormat("yyyyMMdd").format(new Date()));
 		aRecharge.setOpusertime(new Date());
 		aRecharge.setOpuserid(param.getOpuserid());
 		SysFee sf = sysFeeMapper.selectByPrimaryKey(1001);
-		aRecharge.setTransamt(aRecharge.getTransamt()*100);
+		aRecharge.setTransamt(aRecharge.getTransamt());
 		AccountInfo aInfo = accountInfoMapper.selectByPrimaryKey(aRecharge.getAccountid());
 		if (null == aInfo){
 		      result.fail("该用户不存在！");
@@ -749,13 +777,13 @@ public class AccountInfoController {
 		      return result;
 		}
 		
-		String checkInfo = accountInfoService.checkCashMoneyInfo(aInfo, Double.valueOf(aRecharge.getTransamt()/100));
+		String checkInfo = accountInfoService.checkDoMoneyInfo(aInfo, Double.valueOf(aRecharge.getTransamt()));
 		if ((!"true".equals(checkInfo))){
 			result.fail(checkInfo);
 			return result;
 		}
 		
-		if((aRecharge.getTransamt()/100) % (sf.getRatio().doubleValue()) != 0){
+		if((aRecharge.getTransamt()) % (sf.getRatio().doubleValue()) != 0){
 			result.fail("取现必须为"+sf.getRatio().doubleValue()+"的倍数");
 			return result;
 	    }
@@ -764,11 +792,19 @@ public class AccountInfoController {
 			result.fail("当天取现次数不允许超过"+sf.getTime()+"次");
 			return result;
 		}
-		String results = transProxyPayTest.getPayTrans(aRecharge);
-    	if (null == results||results.equals("")||results.equals("false")){
-    	      result.fail("该用户打款出现异常！");
-		      LOG.info(result.getMessage());
-		      return result;
+		//String results = transProxyPayTest.getPayTrans(aRecharge);
+		String results = transCashTest.getCashSubmit(aRecharge);
+		String[] res = results.split("~");
+    	if (null == res[0]||res[0].equals("")||res[0].equals("1111")){
+    	    result.fail("该用户打款出现异常！");
+		    LOG.info(result.getMessage());
+		    return result;
+    	}else if (res[0].equals("0000")){
+    		result.success("success");
+    	}else{
+  	        result.fail(res[1]);
+		    LOG.info(result.getMessage());
+		    return result;
     	}
 		result.success("success");
 		LOG.info(result.getMessage());
@@ -798,6 +834,11 @@ public class AccountInfoController {
 		if (null == aRecharge.getRespcode()){
 			if (aRecharge.getOrderstate().equals("04")){
 			      result.fail("该订单已取现或已人工处理，无法取消！");
+			      LOG.info(result.getMessage());
+			      return result;
+			}
+			if (aRecharge.getOrderstate().equals("01")||aRecharge.getOrderstate().equals("02")){
+			      result.fail("该订单已处理，无法取消！");
 			      LOG.info(result.getMessage());
 			      return result;
 			}
@@ -843,13 +884,19 @@ public class AccountInfoController {
 	@RequestMapping(value = "/userOutResult", method = RequestMethod.POST)
 	@ResponseBody
 	public synchronized RestResult userOutResult() throws Exception {
+		System.out.println("ddo...");
 		RestResult result = new RestResult();
 		List<AccountRecharge> list = accountRechargeMapper.selectByOutResult();
 		if (null != list){
 			  for (int i = 0;i<list.size();i++){
 				  AccountRecharge aRecharge = new AccountRecharge();
 				  aRecharge = list.get(i);
-				  String results = queryTransStatusTest.getPayResults(aRecharge);
+				  String results = "";
+				  //String results = queryTransStatusTest.getPayResults(aRecharge);
+				  if (aRecharge.getRelativetype().equals("In"))
+				      results = transPayTest.getPayResults(aRecharge);
+				  else if (aRecharge.getRelativetype().equals("Out"))
+					  results = transPayTest.getCashResults(aRecharge);
 				  System.out.println(results +",accountid = "+aRecharge.getAccountid()+",transAmt = "+aRecharge.getTransamt());
 				  LOG.info(results +",accountid = "+aRecharge.getAccountid()+",transAmt = "+aRecharge.getTransamt());
 			  }

@@ -26,4 +26,6 @@ public interface LotteryRoomMapper {
     
     LotteryRoomPlayerDto selectLotteryRoomCount(@Param("sid")Integer sid,@Param("lotteryterm")String lotteryterm,@Param("rmid")Integer rmid);
     
+    List<LotteryRoom> selectDistinctSysSid(@Param("sid")Integer sid,@Param("first")Integer first,@Param("second")Integer second);
+    
 }

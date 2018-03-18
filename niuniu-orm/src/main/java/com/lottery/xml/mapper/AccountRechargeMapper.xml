@@ -584,7 +584,7 @@
     select 
     <include refid="Base_Column_List" />
     from account_recharge
-    where orderdate = #{orderdate,jdbcType=VARCHAR} and relativetype = #{relativetype,jdbcType=VARCHAR} and accountid=#{accountid,jdbcType=INTEGER}
+    where orderdate = #{orderdate,jdbcType=VARCHAR} and relativetype = #{relativetype,jdbcType=VARCHAR} and accountid=#{accountid,jdbcType=INTEGER} and orderstate='01'
   </select>
   
   <select id="selectByOrderNo" resultMap="BaseResultMap" >
