@@ -27,6 +27,16 @@
     lottery_game GROUP BY gametype ORDER BY gamestarttime DESC
   </select>   
   
+  <select id="selectLotteryBySid" resultMap="BaseResultMap">
+    select 
+    a.sid,a.gametype,IFNULL(b.lotteryresult,'0') AS gamename,a.gameterm,a.gamelobbyno,a.gamelobbyname,a.gamestarttime,a.gameovertime
+    from 
+    lottery_game a
+    right join
+    (SELECT lotteryresult,sid FROM lottery_Game_round WHERE sid = #{sid,jdbcType=INTEGER} ORDER BY opentime DESC LIMIT 1,1) b
+    on a.sid = b.sid 
+  </select>  
+  
   <select id="selectLotteryGameItem" resultMap="BaseResultMap">
     select 
     sid,gametype,gamename,gameterm,gamelobbyno,gamelobbyname,gamestarttime,gameovertime 

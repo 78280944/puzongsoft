@@ -18,4 +18,6 @@ public interface LotteryGameMapper {
     List<LotteryGame> selectLotteryGameItem(@Param("gametype")String gametype);
     
     int updateLotteryTime(@Param("sid")int sid,@Param("gameterm")String gameterm,@Param("gamestarttime")Date gamestarttime,@Param("gameovertime")Date gameovertime);
+    
+    LotteryGame selectLotteryBySid(@Param("sid")int sid);
 }

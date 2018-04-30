@@ -1,19 +1,25 @@
 package com.lottery.orm.service;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.lottery.orm.bo.LotteryGame;
 import com.lottery.orm.bo.LotteryGameOrder;
 import com.lottery.orm.bo.LotteryGameRound;
 import com.lottery.orm.bo.SysLimit;
 import com.lottery.orm.dao.AccountAmountMapper;
 import com.lottery.orm.dao.LotteryGameDetailMapper;
+import com.lottery.orm.dao.LotteryGameMapper;
 import com.lottery.orm.dao.LotteryGameOrderMapper;
 import com.lottery.orm.dao.LotteryGameRoundMapper;
 import com.lottery.orm.dao.LotteryServiceMapper;
@@ -21,6 +27,7 @@ import com.lottery.orm.dao.SysLimitMapper;
 import com.lottery.orm.dao.TradeInfoMapper;
 import com.lottery.orm.dto.LotteryAmountDto;
 import com.lottery.orm.util.CommonUtils;
+import com.lottery.orm.util.HttpclientTool;
 import com.lottery.orm.util.MessageTool;
 import com.lottery.orm.bo.LotteryService;
 
@@ -35,6 +42,8 @@ public class JobsTaskService {
 	@Autowired
 	private LotteryGameOrderMapper lotteryGameOrderMapper;
 	
+	@Autowired
+	private LotteryGameMapper lotteryGameMapper;
 	
 	@Autowired
 	private AccountAmountMapper accountAmountMapper;
@@ -55,33 +64,69 @@ public class JobsTaskService {
 	 *试玩账户删除
 	 * @throws Exception 
 	 */
-	public synchronized void LotteryPlayerDelete() throws Exception{
-		Date[] param1 = CommonUtils.getDateTime(new Date(), new Date());
-		System.out.println("Time-----------"+param1[0]+"..."+param1[1]);
+	public void LotteryPlayerDelete() throws Exception{
+		Date lastDay = CommonUtils.getNextDay(new Date());
+		Date[] param1 = CommonUtils.getDateTime(lastDay, lastDay);
+		System.out.println("Time do delete --"+param1[0]+".."+param1[1]);
 		List<LotteryGameRound> list =  lotteryGameRoundMapper.selectLotteryOrderPlayer(param1[0],param1[1]);
 		Date openTime = null;
 		int[] accoundis = {888,987,988,989,990,991,992,993,994,995,996,997,998,999};
 		for (int i = 0;i<list.size();i++){
 			LotteryGameRound lr = new LotteryGameRound();
 			lr = list.get(i);	
-			openTime = lr.getOpentime();
-			System.out.println("time---"+new Date()+".."+openTime);
-			if ((new Date().getTime() - openTime.getTime())>200){
-			    lotteryGameOrderMapper.deleteByPlayerBatch(lr.getSid(),openTime);
-			    for (int j = 0;j<accoundis.length;j++){
+			lotteryGameOrderMapper.deleteByPlayerBatch(lr.getSid(),openTime);
+			for (int j = 0;j<accoundis.length;j++){
 			    	tradeInfoMapper.deleteByPlayer(accoundis[j]);
 			    	accountAmountMapper.deleteByPlayer(accoundis[j]);
 			    	lotteryGameDetailMapper.deletePlayer(accoundis[j]);
 			    }
-			}
 		}
 	}
 		
 	/**
+	 *是否读取开奖
+	 * @throws Exception 
+	 */
+	public  synchronized String[] LotterApi(int sid,String apiUrl) throws Exception{
+		LotteryGame lg =  lotteryGameMapper.selectLotteryBySid(sid);
+		Date date = new Date();
+		String[] result = new String[2];
+		//boolean flag = false;
+		//if ((sid==1001&&CommonUtils.dateRange())||sid==2001||sid==2002)
+			//date = CommonUtils.getChangeDate(20);
+		/*
+		String result = HttpclientTool.get(apiUrl);
+		System.out.println("result.."+result+"..");
+		if(StringUtils.isNotBlank(result)&&result.trim().startsWith("{")){
+		    JSONObject jObj = new JSONObject(result);
+		    JSONArray openArray = jObj.getJSONArray("open");
+		    System.out.println("result.e."+openArray.getJSONObject(0).getString("expect")+".."+lg.getGameterm());
+			if (!(openArray.getJSONObject(0).getString("expect").equals(String.valueOf(BigInteger.valueOf(Long.valueOf(lg.getGameterm())-1))))){
+				flag = true;
+				System.out.println("读取sdsd,open:"+flag+".."+openArray.getJSONObject(0).getString("expect"));
+			}
+		}
+		*/
+		System.out.println("是否运行状态:"+date.after(lg.getGameovertime())+".."+sid+".."+lg.getGamename()+".."+".."+lg.getGamename().equals("0"));
+		if (date.after(lg.getGameovertime())){
+			System.out.println("是否最终状态：true");
+			result[0] = "true";
+			result[1] = lg.getGamename();
+			return result;
+		}else{
+			System.out.println("是否最终状态：false");
+			result[0] = "false";
+			result[1] = lg.getGamename();
+			return result;
+		}
+
+	}
+	
+	/**
 	 *公司上庄
 	 * @throws Exception 
 	 */
-	public  void taskplayoridle(LotteryGameRound lgr) throws Exception{
+	public synchronized void taskplayoridle(LotteryGameRound lgr) throws Exception{
 		//LOG.info("公司上庄开始："+new Date());
 		java.util.Random random=new java.util.Random();// 定义随机类
 		//List<LotteryGameRound> list =  lotteryGameRoundMapper.selectLotteryPlayoridle();
@@ -90,21 +135,19 @@ public class JobsTaskService {
 		Date overTime = null;
 	    int  noid  = 0;
 		overTime = lgr.getOvertime();
-		LotteryService ls = lotteryServiceMapper.selectByPrimaryKey(1000);
 		String gametype = "";
 		//LOG.info("公司上庄状态："+ls.getAremarksercie());
-		if (ls.getAremarksercie().equals("1")){
 			if ((currentDate.getTime() - overTime.getTime())/1000>=-40&&((currentDate.getTime() - overTime.getTime())<0)){	
 				List<LotteryGameOrder> lists =  lotteryGameOrderMapper.selectGamePlayoridle(lgr.getLotteryterm(), lgr.getSid());
 				for (int j = 0;j<lists.size();j++){
 	                if (lgr.getSid()==2001||lgr.getSid()==2002){
-						offtype = "1";
-						noid = 5;
-						gametype = "03";
-					}else{
 						offtype = "2";
-						noid = 10;
+						noid = 5;
 						gametype = "04";
+					}else{
+						offtype = "1";
+						noid = 10;
+						gametype = "03";
 					}
 					SysLimit sys = sysLimitMapper.selectByOrderGs(gametype,offtype);
 					LotteryGameOrder la = new LotteryGameOrder();
@@ -125,7 +168,6 @@ public class JobsTaskService {
 			        lotteryGameOrderMapper.updatePlayOridle(order.getSid(), order.getRmid(), order.getNoid(),order.getLotteryterm());
 					}
 				}
-		}
 		//LOG.info("公司上庄结束："+new Date());
 	}
 	

@@ -64,6 +64,14 @@ public class CommonUtils {
 			sTime[1] = sdf.parse(imptimeEnd);
 			return sTime;  
 		}
+   
+   public static Date getNextDay(Date date) {  
+       Calendar calendar = Calendar.getInstance();  
+       calendar.setTime(date);  
+       calendar.add(Calendar.DAY_OF_MONTH, -1);  
+       date = calendar.getTime();  
+       return date;  
+   }
 	
 	public static String getMonday(){
 		String monday = "";
@@ -180,6 +188,13 @@ public class CommonUtils {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
 	    String sTime = sdf.format(date);
 	    return sTime;
+	}
+	
+	public static Date getChangeDate(Integer seconds){
+		Calendar calendar = Calendar.getInstance ();
+        calendar.add (Calendar.SECOND, seconds);
+	    Date date = calendar.getTime();
+	    return date;
 	}
 	
 	public static String getArrayString(String str){
@@ -1548,11 +1563,12 @@ public class CommonUtils {
 		//Date currentTime = AppUtils.getCurrentDate();
 		  //获取昨天时间
 		Date s = CommonUtils.getStringToMillon(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()),1*60);
-	 System.out.println("ik--"+new Date()+".."+s);
+	 System.out.println("ik--"+getChangeDate(20));
 		String s1="bankCode=CMB&cardType=0&commodityName=1009,充值金额：2,IP:&keyType=file&merNo=850610050942302&notifyUrl=http://api.niuniu668.com/swagger/wx_wap_notify.jsp&orderDate=20180126&orderNo=20180126133128&productId=1053&remark=充值金额:2,充值时间:2018-01-26 13:31:28&requestNo=20180126133128211&returnUrl=http://api.niuniu668.com/swagger/wx_wap_result.jsp&transAmt=200&transId=70&version=V1.0";
         String s2="keyType=file&merNo=850610050942302&requestNo=20180126133128211&version=V1.0&productId=1053&transId=70&orderDate=20180126&orderNo=20180126133128&returnUrl=http://api.niuniu668.com/swagger/wx_wap_result.jsp&notifyUrl=http://api.niuniu668.com/swagger/wx_wap_notify.jsp&commodityName=1009,充值金额：2,IP:&remark=充值金额:2,充值时间:2018-01-26 13:31:28&transAmt=200&cardType=0&bankCode=CMB";
 		String[] r1 = s1.split("&");
         String[] r2 = s2.split("&");
+        /*
         System.out.println("m---sd.."+r1.length);
         for (int m = 0;m<r2.length;m++){
         	String temp = r2[m];
@@ -1608,5 +1624,6 @@ public class CommonUtils {
 		Date[] data = CommonUtils.getDateBetween(new Date(),new Date(),"03");
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		System.out.println(data[0]+".."+data[1]+"..."+sdf.format(data[0])+".."+sdf.format(data[1]));*/
+       
 	}
 }

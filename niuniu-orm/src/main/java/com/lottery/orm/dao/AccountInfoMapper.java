@@ -37,9 +37,11 @@ public interface AccountInfoMapper {
     
     AccountInfo selectByUsername(String username);
     
-    AccountInfo selectByUserAndId(AccountInfo record);
+    AccountInfo selectByCodeCount(@Param("accountid")Integer accountid);
     
     List<AccountInfo> selectByCodeNo(@Param("code")String code);
+    
+    AccountInfo selectByUserAndId(AccountInfo record);
     
     AccountInfo selectByCode(@Param("code")String code, @Param("level")String level, @Param("offtype")String offtype);
     

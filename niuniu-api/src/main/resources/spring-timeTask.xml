@@ -14,8 +14,8 @@
 
 	<!-- 定时任务配置 scheduler 方式 注解 暂时不支持动态更新 -->
 	<context:component-scan base-package="com.lottery.api.timer" />
-	<task:executor id="executor" pool-size="5" />
-	<task:scheduler id="scheduler" pool-size="10" />
+	<task:executor id="executor" pool-size="200" />
+	<task:scheduler id="scheduler" pool-size="40" />
 	<!-- <task:annotation-driven executor="executor" scheduler="scheduler" /> -->
 		
 	<bean id="lotteryCQTaskJob"
@@ -103,48 +103,46 @@
 		<property name="concurrent" value="false" />
 	</bean>
 	
-	
 	<bean id="openCQCronTrigger" class="com.lottery.api.timer.DataBaseCronTriggerBean">
 		<property name="jobDetail" ref="lotteryCQTaskJob" />
-		<property name="cronExpression" value="0/12 * * * * ?" />
+		<property name="cronExpression" value="0/13 * * * * ?" />
 	</bean>
 	
 	<bean id="openTJCronTrigger" class="com.lottery.api.timer.DataBaseCronTriggerBean">
 		<property name="jobDetail" ref="lotteryTJTaskJob" />
-		<property name="cronExpression" value="0/10 * * * * ?" />
+		<property name="cronExpression" value="0/13 * * * * ?" />
 	</bean>
-	
 	
 	<bean id="openHLJCronTrigger" class="com.lottery.api.timer.DataBaseCronTriggerBean">
 		<property name="jobDetail" ref="lotteryHLJTaskJob" />
-		<property name="cronExpression" value="0/10 * * * * ?" />
+		<property name="cronExpression" value="0/11 * 9-23 * * ?" />
 	</bean>
 	
 	
 	<bean id="openXJCronTrigger" class="com.lottery.api.timer.DataBaseCronTriggerBean">
 		<property name="jobDetail" ref="lotteryXJTaskJob" />
-		<property name="cronExpression" value="0/11 * * * * ?" />
+		<property name="cronExpression" value="0/13 * * * * ?" />
 	</bean>
 	
 	<bean id="openYNCronTrigger" class="com.lottery.api.timer.DataBaseCronTriggerBean">
 		<property name="jobDetail" ref="lotteryYNTaskJob" />
-		<property name="cronExpression" value="0/11 * * * * ?" />
+		<property name="cronExpression" value="0/12 * 9-22 * * ?" />
 	</bean>
 	
 	<bean id="openBJSCCronTrigger" class="com.lottery.api.timer.DataBaseCronTriggerBean">
 		<property name="jobDetail" ref="lotteryBJSCTaskJob" />
-		<property name="cronExpression" value="0/10 * * * * ?" />
+		<property name="cronExpression" value="0/13 * * * * ?" />
 	</bean>
 	
 	<bean id="openXYFTCronTrigger" class="com.lottery.api.timer.DataBaseCronTriggerBean">
 		<property name="jobDetail" ref="lotteryXYFTTaskJob" />
-		<property name="cronExpression" value="0/8 * * * * ?" />
+		<property name="cronExpression" value="0/13 * * * * ?" />
 	</bean>
 	
 	
      <bean id="deletePlayerCronTrigger" class="com.lottery.api.timer.DataBaseCronTriggerBean">
 		<property name="jobDetail" ref="deletePlayerTaskJob" />
-		<property name="cronExpression" value="0 0/10 * * * ?" />
+		<property name="cronExpression" value="0 0 5 * * ?" />
 	</bean>
 	
 	<bean id="closeCQCronTrigger" class="com.lottery.api.timer.DataBaseCronTriggerBean">
@@ -177,14 +175,14 @@
 			<list>
 				<ref bean="openCQCronTrigger" />
 				<ref bean="openHLJCronTrigger" />
-				<!-- <ref bean="openTJCronTrigger" /> -->
+<!-- 				<ref bean="openTJCronTrigger" /> -->
 				<ref bean="openYNCronTrigger" />
 				<ref bean="openXJCronTrigger" />
 				<ref bean="openBJSCCronTrigger" />
 				<ref bean="openXYFTCronTrigger" />
 		<!-- 		<ref bean="openValueCronTrigger" /> -->
 		        <ref bean="deletePlayerCronTrigger" />
-		        <ref bean="outResultCronTrigger" />
+		        <ref bean="outResultCronTrigger" /> 
 		        
 				<!-- <ref bean="openTJCronTrigger" />
 				<ref bean="openGDCronTrigger" />

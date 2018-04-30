@@ -21,7 +21,7 @@
     b.accountid,b.username
     from lottery_add_account a left join account_info b
     on a.accountid = b.supuserid
-    where a.accountid!=1 and b.usermoney>5000
+    where a.accountid!=1 and b.usermoney>=5000 and b.offtype='3'
   </select>
   
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >

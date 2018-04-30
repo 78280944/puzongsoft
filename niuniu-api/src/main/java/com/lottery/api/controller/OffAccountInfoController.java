@@ -89,7 +89,7 @@ public class OffAccountInfoController {
 	@ApiOperation(value = "新增下线代理", notes = "新增下线代理", httpMethod = "POST")
 	@RequestMapping(value = "/addOffAccountInfo", method = RequestMethod.POST)
 	@ResponseBody
-	public RestResult addOffAccountInfo(@ApiParam(value = "Json参数", required = true) @Validated @RequestBody OffAccountInfoVo param) throws Exception {
+	public synchronized RestResult addOffAccountInfo(@ApiParam(value = "Json参数", required = true) @Validated @RequestBody OffAccountInfoVo param) throws Exception {
 		RestResult result = new RestResult();
 		try {
 			
@@ -184,7 +184,7 @@ public class OffAccountInfoController {
 	@ApiOperation(value = "获取该代理下的代理列表", notes = "获取该代理下的代理列表", httpMethod = "POST")
 	@RequestMapping(value = "/getAllOffAccountInfo", method = RequestMethod.POST)
 	@ResponseBody
-	public OffAccountListResult getAllOffAccountInfo(@ApiParam(value = "Json参数", required = true) @Validated @RequestBody AccountInfoVo param) throws Exception {
+	public synchronized OffAccountListResult getAllOffAccountInfo(@ApiParam(value = "Json参数", required = true) @Validated @RequestBody AccountInfoVo param) throws Exception {
 	    OffAccountListResult result = new OffAccountListResult();
 		try {
 			
@@ -208,7 +208,7 @@ public class OffAccountInfoController {
 	@ApiOperation(value = "获取该代理下的会员列表", notes = "获取该代理下的会员列表", httpMethod = "POST")
 	@RequestMapping(value = "/getAllAccountInfo", method = RequestMethod.POST)
 	@ResponseBody
-	public OffAccountListResult getAllAccountInfo(@ApiParam(value = "Json参数", required = true) @Validated @RequestBody AccountInfoVo param) throws Exception {
+	public synchronized OffAccountListResult getAllAccountInfo(@ApiParam(value = "Json参数", required = true) @Validated @RequestBody AccountInfoVo param) throws Exception {
 	    OffAccountListResult result = new OffAccountListResult();
 		try {
 			
@@ -232,7 +232,7 @@ public class OffAccountInfoController {
 	@ApiOperation(value = "代理用户修改下线密码", notes = "代理用户修改下线密码", httpMethod = "POST")
 	@RequestMapping(value = "/updateOffAccountPass", method = RequestMethod.POST)
 	@ResponseBody
-	public RestResult updateOffAccountPass(@ApiParam(value = "Json参数", required = true) @Validated @RequestBody UpdatePlayPassVo param) throws Exception {
+	public synchronized RestResult updateOffAccountPass(@ApiParam(value = "Json参数", required = true) @Validated @RequestBody UpdatePlayPassVo param) throws Exception {
 		RestResult result = new RestResult();
 		try {			
 			AccountInfo offAccountInfo = accountInfoMapper.selectByPrimaryKey(param.getAccountid());
@@ -259,7 +259,7 @@ public class OffAccountInfoController {
 	@ApiOperation(value = "代理用户修改下线代理占成", notes = "代理用户修改下线代理占成", httpMethod = "POST")
 	@RequestMapping(value = "/updateAccountPercent", method = RequestMethod.POST)
 	@ResponseBody
-	public RestResult updateAccountPercent(@ApiParam(value = "Json参数", required = true) @Validated @RequestBody UpdateAccountPerVo param) throws Exception {
+	public synchronized RestResult updateAccountPercent(@ApiParam(value = "Json参数", required = true) @Validated @RequestBody UpdateAccountPerVo param) throws Exception {
 		RestResult result = new RestResult();
 		try {
 			int supaccountId = param.getSupaccountid();
@@ -310,7 +310,7 @@ public class OffAccountInfoController {
 	@ApiOperation(value = "代理用户修改下线状态", notes = "代理用户修改下线状态", httpMethod = "POST")
 	@RequestMapping(value = "/updateAccountState", method = RequestMethod.POST)
 	@ResponseBody
-	public RestResult updateAccountState(@ApiParam(value = "Json参数", required = true) @Validated @RequestBody UpdateAccountStateVo param) throws Exception {
+	public synchronized RestResult updateAccountState(@ApiParam(value = "Json参数", required = true) @Validated @RequestBody UpdateAccountStateVo param) throws Exception {
 		RestResult result = new RestResult();
 		try {
 			int supaccountId = param.getSupaccountid();

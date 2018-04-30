@@ -72,7 +72,7 @@ public class SubAccountInfoController {
 	@ApiOperation(value = "新增子帐号", notes = "新增子帐号", httpMethod = "POST")
 	@RequestMapping(value = "/addSubAccountInfo", method = RequestMethod.POST)
 	@ResponseBody
-	public RestResult addSubAccountInfo(@ApiParam(value = "Json参数", required = true) @Validated @RequestBody SubAccountInfoVo param) throws Exception {
+	public synchronized RestResult addSubAccountInfo(@ApiParam(value = "Json参数", required = true) @Validated @RequestBody SubAccountInfoVo param) throws Exception {
 		RestResult result = new RestResult();
 		try {
 			
@@ -131,7 +131,7 @@ public class SubAccountInfoController {
 	@ApiOperation(value = "获取该代理的子账号列表", notes = "获取该代理的子账号列表", httpMethod = "POST")
 	@RequestMapping(value = "/getAllSubAccountInfo", method = RequestMethod.POST)
 	@ResponseBody
-	public SubAccountListResult getAllSubAccountInfo(@ApiParam(value = "Json参数", required = true) @Validated @RequestBody AccountInfoVo param) throws Exception {
+	public synchronized SubAccountListResult getAllSubAccountInfo(@ApiParam(value = "Json参数", required = true) @Validated @RequestBody AccountInfoVo param) throws Exception {
 		SubAccountListResult result = new SubAccountListResult();
 		try {
 			
@@ -154,7 +154,7 @@ public class SubAccountInfoController {
 	@ApiOperation(value = "代理用户修改子账户密码", notes = "代理用户修改子账户密码", httpMethod = "POST")
 	@RequestMapping(value = "/updateSubAccountPass", method = RequestMethod.POST)
 	@ResponseBody
-	public RestResult updateSubAccountPass(@ApiParam(value = "Json参数", required = true) @Validated @RequestBody UpdatePlayPassVo param) throws Exception {
+	public synchronized RestResult updateSubAccountPass(@ApiParam(value = "Json参数", required = true) @Validated @RequestBody UpdatePlayPassVo param) throws Exception {
 		RestResult result = new RestResult();
 		try {			
 			AccountInfo offAccountInfo = accountInfoMapper.selectByPrimaryKey(param.getAccountid());
@@ -180,7 +180,7 @@ public class SubAccountInfoController {
 	@ApiOperation(value = "代理用户修改子账户状态", notes = "代理用户修改子账户状态", httpMethod = "POST")
 	@RequestMapping(value = "/updateSubAccountState", method = RequestMethod.POST)
 	@ResponseBody
-	public RestResult updateSubAccountState(@ApiParam(value = "Json参数", required = true) @Validated @RequestBody UpdateAccountStateVo param) throws Exception {
+	public synchronized RestResult updateSubAccountState(@ApiParam(value = "Json参数", required = true) @Validated @RequestBody UpdateAccountStateVo param) throws Exception {
 		RestResult result = new RestResult();
 		try {
 			int supaccountId = param.getSupaccountid();

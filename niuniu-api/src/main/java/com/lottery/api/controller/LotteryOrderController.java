@@ -131,14 +131,13 @@ public class LotteryOrderController {
 	@ResponseBody
 	public synchronized RestResult addLotteryOrder(
 			@ApiParam(value = "Json参数", required = true) @Validated @RequestBody OrderParamVo param) throws Exception {
-		//System.out.println("1---------------------------------------"+param.getRmid());
 		RestResult result = new RestResult();
 		String checkInfo = "";
 		try {
 			
 			LotteryGameOrder order = mapper.map(param, LotteryGameOrder.class);
 			//System.out.println("投注开始时间------------------"+new Date());
-			LOG.info("投注开始时间------------------"+new Date());
+			LOG.info("投注开始时间------------------"+new Date()+".."+param.getAccountId());
 			LotteryGameRound lgr = lotteryGameRoundMapper.selectLotteryGameResult(order.getSid(), order.getLotteryterm());
 			if (lgr.getOvertime().getTime()<(new java.util.Date()).getTime()){
 				result.fail("该游戏已封盘");
@@ -229,7 +228,7 @@ public class LotteryOrderController {
 				
 			}
 			//System.out.println("投注结束时间------------------"+new Date());
-			LOG.info("投注结束时间------------------"+new Date());
+			LOG.info("投注结束时间------------------"+new Date()+".."+param.getAccountId());
 			result.success();
 			LOG.info(result.getMessage());
 		} catch (Exception e) {
@@ -243,7 +242,7 @@ public class LotteryOrderController {
 	@ApiOperation(value = "获取投注明细", notes = "获取投注明细", httpMethod = "POST")
 	@RequestMapping(value = "/getOrderItem", method = RequestMethod.POST)
 	@ResponseBody
-	public GameOrderGrListResult getOrderItem(
+	public synchronized GameOrderGrListResult getOrderItem(
 			@ApiParam(value = "Json参数", required = true) @Validated @RequestBody RoomOrderVo param) throws Exception {
 		GameOrderGrListResult  result =  new GameOrderGrListResult();
 		try { 	
@@ -261,7 +260,7 @@ public class LotteryOrderController {
 	@ApiOperation(value = "获取本期注单", notes = "获取本期注单", httpMethod = "POST")
 	@RequestMapping(value = "/getCurTermOrder", method = RequestMethod.POST)
 	@ResponseBody
-	public GameOrderListResult getCurTermOrder(
+	public synchronized GameOrderListResult getCurTermOrder(
 			@ApiParam(value = "Json参数", required = true) @Validated @RequestBody CurResultParamVo param) throws Exception {
 		GameOrderListResult result = new GameOrderListResult();
 		try {
@@ -280,7 +279,7 @@ public class LotteryOrderController {
 	@ApiOperation(value = "获取游戏桌台人数及庄台", notes = "获取游戏桌台人数及庄台", httpMethod = "POST")
 	@RequestMapping(value = "/getLotteryGameNoid", method = RequestMethod.POST)
 	@ResponseBody
-	public LotteryNoidResult getLotteryGameNoid(
+	public synchronized LotteryNoidResult getLotteryGameNoid(
 			@ApiParam(value = "Json参数", required = true) @Validated @RequestBody RoomOrderVo param) throws Exception {
 		LotteryNoidResult result = new LotteryNoidResult();
 		try {
@@ -300,7 +299,7 @@ public class LotteryOrderController {
 	@ApiOperation(value = "获取历史注单", notes = "获取本历史注单", httpMethod = "POST")
 	@RequestMapping(value = "/getHisOrder", method = RequestMethod.POST)
 	@ResponseBody
-	public OrderListResult getHisOrder(
+	public synchronized OrderListResult getHisOrder(
 			@ApiParam(value = "Json参数", required = true) @Validated @RequestBody ResultParamVo param) throws Exception {
 		OrderListResult result = new OrderListResult();
 		try {
@@ -325,7 +324,7 @@ public class LotteryOrderController {
 	@ApiOperation(value = "获取注单汇总金额", notes = "获取注单汇总金额", httpMethod = "POST")
 	@RequestMapping(value = "/getHisOrderAmount", method = RequestMethod.POST)
 	@ResponseBody
-	public OrderAmountResult getHisOrderAmount(
+	public synchronized OrderAmountResult getHisOrderAmount(
 			@ApiParam(value = "Json参数", required = true) @Validated @RequestBody ResultAmountVo param) throws Exception {
 		OrderAmountResult result = new OrderAmountResult();
 		try {
@@ -349,7 +348,7 @@ public class LotteryOrderController {
 	@ApiOperation(value = "获取房间收益", notes = "获取房间收益", httpMethod = "POST")
 	@RequestMapping(value = "/getOrderAmount", method = RequestMethod.POST)
 	@ResponseBody
-	public RoomAmountResult getOrderAmount(
+	public synchronized RoomAmountResult getOrderAmount(
 			@ApiParam(value = "Json参数", required = true) @Validated @RequestBody RoomAmountVo param) throws Exception {
 		RoomAmountResult result = new RoomAmountResult();
 		try {
@@ -367,7 +366,7 @@ public class LotteryOrderController {
 	@ApiOperation(value = "获取房间结算/本房/明细", notes = "获取房间结算/本房/明细", httpMethod = "POST")
 	@RequestMapping(value = "/getOrderAmountDetail", method = RequestMethod.POST)
 	@ResponseBody
-	public RoomOrderDetaiResult getOrderAmountDetail(
+	public synchronized RoomOrderDetaiResult getOrderAmountDetail(
 			@ApiParam(value = "Json参数", required = true) @Validated @RequestBody RoomAmountVo param) throws Exception {
 		RoomOrderDetaiResult result = new RoomOrderDetaiResult();
 		try {
@@ -386,7 +385,7 @@ public class LotteryOrderController {
 	@ApiOperation(value = "获取输赢明细记录", notes = "获取输赢明细记录", httpMethod = "POST")
 	@RequestMapping(value = "/getLotteryGameDetail", method = RequestMethod.POST)
 	@ResponseBody
-	public LotteryGameDetailResult getLotteryGameDetail(
+	public synchronized LotteryGameDetailResult getLotteryGameDetail(
 			@ApiParam(value = "Json参数", required = true) @Validated @RequestBody LotteryGameDetailVO param) throws Exception {
 		LotteryGameDetailResult result = new LotteryGameDetailResult();
 		try {

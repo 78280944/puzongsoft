@@ -189,7 +189,7 @@
     select 
     a.lgrid,a.sid,a.lotteryterm,a.lotteryresult,a.starttime,a.overtime,a.opentime,a.closetime,a.actopentime,a.actclosetime 
     from lottery_game_round a
-    where a.sid = #{sid,jdbcType=INTEGER} and a.lotteryterm = #{lotteryterm,jdbcType=VARCHAR} for update
+    where a.sid = #{sid,jdbcType=INTEGER} and a.lotteryterm = #{lotteryterm,jdbcType=VARCHAR} 
   </select>
   
   <select id="selectLotteryOrderResult" resultMap="BaseResultMap">

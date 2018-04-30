@@ -83,5 +83,5 @@ public interface LotteryGameOrderMapper {
     
     List<RoomOrderDetailDto> selectGameAmountDetail(@Param("rmid")Integer rmid,@Param("lotteryterm")String lotteryterm);
     
-    List<LotteryGameOrder> selectAddAccountIds(@Param("sid")Integer sid,@Param("rmid")Integer rmid,@Param("noid")Integer noid,@Param("lotteryterm")String lotteryterm,@Param("accountids")String accountids);
+    List<LotteryGameOrder> selectAddAccountIds(@Param("sid")Integer sid,@Param("rmid")Integer rmid,@Param("noid")Integer noid,@Param("lotteryterm")String lotteryterm,@Param("accountids")List<Integer> accountids);
 }

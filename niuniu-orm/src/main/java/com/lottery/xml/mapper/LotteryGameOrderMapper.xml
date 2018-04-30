@@ -76,7 +76,9 @@
     from lottery_game_order
     where rmid =#{rmid,jdbcType=INTEGER} and sid = #{sid,jdbcType=INTEGER} 
     and noid = #{noid,jdbcType=INTEGER} and lotteryterm = #{lotteryterm,jdbcType=VARCHAR}
-    and accountid in(#{accountid,jdbcType=VARCHAR})
+    and accountid in
+    <foreach collection="accountids" item="item" index="index"
+     open="(" separator="," close=")">#{item}</foreach>
   </select>
   
   <select id="selectByNoResultValue"  resultMap="BaseResultMap">    

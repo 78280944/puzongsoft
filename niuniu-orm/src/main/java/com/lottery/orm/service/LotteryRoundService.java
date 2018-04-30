@@ -253,7 +253,7 @@ public class LotteryRoundService {
 	}
 	
 	//获取是否有游戏结果
-	public LotteryGameRound getLotteryTermResult(Integer sid,String lotteryterm) throws Exception{
+	public synchronized LotteryGameRound getLotteryTermResult(Integer sid,String lotteryterm) throws Exception{
 		LotteryGameRound lotteryGameRound = lotteryGameRoundMapper.selectLotteryGameResult(sid, lotteryterm);
 		return lotteryGameRound;
 	} 

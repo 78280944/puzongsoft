@@ -451,6 +451,14 @@
     where code = #{code,jdbcType=VARCHAR}
   </select>
   
+  <select id="selectByCodeCount" resultMap="BaseResultMap">  
+    select 
+    count(*) as limited
+    from account_info a
+    where a.supuserid = (select b.accountid from lottery_add_account b where b.accountid = #{accountid,jdbcType=INTEGER} )
+
+  </select>
+  
    <select id="selectByLoginPlayer" parameterType="com.lottery.orm.bo.AccountInfo" resultMap="BaseResultMap">  
     select 
     <include refid="Base_Column_List" />

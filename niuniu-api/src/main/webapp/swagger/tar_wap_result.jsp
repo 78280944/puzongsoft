@@ -11,6 +11,9 @@
 <%@ page import="org.apache.http.entity.StringEntity" %>
 <%@ page import="com.alibaba.fastjson.JSONObject" %>
 <%@ page import="com.kdpay.util.MD5" %>
+<%@ page import="java.io.BufferedInputStream" %>
+<%@ page import="java.io.BufferedReader" %>
+<%@ page import="java.io.InputStreamReader" %>
 
 <%
 	 //request.setCharacterEncoding("UTF-8");

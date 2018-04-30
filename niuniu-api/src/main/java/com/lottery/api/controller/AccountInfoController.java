@@ -181,7 +181,7 @@ public class AccountInfoController {
 	@ApiOperation(value = "获取玩家或者代理商、子代理商信息", notes = "获取玩家或者代理商、子代理商信息", httpMethod = "POST")
 	@RequestMapping(value = "/getAccountInfo", method = RequestMethod.POST)
 	@ResponseBody
-	public AccountResult getAccountInfo(@ApiParam(value = "Json参数", required = true) @Validated @RequestBody LoginParamVo param) throws Exception {
+	public synchronized AccountResult getAccountInfo(@ApiParam(value = "Json参数", required = true) @Validated @RequestBody LoginParamVo param) throws Exception {
 		AccountResult result = new AccountResult();
 		try {
 			String username = param.getUsername();
@@ -374,7 +374,6 @@ public class AccountInfoController {
 		    	//根据邀请码判断上级
 		    	
 		    	AccountInfo accountInfo2 = accountInfoMapper.selectByCode(accountInfo.getCode(), "9", "1");
-		    	System.out.println("34-----------"+accountInfo2);
 		    	if (accountInfo2!=null){
 		    		accountInfo.setSupuserid(accountInfo2.getAccountid());
 			    	accountInfo.setPassword(DigestUtils.md5Hex(accountInfo.getPassword())); 
@@ -385,15 +384,27 @@ public class AccountInfoController {
 			    	accountInfo.setState("1");//默认状态正常
 			    	accountInfo.setInputdate(new Date());
 			    	accountInfo.setUsermoney(BigDecimal.valueOf(0.0));
+			    	//增值账户
+			    	AccountInfo aInfo = accountInfoMapper.selectByCodeCount(accountInfo2.getAccountid());
+			    	if (aInfo.getLimited()>0){
+			    		accountInfo1 = accountInfoMapper.selectByPrimaryKey(1000);
+			    		if (aInfo.getLimited()>Integer.valueOf(accountInfo1.getBudget())){
+						      result.fail("增值代理客户已超过最大设置值，请核对邀请码");
+						      return result;
+			    		}
+			    	}
+			    	
+			    	
 			    	//注册环信帐号
 	                Boolean easeRegisterResult = easemobService.registerEaseMobUser(accountInfo.getUsername().toLowerCase(), accountInfo.getUsername().toLowerCase());
-	                if (easeRegisterResult) {
+			    	if (easeRegisterResult) {
 	                    //环信帐号注册成功
 	                    accountInfoService.addAccountInfo(accountInfo);
 	                    result.success();
 	                } else {
 	                    result.fail("环信注册",MessageTool.Code_3002);
 	                }
+	               
 		    	}else {
 				     result.fail("邀请码",MessageTool.Code_3003);
 				     return result;
@@ -884,7 +895,7 @@ public class AccountInfoController {
 	@RequestMapping(value = "/userOutResult", method = RequestMethod.POST)
 	@ResponseBody
 	public synchronized RestResult userOutResult() throws Exception {
-		System.out.println("ddo...");
+		System.out.println("ddo..start."+new Date());
 		RestResult result = new RestResult();
 		List<AccountRecharge> list = accountRechargeMapper.selectByOutResult();
 		if (null != list){
@@ -903,6 +914,7 @@ public class AccountInfoController {
 		}
 		result.success("success");
 		LOG.info(result.getMessage());
+		System.out.println("ddo..over."+new Date());
 		return result;
       }
 

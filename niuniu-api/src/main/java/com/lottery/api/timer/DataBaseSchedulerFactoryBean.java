@@ -32,6 +32,7 @@ public class DataBaseSchedulerFactoryBean extends SchedulerFactoryBean {
 		TSTimeTask task = null;
 		for (TriggerKey triggerKey : trigerrNames) {
 			task = TSTimeTaskMapper.selectByTaskId(triggerKey.getName());
+			System.out.println("TASK...."+task.getTaskId());
 			//数据库查询不到的定时任务或者定时任务的运行状态不为1时，都停止
 			//TASK #327 定时器任务默认未启动 
 			if(task==null || !"1".equals(task.getIsStart())){
