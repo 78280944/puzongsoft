@@ -11,6 +11,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.lottery.orm.bo.LotteryGame;
@@ -64,6 +65,7 @@ public class JobsTaskService {
 	 *试玩账户删除
 	 * @throws Exception 
 	 */
+	@Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor=Exception.class)
 	public void LotteryPlayerDelete() throws Exception{
 		Date lastDay = CommonUtils.getNextDay(new Date());
 		Date[] param1 = CommonUtils.getDateTime(lastDay, lastDay);
@@ -87,6 +89,7 @@ public class JobsTaskService {
 	 *是否读取开奖
 	 * @throws Exception 
 	 */
+	@Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor=Exception.class)
 	public  synchronized String[] LotterApi(int sid,String apiUrl) throws Exception{
 		LotteryGame lg =  lotteryGameMapper.selectLotteryBySid(sid);
 		Date date = new Date();
@@ -126,6 +129,7 @@ public class JobsTaskService {
 	 *公司上庄
 	 * @throws Exception 
 	 */
+	@Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor=Exception.class)
 	public synchronized void taskplayoridle(LotteryGameRound lgr) throws Exception{
 		//LOG.info("公司上庄开始："+new Date());
 		java.util.Random random=new java.util.Random();// 定义随机类

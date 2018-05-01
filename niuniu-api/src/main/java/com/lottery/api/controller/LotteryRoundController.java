@@ -2,6 +2,8 @@ package com.lottery.api.controller;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.validation.constraints.Min;
@@ -53,9 +55,7 @@ import com.lottery.orm.result.HisRoundResult;
 import com.lottery.orm.result.LotteryGameResult;
 import com.lottery.orm.result.LotterySidResult;
 import com.lottery.orm.result.ResultListResult;
-import com.lottery.orm.result.RoundResult;
-import com.lottery.orm.service.LotteryOrderService;
-import com.lottery.orm.service.LotteryRoundService;
+import com.lottery.orm.util.CommonUtils;
 import com.lottery.orm.util.EnumType;
 import com.lottery.orm.util.HttpclientTool;
 import com.lottery.orm.util.MessageTool;
@@ -76,15 +76,9 @@ public class LotteryRoundController {
 
 	@Autowired
 	LotteryRoundMapper lotteryRoundMapper;
-
-	@Autowired
-	LotteryRoundService lotteryRoundService;
 	
 	@Autowired
 	CustomLotteryMapper customLotteryMapper;
-
-	@Autowired
-	LotteryOrderService lotteryOrderService;
 	
 	@Autowired
 	LotteryGameRoundMapper lotteryGameRoundMapper;
@@ -97,16 +91,6 @@ public class LotteryRoundController {
 	
 	@Autowired
 	LotteryRoomMapper lotteryRoomMapper;
-	
-	@Value("${lottery.apiUrlByDate.cqklsf}")
-    private String apiUrlByDateCQ;
-	
-	@Value("${lottery.apiUrlByDate.gdklsf}")
-    private String apiUrlByDateGD;
-	
-	@Value("${lottery.apiUrlByDate.tjklsf}")
-    private String apiUrlByDateTJ;
-	
 	
 	@ApiOperation(value = "获取游戏类型", notes = "获取游戏类型", httpMethod = "POST")
 	@RequestMapping(value = "/getLotteryGame", method = RequestMethod.POST)
@@ -190,8 +174,11 @@ public class LotteryRoundController {
 		ResultListResult result = new ResultListResult();
 		
 		try {
-			List<ResultDataDto> list = lotteryRoundService.getLotteryResult(param.getStartDate(), param.getEndDate(), param.getSid(), param.getBeginRow(), param.getPageSize());
-			result.success(list);
+			//List<ResultDataDto> list = lotteryRoundService.getLotteryResult(param.getStartDate(), param.getEndDate(), param.getSid(), param.getBeginRow(), param.getPageSize());
+			List<ResultDataDto> roundList = new ArrayList<ResultDataDto>();
+			Date[] sTime = CommonUtils.getDateTime(param.getStartDate(), param.getEndDate());
+			roundList = lotteryGameRoundMapper.selectGameResult(sTime[0], sTime[1], param.getSid(), param.getBeginRow(), param.getPageSize());
+			result.success(roundList);
 		} catch (Exception e) {
 			result.fail(MessageTool.ErrorCode);
 			LOG.error(e.getMessage(), e);
@@ -206,7 +193,24 @@ public class LotteryRoundController {
 			@ApiParam(value = "Json参数", required = true) @Validated @RequestBody GameLobbyVo param) throws Exception {
 		LotterySidResult result = new LotterySidResult();	
 		try {
-			LotteryGameCurDto lgc = lotteryRoundService.getLotteyCurResult(param.getSid());
+			//LotteryGameCurDto lgc = lotteryRoundService.getLotteyCurResult(param.getSid());
+			List<LotteryGameRound> list = lotteryGameRoundMapper.selectLotteryOrderResult(param.getSid());
+			LotteryGameCurDto lgc = new LotteryGameCurDto();
+			for (int i = 0;i<list.size();i++){
+				LotteryGameRound lgr = new LotteryGameRound();
+				lgr = list.get(i);
+				if (i==0){
+					lgc.setSid(lgr.getSid());
+					lgc.setStarttime(lgr.getStarttime());
+					lgc.setOvertime(lgr.getOvertime());
+					lgc.setOpentime(lgr.getOpentime());
+					lgc.setLotteryterm(lgr.getLotteryterm());
+				}
+				if (i==1){
+					lgc.setLastlotteryterm(lgr.getLotteryterm());
+					lgc.setLastlotteryresult(lgr.getLotteryresult());
+				}
+			}
 			result.success(lgc);
 		} catch (Exception e) {
 			result.fail(MessageTool.ErrorCode);

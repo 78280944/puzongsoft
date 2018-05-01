@@ -253,12 +253,14 @@ public class LotteryRoundService {
 	}
 	
 	//获取是否有游戏结果
+	@Transactional(propagation = Propagation.REQUIRED, rollbackFor=Exception.class)
 	public synchronized LotteryGameRound getLotteryTermResult(Integer sid,String lotteryterm) throws Exception{
 		LotteryGameRound lotteryGameRound = lotteryGameRoundMapper.selectLotteryGameResult(sid, lotteryterm);
 		return lotteryGameRound;
 	} 
 	
 	//获取当前游戏接口信息
+	@Transactional(propagation = Propagation.REQUIRED, rollbackFor=Exception.class)
 	public LotteryGameCurDto getLotteyCurResult(Integer sid) throws Exception{
 		List<LotteryGameRound> list = lotteryGameRoundMapper.selectLotteryOrderResult(sid);
 		LotteryGameCurDto lgc = new LotteryGameCurDto();

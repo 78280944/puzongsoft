@@ -302,6 +302,7 @@ public class LotteryOrderService {
 	}
 
 	//投注金额检查
+	@Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor=Exception.class)
 	public synchronized String checkLotteryOrderInfo(AccountInfo accountInfo, LotteryGameOrder order,SysLimit sys) {
 		//System.out.println("9-3333333----"+sys.getLimited()+"..."+order.getOrderamount()+".."+accountInfo.getUsermoney()+".."+(order.getOrderamount().compareTo(accountInfo.getUsermoney())<0));
 		
@@ -345,6 +346,7 @@ public class LotteryOrderService {
 	}
 	
 	//账户变动
+	@Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor=Exception.class)
 	public synchronized void changeAccountAmount(AccountInfo accountInfo,LotteryGameOrder order){
 		//账户变动明细
 		TradeInfo trade = new TradeInfo();
@@ -460,6 +462,7 @@ public class LotteryOrderService {
 	}
 
 	// 投注结果
+	@Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor=Exception.class)
 	public List<RoomHisOrderDto> getLotteryHisOrder(Date startTime, Date endTime, Integer accountid,Integer sid, Integer beginRow, Integer pageSize) throws ParseException {
 		List<RoomHisOrderDto> roundList = new ArrayList<RoomHisOrderDto>();
 		//Date[] sTime = CommonUtils.getDateTime(startTime, endTime);
@@ -467,6 +470,7 @@ public class LotteryOrderService {
 		return roundList;
 	}
 	
+	@Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor=Exception.class)
 	public List<RoomHisOrderDto> getLotteryHisAllOrder(Date startTime, Date endTime, Integer accountid,Integer sid, Integer beginRow, Integer pageSize) throws ParseException {
 		List<RoomHisOrderDto> roundList = new ArrayList<RoomHisOrderDto>();
 		//Date[] sTime = CommonUtils.getDateTime(startTime, endTime);
@@ -527,6 +531,7 @@ public class LotteryOrderService {
 	*/
 	   
 	// 投注明细
+	@Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor=Exception.class)
 	public List<RoomOrderItemDto> selectGameOrderItem(String lotteryTerm,Integer sid, Integer rmid, Integer accountid) throws ParseException {
 		List<RoomOrderItemDto> roundList = new ArrayList<RoomOrderItemDto>();
 		//List<List<RoomOrderItemDto>> list = new ArrayList<List<RoomOrderItemDto>>();
@@ -535,6 +540,7 @@ public class LotteryOrderService {
 	}
 	
 	//本房战绩
+	@Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor=Exception.class)
 	public List<QueryRoomDateDto> selectRoomResult(Date startTime,Date endTime, String time,Integer sid,Integer rmid, Integer accountid,Integer beginRow, Integer pageSize) throws ParseException {
 		//List<QueryRoomDateDto> list = lotteryRoomDetailMapper.selectLotteryRoomDetail(param.getStartDate(), param.getEndDate(), param.getRmid(), param.getBeginRow(), param.getPageSize());;
 		List<QueryRoomDateDto> roundList = new ArrayList<QueryRoomDateDto>();
@@ -553,6 +559,7 @@ public class LotteryOrderService {
 		return roundList;
 	}
 	
+	@Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor=Exception.class)
 	public synchronized void insertLotteryGameOrder(LotteryGameOrder record) throws Exception{
 		lotteryGameOrderMapper.insert(record);
 	}

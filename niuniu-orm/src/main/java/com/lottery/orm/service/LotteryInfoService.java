@@ -9,6 +9,7 @@ import java.util.Random;
 import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.lottery.orm.bo.LotteryGameDetail;
@@ -25,6 +26,7 @@ public class LotteryInfoService {
 	  /**
      * 判断比较,无庄逻辑处理
      */
+	@Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor=Exception.class)
     public  String[][] doNoBankerHandle(String[][] str,String[][] str1,String addstate,Integer time){
    		
         int i = 0;
@@ -283,6 +285,7 @@ public class LotteryInfoService {
     /**
      * 庄判断比较,输庄
      */
+	@Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor=Exception.class)
     public  Map<Integer, Object> doBankerHandleLess(int gains,int count,int values,int times,String[][] str,String[][] strEqual,String addstate,Integer time){
       
         int i = 0;
@@ -363,6 +366,7 @@ public class LotteryInfoService {
     /**
      * 庄判断比较,赢庄
      */
+	@Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor=Exception.class)
     public  Map<Integer, Object> doBankerHandleMore(int gains,int count,int values,int times,String[][] str,String[][] strEqual,String addstate,Integer time){
         
  
@@ -411,7 +415,7 @@ public class LotteryInfoService {
        return map;
         
     }
-    
+	@Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor=Exception.class)
     public  void doCompareHandle1(String[][] strEqual,String[][] str,int j,int comMoney1,int comMoney2){
     	for (int t = 0;t<strEqual.length;t++){
       		 LotteryGameDetail record = new LotteryGameDetail();

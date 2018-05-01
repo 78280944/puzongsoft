@@ -80,6 +80,7 @@ public class OffAccountInfoService {
 	}
 	
 	// 更新子帐户
+	@Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor=Exception.class)
 	public void updateOffAccountInfo(OffAccountInfo paraInfo,String offtype) {
 		if (offtype.equals("2"))
 		    offAccountInfoMapper.updateByPrimaryKeySelective(paraInfo);

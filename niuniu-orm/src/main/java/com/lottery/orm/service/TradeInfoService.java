@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.lottery.orm.bo.AccountAmount;
@@ -96,6 +97,7 @@ public class TradeInfoService {
     }
     */
     // 添加出入金款项并更新账户
+    @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor=Exception.class)
     public String addInoutTradeInfo(TradeInfo tradeInfo) {
     	AccountInfo aInfo = accountInfoMapper.selectByPrimaryKey(tradeInfo.getAccountid());
     	tradeInfo.setAccountamount(aInfo.getUsermoney().add(BigDecimal.valueOf(tradeInfo.getTradeamount())));
@@ -108,6 +110,7 @@ public class TradeInfoService {
     
     
     //代理金款项并更新账户
+    @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor=Exception.class)
     public String addAgencyTradeInfo(TradeInfo tradeInfo,Double fee,int sid,String lotteryterm,Double comission,AccountAmount accAmount) {
     	List<AccountInfo> aInfo = accountInfoMapper.selectAgencyInfo(tradeInfo.getAccountid());
     	Double cfee = 0.0;
@@ -167,6 +170,7 @@ public class TradeInfoService {
     }
     
     //查询
+    @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor=Exception.class)
     public List<TradeInfo> selectByTrade(String relativeType,String startTime,String overTime,int beginRow,int pageSize) {
     	List<TradeInfo> list = tradeInfoMapper.selectByTrade(relativeType, startTime, overTime, beginRow, pageSize);
         return list;

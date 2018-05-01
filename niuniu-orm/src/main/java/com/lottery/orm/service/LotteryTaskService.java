@@ -309,7 +309,7 @@ public class LotteryTaskService {
 	        	}
         	}
         	
-	
+	@Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor=Exception.class)
 	private  String[] getAddService() throws Exception {
 		LotteryService lotteryService = lotteryServiceMapper.selectByPrimaryKey(1000);
 		String[] states = new String[4];
@@ -319,15 +319,28 @@ public class LotteryTaskService {
 		states[3] = lotteryService.getAremarksercie();//上庄
 		return states;
 	}
-	
+	@Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor=Exception.class)
 	private synchronized void getLotteryOriginResultTotal(String lotteryType, String apiUrl) throws Exception {
 		System.out.println("Show time-start--"+lotteryType+"..."+new Date());
+		//results = jobsTaskService.LotterApi(Integer.valueOf(lotteryType),apiUrl);
+		LotteryGame lg =  lotteryGameMapper.selectLotteryBySid(Integer.valueOf(lotteryType));
+		Date date = new Date();
 		String[] results = new String[2];
-		results = jobsTaskService.LotterApi(Integer.valueOf(lotteryType),apiUrl);
+		System.out.println("是否运行状态:"+date.after(lg.getGameovertime())+".."+Integer.valueOf(lotteryType)+".."+lg.getGamename()+".."+".."+lg.getGamename().equals("0"));
+		if (date.after(lg.getGameovertime())){
+			System.out.println("是否最终状态：true"+"..."+lotteryType+"..."+new Date());
+			results[0] = "true";
+			results[1] = lg.getGamename();
+			boolean result = getLotteryOriginResult2(lotteryType,apiUrl,results[1]);
+		}else{
+			System.out.println("是否最终状态：false"+"..."+lotteryType+"..."+new Date());
+			results[0] = "false";
+			results[1] = lg.getGamename();
+		}/*
         if (results[0].equals("true")){
     		boolean result = getLotteryOriginResult2(lotteryType,apiUrl,results[1]);
         }
-        System.out.println("Show time-over--"+lotteryType+"..."+new Date());
+        */
 
 	  /*
 		//if (!result){
@@ -336,7 +349,7 @@ public class LotteryTaskService {
 		//}
 		*/
 	}
-	
+	@Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor=Exception.class)
 	private  String getUrl(String lotteryType)throws Exception{
 		String url = "";
 		if (lotteryType.equals(EnumType.LotteryType.XYFT.ID))
@@ -359,6 +372,7 @@ public class LotteryTaskService {
 	 * 获取开奖结果
 	 * @throws Exception 
 	 */
+	@Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor=Exception.class)
 	private synchronized boolean getLotteryOriginResult1(String lotteryType, String apiUrl) throws Exception {
 		String result = HttpclientTool.get(apiUrl);
 		//String result = "";
@@ -539,6 +553,7 @@ public class LotteryTaskService {
 	 * 获取开奖结果
 	 * @throws Exception 
 	 */
+	@Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor=Exception.class)
 	private  synchronized boolean getLotteryOriginResult2(String lotteryType, String apiUrl,String results) throws Exception {
 		
 		LotteryGameRound lgr = new LotteryGameRound();
@@ -649,7 +664,9 @@ public class LotteryTaskService {
 					
 					System.out.println("9--45--------------"+gRound1+".."+lgr1.getLotteryterm()+".."+String.valueOf(BigInteger.valueOf(Long.valueOf(topenTerm)+1)));
 					//if (gRound1==null&&(!(results.equals("0")))){String.valueOf(BigInteger.valueOf(Long.valueOf(lg.getGameterm())-1))
-					if (gRound1==null&&lgr1.getLotteryterm().equals(String.valueOf(BigInteger.valueOf(Long.valueOf(topenTerm)+1)))){
+					//System.out.println(String.valueOf(BigInteger.valueOf(Long.valueOf(s))));
+					if (gRound1==null&&(String.valueOf(BigInteger.valueOf(Long.valueOf(lgr1.getLotteryterm()))).equals(String.valueOf(BigInteger.valueOf(Long.valueOf(topenTerm)+1))))||(gRound1==null&&lgr1.getLotteryterm().substring(lgr1.getLotteryterm().length()-3, lgr1.getLotteryterm().length()).equals("001"))){
+					//if (gRound1==null){
 						System.out.println("9--678--"+lgr1.getSid()+".."+lgr1.getLotteryterm()+".."+lgr1.getLotteryresult());
 						
 						lgr1.setLotteryresult(null);
@@ -871,6 +888,7 @@ public class LotteryTaskService {
 	 * 结果处理1,游戏的初始化
 	 * @throws Exception 
 	 */
+	@Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor=Exception.class)
 	public  void LotteryResultHandle1(LotteryGame lottery) throws Exception{
 		//System.out.println("00--------------------"+lotteryApiUrlCQ);
 		//getLotteryOriginResult(EnumType.LotteryType.CQ.ID, lotteryApiUrlCQ);
@@ -881,6 +899,7 @@ public class LotteryTaskService {
 	 * 结果处理2,更新结果
 	 * @throws Exception 
 	 */
+	@Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor=Exception.class)
 	public void LotteryResultHandle2(LotteryGameRound lottery) throws Exception{
 		//System.out.println("00--------------------"+lotteryApiUrlCQ);
 		//getLotteryOriginResult(EnumType.LotteryType.CQ.ID, lotteryApiUrlCQ);
@@ -905,6 +924,7 @@ public class LotteryTaskService {
 	 * 结果处理3,更新名次
 	 * @throws Exception 
 	 */
+	@Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor=Exception.class)
 	public void LotteryResultHandle3(LotteryGameRound lottery) throws Exception{
 		List<LotteryGameResults> list = lotteryGameResultsMapper.selectGameResults(lottery.getSid(),lottery.getLotteryterm());
 	    String[] com = new String[5];
@@ -986,6 +1006,7 @@ public class LotteryTaskService {
 	 * 结果处理4,试玩
 	 * @throws Exception 
 	 */
+	@Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor=Exception.class)
 	public synchronized void LotteryResultHandle4(LotteryGameRound lottery) throws Exception{
 		java.util.Random random=new java.util.Random();// 定义随机类
 		//int result=random.nextInt(10);// 返回[0,10)集合中的整数，注意不包括10 
@@ -1034,6 +1055,7 @@ public class LotteryTaskService {
 	 * 上庄处理
 	 * @throws Exception 
 	 */
+	@Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor=Exception.class)
 	public  void LotteryPlayoridleHandle(LotteryGameRound lottery) throws Exception{
 		LotteryOrderRecord record = new LotteryOrderRecord();
 		record.setLotteryterm(lottery.getLotteryterm());
@@ -1053,6 +1075,7 @@ public class LotteryTaskService {
 	 * 机器人投注
 	 * @throws Exception 
 	 */
+	@Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor=Exception.class)
 	public synchronized void LotteryResultHandle10(LotteryGameRound lottery) throws Exception{
 		java.util.Random random=new java.util.Random();// 定义随机类
 		//int result=random.nextInt(10);// 返回[0,10)集合中的整数，注意不包括10 
@@ -1110,6 +1133,7 @@ public class LotteryTaskService {
 	 * 结果处理,增值服务对象
 	 * @throws Exception 
 	 */
+	@Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor=Exception.class)
 	public synchronized void LotteryResultValue(LotteryGameRound lottery) throws Exception{
 		LotteryOrderRecord record = new LotteryOrderRecord();
 		record.setLotteryterm(lottery.getLotteryterm());
@@ -1158,6 +1182,7 @@ public class LotteryTaskService {
 	 *@throws Exception 
 	 ** 
 	 */
+	@Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor=Exception.class)
 	public  void getSecondValueLotteryResult(LotteryGameRound lottery,Integer rmid) throws Exception{		
 		//增值投注
 		//增值
@@ -1230,7 +1255,8 @@ public class LotteryTaskService {
 		 * 结果处理是否有庄,无庄
 		 * @throws Exception 
 		 */
-		public  void LotteryIsOrNotHandle(String lotteryterm,Integer sid,Integer rmid,String addstate,Integer time) throws Exception{
+	@Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor=Exception.class)
+	public  void LotteryIsOrNotHandle(String lotteryterm,Integer sid,Integer rmid,String addstate,Integer time) throws Exception{
 			
 			List<LotteryAmountDto> list =  lotteryGameOrderMapper.selectGameIsOrNotBank(lotteryterm, sid, rmid);
 			if (list.size()>0)
@@ -1243,7 +1269,8 @@ public class LotteryTaskService {
 		 * 结果处理5,无庄比较
 		 * @throws Exception 
 		 */
-		public  void LotteryResultHandle5(String lotteryterm,Integer sid,Integer rmid,String addstate,Integer time) throws Exception{
+	@Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor=Exception.class)
+	public  void LotteryResultHandle5(String lotteryterm,Integer sid,Integer rmid,String addstate,Integer time) throws Exception{
 			
 			System.out.println("8--5----------"+lotteryterm+".."+sid+".."+rmid);
 			List<LotteryAmountDto> list =  lotteryGameOrderMapper.selectGameAmountResult(lotteryterm, sid, rmid);
@@ -1305,7 +1332,8 @@ public class LotteryTaskService {
 		 * 结果处理6,庄比较
 		 * @throws Exception 
 		 */
-		public  void LotteryResultHandle6(String lotteryterm,Integer sid,Integer rmid,String addstate,Integer time) throws Exception{
+	@Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor=Exception.class)
+	public  void LotteryResultHandle6(String lotteryterm,Integer sid,Integer rmid,String addstate,Integer time) throws Exception{
 			
 			//List<LotteryAmountDto> listMore =  lotteryGameOrderMapper.selectGameAmountMoreResult(lotteryterm, sid, rmid);
 			//List<LotteryAmountDto> listLess =  lotteryGameOrderMapper.selectGameAmountLessResult(lotteryterm, sid, rmid);
@@ -1541,8 +1569,9 @@ public class LotteryTaskService {
 			doTradeHandle(lotteryterm,sid,rmid,strs,sc.getCommission(),addstate,time);
 		  
 		    }
-		
-		public  void doTradeHandle(String lotteryterm,Integer sid,Integer rmid,String[][] str1,double ratio,String addstate,Integer time){
+	
+	   @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor=Exception.class)
+	   public  void doTradeHandle(String lotteryterm,Integer sid,Integer rmid,String[][] str1,double ratio,String addstate,Integer time){
 			for (int k = 0;k<str1.length;k++){
 				BigDecimal fee = BigDecimal.valueOf(Integer.valueOf(str1[k][2]) * ratio);
 				lotteryGameOrderMapper.updateOrderResult(Integer.valueOf(str1[k][4]), new Date(), str1[k][8], BigDecimal.valueOf(Integer.valueOf(str1[k][2])).subtract(fee.doubleValue()>0?fee:BigDecimal.valueOf(0)));

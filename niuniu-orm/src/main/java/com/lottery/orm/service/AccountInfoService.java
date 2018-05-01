@@ -64,16 +64,19 @@ public class AccountInfoService {
 	}
 	
 	//更新剩余点数
+	@Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor=Exception.class)
 	public void updateAccountMount(AccountDetail accountDetail) {
 	    accountDetailMapper.updateByPrimaryKeySelective(accountDetail);
 	}
 	
 	//客户Id，更新账户余额
+	@Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor=Exception.class)
 	public void updateResultAccountMount(BigDecimal amount,Integer accountid) {
 	    accountInfoMapper.updateResultAccountMount(amount, accountid);
 	}
 	
 	//取现金额检查
+	@Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor=Exception.class)
 	public String checkCashMoneyInfo(AccountInfo accountInfo,Double transAmt) {
 		
 		//下注金额最大值
@@ -94,6 +97,7 @@ public class AccountInfoService {
 	
 	
 	//打款金额检查
+	@Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor=Exception.class)
 	public String checkDoMoneyInfo(AccountInfo accountInfo,Double transAmt) {
 		//下注金额checkDoMoneyInfo最大值
 		RoomOrderDto  rd  = new RoomOrderDto();
@@ -110,7 +114,7 @@ public class AccountInfoService {
 			return "账户金额不足，请重新输入取现金额";
 		return "true";
 	}
-	
+	@Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor=Exception.class)
 	public synchronized String checkResult(String orderNo,String payNo,String transAmt,String orderDate,String respCode,String respDesc){
 		LOG.info("返回时间："+new Date()+"，订单编号："+orderNo+",支付订单号："+payNo+",交易金额："+transAmt+",返回消息代码："+respCode+",消息描述："+respDesc);
 		AccountRecharge aRecharge = new AccountRecharge();

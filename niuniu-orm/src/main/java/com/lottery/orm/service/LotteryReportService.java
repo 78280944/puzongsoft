@@ -36,6 +36,7 @@ public class LotteryReportService {
 	private LotteryReportMapper lotteryReportMapper;
 
 	//代理输赢报表
+	@Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor=Exception.class)
 	public List<ProAccAmountDto> getProAccWinReport(Date startTime, Date endTime, Integer accountid,String level,String offtype,Integer beginRow, Integer pageSize) throws ParseException {
 		List<ProAccAmountDto> roundList = new ArrayList<ProAccAmountDto>();
 		//Date[] sTime = CommonUtils.getDateTime(startTime, endTime);
@@ -44,6 +45,7 @@ public class LotteryReportService {
 	}
 	
 	//会员报表
+	@Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor=Exception.class)
 	public List<AccAmountDto> getAccWinReport(Date startTime, Date endTime, Integer accountid,String level, String offtype,Integer beginRow, Integer pageSize) throws ParseException {
 		List<AccAmountDto> roundList = new ArrayList<AccAmountDto>();
 		//Date[] sTime = CommonUtils.getDateTime(startTime, endTime);
@@ -52,6 +54,7 @@ public class LotteryReportService {
 	}
 	
 	//交易报表
+	@Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor=Exception.class)
 	public List<AccAmountDto> getPlayTradeReport(Date startTime, Date endTime, Integer accountid,String level, Integer beginRow, Integer pageSize) throws ParseException {
 		List<AccAmountDto> roundList = new ArrayList<AccAmountDto>();
 		//Date[] sTime = CommonUtils.getDateTime(startTime, endTime);
