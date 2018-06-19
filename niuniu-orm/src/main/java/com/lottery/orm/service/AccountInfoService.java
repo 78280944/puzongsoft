@@ -53,31 +53,31 @@ public class AccountInfoService {
 	
 	// 添加账户
 	@Transactional(propagation = Propagation.REQUIRED, rollbackFor=Exception.class)
-	public void addAccountInfo(AccountInfo paraInfo) {
+	public synchronized void addAccountInfo(AccountInfo paraInfo) {
 		accountInfoMapper.insertSelective(paraInfo);
 	}
 
 	// 更新账户
 	@Transactional(propagation = Propagation.REQUIRED, rollbackFor=Exception.class)
-	public void updateAccountInfo(AccountInfo paraInfo) {
+	public synchronized void updateAccountInfo(AccountInfo paraInfo) {
 		accountInfoMapper.updateByPrimaryKeySelective(paraInfo);
 	}
 	
 	//更新剩余点数
 	@Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor=Exception.class)
-	public void updateAccountMount(AccountDetail accountDetail) {
+	public synchronized void updateAccountMount(AccountDetail accountDetail) {
 	    accountDetailMapper.updateByPrimaryKeySelective(accountDetail);
 	}
 	
 	//客户Id，更新账户余额
 	@Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor=Exception.class)
-	public void updateResultAccountMount(BigDecimal amount,Integer accountid) {
+	public synchronized void updateResultAccountMount(BigDecimal amount,Integer accountid) {
 	    accountInfoMapper.updateResultAccountMount(amount, accountid);
 	}
 	
 	//取现金额检查
 	@Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor=Exception.class)
-	public String checkCashMoneyInfo(AccountInfo accountInfo,Double transAmt) {
+	public synchronized String checkCashMoneyInfo(AccountInfo accountInfo,Double transAmt) {
 		
 		//下注金额最大值
 		RoomOrderDto  rd  = new RoomOrderDto();
@@ -98,7 +98,7 @@ public class AccountInfoService {
 	
 	//打款金额检查
 	@Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor=Exception.class)
-	public String checkDoMoneyInfo(AccountInfo accountInfo,Double transAmt) {
+	public synchronized String checkDoMoneyInfo(AccountInfo accountInfo,Double transAmt) {
 		//下注金额checkDoMoneyInfo最大值
 		RoomOrderDto  rd  = new RoomOrderDto();
 		rd = lotteryGameOrderMapper.selectAccountIdOrder(accountInfo.getAccountid());

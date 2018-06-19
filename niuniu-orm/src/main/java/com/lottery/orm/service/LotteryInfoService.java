@@ -27,7 +27,7 @@ public class LotteryInfoService {
      * 判断比较,无庄逻辑处理
      */
 	@Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor=Exception.class)
-    public  String[][] doNoBankerHandle(String[][] str,String[][] str1,String addstate,Integer time){
+    public synchronized String[][] doNoBankerHandle(String[][] str,String[][] str1,String addstate,Integer time){
    		
         int i = 0;
         int j=str.length-1;

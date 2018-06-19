@@ -97,21 +97,22 @@ public class TradeInfoService {
     }
     */
     // 添加出入金款项并更新账户
-    @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor=Exception.class)
-    public String addInoutTradeInfo(TradeInfo tradeInfo) {
+    
+    public synchronized String addInoutTradeInfo(TradeInfo tradeInfo) {
     	AccountInfo aInfo = accountInfoMapper.selectByPrimaryKey(tradeInfo.getAccountid());
     	tradeInfo.setAccountamount(aInfo.getUsermoney().add(BigDecimal.valueOf(tradeInfo.getTradeamount())));
     	if (String.valueOf(tradeInfo.getAccountid()).length()>=4)
     	    tradeInfoMapper.insertSelective(tradeInfo);
     	aInfo.setUsermoney(aInfo.getUsermoney().add(BigDecimal.valueOf(tradeInfo.getTradeamount())));
-    	accountInfoMapper.updateByPrimaryKey(aInfo);
+    	accountInfoMapper.updateByPrimaryKeySelective(aInfo);
+    	//accountInfoMapper.updateResultAccountMount(aInfo.getUsermoney(), aInfo.getAccountid());
     	return "sucess";
     }
     
     
     //代理金款项并更新账户
     @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor=Exception.class)
-    public String addAgencyTradeInfo(TradeInfo tradeInfo,Double fee,int sid,String lotteryterm,Double comission,AccountAmount accAmount) {
+    public synchronized String addAgencyTradeInfo(TradeInfo tradeInfo,Double fee,int sid,String lotteryterm,Double comission,AccountAmount accAmount) {
     	List<AccountInfo> aInfo = accountInfoMapper.selectAgencyInfo(tradeInfo.getAccountid());
     	Double cfee = 0.0;
     	Double profits = 0.0;
